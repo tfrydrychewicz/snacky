@@ -1,0 +1,17 @@
+{
+  "extends": "@react-native/typescript-config",
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["jest"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@snacky/shared-types": ["../../packages/shared-types/src"],
+      "@snacky/api-client": ["../../packages/api-client/src"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "index.js", "nativewind-env.d.ts"],
+  "exclude": ["node_modules", "ios", "android", "dist"]
+}

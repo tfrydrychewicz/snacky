@@ -1,0 +1,77 @@
+---
+description: Enforce Gluestack UI components instead of raw React Native primitives for all user-facing UI
+globs: apps/mobile/src/**/*.tsx
+alwaysApply: false
+---
+
+# Gluestack UI Components
+
+Use `@gluestack-ui/themed` components instead of raw React Native primitives. This ensures consistent theming, dark mode support, and accessibility across the app.
+
+## Component Mapping
+
+| Instead of (RN)             | Use (Gluestack)                                    |
+|-----------------------------|-----------------------------------------------------|
+| `<Text>`                    | `<Text>` from `@gluestack-ui/themed`                |
+| `<TextInput>`               | `<Input>` + `<InputField>`                          |
+| `<TouchableOpacity>`        | `<Button>` + `<ButtonText>` / `<Pressable>`         |
+| `<View>` (semantic)         | `<Box>`, `<HStack>`, `<VStack>`, `<Center>`         |
+| `<Switch>`                  | `<Switch>` from `@gluestack-ui/themed`              |
+| `<Modal>`                   | `<Modal>` + `<ModalBackdrop>` + `<ModalContent>`    |
+| `<Alert>`                   | `<Alert>` + `<AlertIcon>` + `<AlertText>`           |
+| `<ActivityIndicator>`       | `<Spinner>`                                         |
+| `<Image>`                   | `<Image>` from `@gluestack-ui/themed`               |
+| `<FlatList>` item wrappers  | `<Box>` or `<Pressable>` (FlatList itself stays RN) |
+
+## When Raw RN is OK
+
+- `<View>` for pure layout containers with no semantic meaning (flex wrappers)
+- `<FlatList>`, `<SectionList>`, `<ScrollView>` — no Gluestack equivalents
+- `<StatusBar>`, `<KeyboardAvoidingView>`, `<SafeAreaView>` — system primitives
+- `<Animated.View>` — Reanimated animation wrappers
+
+## Examples
+
+```tsx
+// ❌ BAD — raw RN primitives for interactive/semantic UI
+import { Text, TextInput, TouchableOpacity } from 'react-native';
+<TouchableOpacity onPress={onSave}>
+  <Text>Save</Text>
+</TouchableOpacity>
+<TextInput value={name} onChangeText={setName} />
+
+// ✅ GOOD — Gluestack components
+import { Button, ButtonText, Input, InputField } from '@gluestack-ui/themed';
+<Button onPress={onSave}>
+  <ButtonText>{t('common.save')}</ButtonText>
+</Button>
+<Input>
+  <InputField value={name} onChangeText={setName} />
+</Input>
+```
+
+## Composition Pattern
+
+Gluestack uses compound components. Always import the sub-parts:
+
+```tsx
+import {
+  Modal,
+  ModalBackdrop,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
+} from '@gluestack-ui/themed';
+```
+
+## Styling
+
+Gluestack components accept NativeWind `className` plus Gluestack props (`size`, `variant`, `action`). Prefer Gluestack semantic props for variants, NativeWind for layout:
+
+```tsx
+<Button size="lg" variant="solid" action="primary" className="mt-md">
+  <ButtonText>{t('common.continue')}</ButtonText>
+</Button>
+```

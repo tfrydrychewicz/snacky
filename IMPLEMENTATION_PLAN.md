@@ -31,33 +31,33 @@
 
 ### 0.2 React Native Project Initialization (Week 1)
 
-- [ ] Initialize React Native project (`npx @react-native-community/cli init`) in `apps/mobile/`
-- [ ] Enable New Architecture (Fabric + TurboModules) in `gradle.properties` and Podfile
-- [ ] Verify New Architecture builds successfully on both platforms
-- [ ] Configure TypeScript ≥ 6.0 with strict mode
-- [ ] Add `codegenConfig` to `package.json` for TurboModule specs
-- [ ] Install and configure core dependencies:
-  - [ ] React Navigation v7 (`@react-navigation/native`, `@react-navigation/native-stack`, `@react-navigation/bottom-tabs`)
-  - [ ] Zustand ≥ 5.x
-  - [ ] TanStack Query v5 (`@tanstack/react-query`)
-  - [ ] `@supabase/supabase-js` ≥ 2.100
-  - [ ] NativeWind ≥ 4.2 + Tailwind CSS config
-  - [ ] Gluestack-UI v3 (`@gluestack-ui/core`, `@gluestack-ui/utils`)
-  - [ ] React Native Reanimated 4 (≥ 4.x)
-  - [ ] react-native-mmkv
-  - [ ] react-native-keychain ≥ 10.x
-  - [ ] React Hook Form + Zod
-- [ ] Configure Metro bundler for monorepo (symlink resolution)
-- [ ] Set up `react-native-config` or similar for environment variables
-- [ ] Verify clean build on Android emulator
-- [ ] Verify clean build on iOS simulator
-- [ ] Create `src/` folder structure per Feature-Sliced Design:
-  - [ ] `src/app/` — App.tsx, providers/, navigation/
-  - [ ] `src/features/` — empty feature module folders
-  - [ ] `src/shared/` — api/, components/, constants/, hooks/, theme/, types/, utils/
-  - [ ] `src/i18n/` — translation files
-  - [ ] `src/native/` — TurboModule specs
-  - [ ] `src/assets/` — fonts, icons, images, animations
+- [x] Initialize React Native project (`npx @react-native-community/cli init`) in `apps/mobile/`
+- [x] Enable New Architecture (Fabric + TurboModules) in `gradle.properties` and Podfile
+- [x] Verify New Architecture builds successfully on both platforms
+- [x] Configure TypeScript ≥ 6.0 with strict mode
+- [x] Add `codegenConfig` to `package.json` for TurboModule specs
+- [x] Install and configure core dependencies:
+  - [x] React Navigation v7 (`@react-navigation/native`, `@react-navigation/native-stack`, `@react-navigation/bottom-tabs`)
+  - [x] Zustand ≥ 5.x
+  - [x] TanStack Query v5 (`@tanstack/react-query`)
+  - [x] `@supabase/supabase-js` ≥ 2.100
+  - [x] NativeWind ≥ 4.2 + Tailwind CSS config
+  - [x] Gluestack-UI v3 (`@gluestack-ui/themed`, `@gluestack-ui/config`, `@gluestack-style/react`)
+  - [x] React Native Reanimated 4 (≥ 4.x)
+  - [x] react-native-mmkv
+  - [x] react-native-keychain ≥ 10.x
+  - [x] React Hook Form + Zod
+- [x] Configure Metro bundler for monorepo (symlink resolution)
+- [x] Set up `react-native-config` or similar for environment variables
+- [ ] Verify clean build on Android emulator — no Android SDK on this machine
+- [x] Verify clean build on iOS simulator
+- [x] Create `src/` folder structure per Feature-Sliced Design:
+  - [x] `src/app/` — App.tsx, providers/, navigation/
+  - [x] `src/features/` — empty feature module folders
+  - [x] `src/shared/` — api/, components/, constants/, hooks/, theme/, types/, utils/
+  - [x] `src/i18n/` — translation files
+  - [x] `src/native/` — TurboModule specs
+  - [x] `src/assets/` — fonts, icons, images, animations
 
 ### 0.3 Internationalization Setup (Week 1 — before any UI work)
 
