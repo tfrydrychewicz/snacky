@@ -75,46 +75,46 @@
 
 ### 0.4 Supabase Project Setup (Week 1–2)
 
-- [ ] Create Supabase project (staging environment)
-- [ ] Install Supabase CLI locally
-- [ ] Initialize Supabase project in `supabase/` directory (`supabase init`)
-- [ ] Configure `supabase/config.toml` for local development
-- [ ] Enable required Postgres extensions:
-  - [ ] `pgvector`
-  - [ ] `pg_cron`
-  - [ ] `pg_net`
-- [ ] Create initial SQL migration — core tables:
-  - [ ] `users` table
-  - [ ] `user_profiles` table
-  - [ ] `meals` table + indexes
-  - [ ] `meal_ingredients` table + indexes
-  - [ ] `meal_comments` table + indexes
-  - [ ] `measurements` table + indexes
-  - [ ] `diet_plans` table + indexes
-  - [ ] `diet_plan_meals` table + indexes
-  - [ ] `chat_sessions` table
-  - [ ] `chat_messages` table + indexes
-  - [ ] `health_sync_log` table
-  - [ ] `notification_log` table
-  - [ ] `embeddings` table (VECTOR(2048)) + HNSW index
-- [ ] Create RLS policies for every table:
-  - [ ] Users: `auth.uid() = id` for own record
-  - [ ] User profiles: `auth.uid() = user_id`
-  - [ ] Meals: `auth.uid() = user_id`
-  - [ ] Meal ingredients: via meals join
-  - [ ] Meal comments: `auth.uid() = user_id`
-  - [ ] Measurements: `auth.uid() = user_id`
-  - [ ] Diet plans: `auth.uid() = user_id`
-  - [ ] Diet plan meals: via diet_plans join
-  - [ ] Chat sessions: `auth.uid() = user_id`
-  - [ ] Chat messages: via chat_sessions join
-  - [ ] Embeddings: `auth.uid() = user_id` (read), service role (write)
-- [ ] Create Supabase Storage bucket `meal-photos` (private, RLS-protected)
-- [ ] Configure Storage RLS: user folder = `auth.uid()`
-- [ ] Set up Google OAuth provider in Supabase Auth dashboard
-- [ ] Create `supabase/seed.sql` with development test data
-- [ ] Verify `supabase start` runs locally with all tables and RLS
-- [ ] Create `match_embeddings` Postgres function for vector similarity search
+- [x] Create Supabase project (staging environment)
+- [x] Install Supabase CLI locally
+- [x] Initialize Supabase project in `supabase/` directory (`supabase init`)
+- [x] Configure `supabase/config.toml` for local development
+- [x] Enable required Postgres extensions:
+  - [x] `pgvector`
+  - [x] `pg_cron`
+  - [x] `pg_net`
+- [x] Create initial SQL migration — core tables:
+  - [x] `users` table
+  - [x] `user_profiles` table
+  - [x] `meals` table + indexes
+  - [x] `meal_ingredients` table + indexes
+  - [x] `meal_comments` table + indexes
+  - [x] `measurements` table + indexes
+  - [x] `diet_plans` table + indexes
+  - [x] `diet_plan_meals` table + indexes
+  - [x] `chat_sessions` table
+  - [x] `chat_messages` table + indexes
+  - [x] `health_sync_log` table
+  - [x] `notification_log` table
+  - [x] `embeddings` table (VECTOR(2048)) + HNSW index
+- [x] Create RLS policies for every table:
+  - [x] Users: `auth.uid() = id` for own record
+  - [x] User profiles: `auth.uid() = user_id`
+  - [x] Meals: `auth.uid() = user_id`
+  - [x] Meal ingredients: via meals join
+  - [x] Meal comments: `auth.uid() = user_id`
+  - [x] Measurements: `auth.uid() = user_id`
+  - [x] Diet plans: `auth.uid() = user_id`
+  - [x] Diet plan meals: via diet_plans join
+  - [x] Chat sessions: `auth.uid() = user_id`
+  - [x] Chat messages: via chat_sessions join
+  - [x] Embeddings: `auth.uid() = user_id` (read), service role (write)
+- [x] Create Supabase Storage bucket `meal-photos` (private, RLS-protected)
+- [x] Configure Storage RLS: user folder = `auth.uid()`
+- [x] Set up Google OAuth provider in Supabase Auth dashboard
+- [x] Create `supabase/seed.sql` with development test data
+- [x] Verify `supabase start` runs locally with all tables and RLS
+- [x] Create `match_embeddings` Postgres function for vector similarity search
 
 ### 0.5 Authentication — Google OAuth (Week 2–3)
 

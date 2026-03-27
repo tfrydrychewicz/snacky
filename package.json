@@ -19,6 +19,7 @@
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:reset": "supabase db reset",
+    "supabase:db:reset-with-seed": "supabase db reset --seed supabase/seed.sql",
     "supabase:migrate": "supabase migration new",
     "supabase:push": "supabase db push",
     "supabase:functions:serve": "supabase functions serve --no-verify-jwt",
