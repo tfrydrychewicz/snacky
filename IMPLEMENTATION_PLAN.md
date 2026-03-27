@@ -1,0 +1,908 @@
+# Snacky — Implementation Plan
+
+**Derived from:** `PRODUCT_AND_SYSTEM_DESIGN.md` v1.0.0  
+**Created:** 2026-03-27  
+**Timeline:** 28 weeks (Phases 0–4) + ongoing (Phase 5)
+
+---
+
+## Phase 0: Foundation (Weeks 1–4)
+
+### 0.1 Monorepo & Tooling Setup (Week 1)
+
+- [x] Initialize git repository
+- [x] Set up pnpm workspace (`pnpm-workspace.yaml`)
+- [x] Configure Turborepo (`turbo.json` with pipeline definitions for build, lint, test, typecheck)
+- [x] Create directory structure:
+  - [x] `apps/mobile/` — React Native app
+  - [x] `supabase/` — Supabase project (config, migrations, functions, seed)
+  - [x] `packages/shared-types/` — Shared TypeScript types + Zod schemas
+  - [x] `packages/api-client/` — Thin wrapper around `@supabase/supabase-js`
+  - [x] `packages/eslint-config/` — Shared ESLint rules
+  - [x] `docs/` — API docs, ADRs, runbooks
+  - [x] `scripts/` — Seed scripts, batch tools
+  - [x] `.github/workflows/` — CI/CD pipelines
+- [x] Configure root `package.json` with workspace scripts
+- [x] Configure shared ESLint config (TypeScript strict, import order, i18next plugin)
+- [x] Configure shared Prettier config
+- [x] Set up `.nvmrc` / `.node-version` (Node 22+)
+- [x] Add `.gitignore` covering RN, Supabase, Deno, IDE files
+- [x] Add `CODEOWNERS` file
+
+### 0.2 React Native Project Initialization (Week 1)
+
+- [ ] Initialize React Native project (`npx @react-native-community/cli init`) in `apps/mobile/`
+- [ ] Enable New Architecture (Fabric + TurboModules) in `gradle.properties` and Podfile
+- [ ] Verify New Architecture builds successfully on both platforms
+- [ ] Configure TypeScript ≥ 6.0 with strict mode
+- [ ] Add `codegenConfig` to `package.json` for TurboModule specs
+- [ ] Install and configure core dependencies:
+  - [ ] React Navigation v7 (`@react-navigation/native`, `@react-navigation/native-stack`, `@react-navigation/bottom-tabs`)
+  - [ ] Zustand ≥ 5.x
+  - [ ] TanStack Query v5 (`@tanstack/react-query`)
+  - [ ] `@supabase/supabase-js` ≥ 2.100
+  - [ ] NativeWind ≥ 4.2 + Tailwind CSS config
+  - [ ] Gluestack-UI v3 (`@gluestack-ui/core`, `@gluestack-ui/utils`)
+  - [ ] React Native Reanimated 4 (≥ 4.x)
+  - [ ] react-native-mmkv
+  - [ ] react-native-keychain ≥ 10.x
+  - [ ] React Hook Form + Zod
+- [ ] Configure Metro bundler for monorepo (symlink resolution)
+- [ ] Set up `react-native-config` or similar for environment variables
+- [ ] Verify clean build on Android emulator
+- [ ] Verify clean build on iOS simulator
+- [ ] Create `src/` folder structure per Feature-Sliced Design:
+  - [ ] `src/app/` — App.tsx, providers/, navigation/
+  - [ ] `src/features/` — empty feature module folders
+  - [ ] `src/shared/` — api/, components/, constants/, hooks/, theme/, types/, utils/
+  - [ ] `src/i18n/` — translation files
+  - [ ] `src/native/` — TurboModule specs
+  - [ ] `src/assets/` — fonts, icons, images, animations
+
+### 0.3 Internationalization Setup (Week 1 — before any UI work)
+
+- [ ] Install i18n dependencies: `i18next`, `react-i18next`, `i18next-resources-to-backend`, `expo-localization`, `intl-pluralrules`
+- [ ] Create `src/i18n/index.ts` with configuration (fallback `en`, supported `['pl', 'en']`)
+- [ ] Create namespace-per-feature translation structure:
+  - [ ] `src/i18n/en/common.json` (shared UI strings)
+  - [ ] `src/i18n/pl/common.json`
+  - [ ] Empty namespace files for each feature: `auth`, `onboarding`, `scanner`, `meals`, `dietPlan`, `chat`, `progress`, `dashboard`, `notifications`, `settings`
+- [ ] Configure `expo-localization` for device locale detection
+- [ ] Add `eslint-plugin-i18next` to lint config — reject hardcoded strings in JSX
+- [ ] Verify Polish diacritics (ą, ć, ę, ł, ń, ó, ś, ź, ż) render correctly on both platforms
+- [ ] Create typed translation key helper (auto-generated types from JSON)
+- [ ] Add CI lint check that all `t()` keys exist in both `en/` and `pl/`
+
+### 0.4 Supabase Project Setup (Week 1–2)
+
+- [ ] Create Supabase project (staging environment)
+- [ ] Install Supabase CLI locally
+- [ ] Initialize Supabase project in `supabase/` directory (`supabase init`)
+- [ ] Configure `supabase/config.toml` for local development
+- [ ] Enable required Postgres extensions:
+  - [ ] `pgvector`
+  - [ ] `pg_cron`
+  - [ ] `pg_net`
+- [ ] Create initial SQL migration — core tables:
+  - [ ] `users` table
+  - [ ] `user_profiles` table
+  - [ ] `meals` table + indexes
+  - [ ] `meal_ingredients` table + indexes
+  - [ ] `meal_comments` table + indexes
+  - [ ] `measurements` table + indexes
+  - [ ] `diet_plans` table + indexes
+  - [ ] `diet_plan_meals` table + indexes
+  - [ ] `chat_sessions` table
+  - [ ] `chat_messages` table + indexes
+  - [ ] `health_sync_log` table
+  - [ ] `notification_log` table
+  - [ ] `embeddings` table (VECTOR(2048)) + HNSW index
+- [ ] Create RLS policies for every table:
+  - [ ] Users: `auth.uid() = id` for own record
+  - [ ] User profiles: `auth.uid() = user_id`
+  - [ ] Meals: `auth.uid() = user_id`
+  - [ ] Meal ingredients: via meals join
+  - [ ] Meal comments: `auth.uid() = user_id`
+  - [ ] Measurements: `auth.uid() = user_id`
+  - [ ] Diet plans: `auth.uid() = user_id`
+  - [ ] Diet plan meals: via diet_plans join
+  - [ ] Chat sessions: `auth.uid() = user_id`
+  - [ ] Chat messages: via chat_sessions join
+  - [ ] Embeddings: `auth.uid() = user_id` (read), service role (write)
+- [ ] Create Supabase Storage bucket `meal-photos` (private, RLS-protected)
+- [ ] Configure Storage RLS: user folder = `auth.uid()`
+- [ ] Set up Google OAuth provider in Supabase Auth dashboard
+- [ ] Create `supabase/seed.sql` with development test data
+- [ ] Verify `supabase start` runs locally with all tables and RLS
+- [ ] Create `match_embeddings` Postgres function for vector similarity search
+
+### 0.5 Authentication — Google OAuth (Week 2–3)
+
+- [ ] Configure Google Cloud Console: OAuth 2.0 client IDs (iOS + Android + web)
+- [ ] Configure Supabase Auth with Google provider credentials
+- [ ] Implement mobile auth flow:
+  - [ ] Install `@react-native-google-signin/google-signin`
+  - [ ] Create `AuthProvider.tsx` wrapping Supabase session listener (`onAuthStateChange`)
+  - [ ] Create `WelcomeScreen` with Snacky branding + splash animation
+  - [ ] Create `LoginScreen` with "Continue with Google" button
+  - [ ] Implement `signInWithIdToken()` flow (Google ID token → Supabase session)
+  - [ ] Store session via Supabase JS auto-persistence (AsyncStorage)
+  - [ ] Implement token refresh (auto-handled by `@supabase/supabase-js`)
+  - [ ] Implement logout flow (`supabase.auth.signOut()`)
+- [ ] Create `AuthNavigator` (Stack: Welcome → Login)
+- [ ] Create `RootNavigator` with auth state conditional routing
+- [ ] Add biometric-protected token storage via `react-native-keychain`
+- [ ] Implement Supabase DB trigger: on new `auth.users` insert → create `users` + `user_profiles` row
+- [ ] Test: Google sign-in on Android emulator
+- [ ] Test: Google sign-in on iOS simulator
+- [ ] Add auth translation keys to `en/auth.json` and `pl/auth.json`
+
+### 0.6 Design System — Tokens & Base Components (Week 2–3)
+
+- [ ] Create `src/shared/theme/tokens.ts` with full design token system:
+  - [ ] Color palette (primary green, semantic colors, surface colors, dark mode surfaces, text colors)
+  - [ ] Spacing scale (xs through xxl)
+  - [ ] Border radius scale
+  - [ ] Typography scale (displayLarge through labelMedium)
+  - [ ] Elevation/shadow definitions
+  - [ ] Macro-specific colors (protein: indigo, carbs: amber, fat: red, fiber: green)
+- [ ] Configure Tailwind / NativeWind `tailwind.config.js` with design tokens
+- [ ] Create `lightTheme.ts` and `darkTheme.ts`
+- [ ] Create `ThemeProvider.tsx` with theme context
+- [ ] Build base shared components:
+  - [ ] `SkeletonLoader.tsx` — Reanimated 4 shimmer animation
+  - [ ] `AnimatedTransition.tsx` — reusable enter/exit wrapper
+  - [ ] `ErrorBoundary.tsx` — error UI with retry
+  - [ ] `EmptyState.tsx` — empty data placeholder
+- [ ] Build Bento Grid container component (`BentoGrid.tsx`)
+- [ ] Create placeholder `DashboardScreen` with empty Bento Grid
+- [ ] Set up bottom tab navigation (`MainTabNavigator`) with 5 tabs:
+  - [ ] Dashboard
+  - [ ] Scanner (placeholder)
+  - [ ] Diet Plan (placeholder)
+  - [ ] Chat (placeholder)
+  - [ ] Progress (placeholder)
+- [ ] Add tab icons and labels (translated via `t()`)
+- [ ] Implement tab switch animation (Reanimated 4, 200ms ease-out)
+
+### 0.7 CI/CD Pipeline Setup (Week 2–3)
+
+- [ ] Create GitHub Actions workflow: `ci.yml` (PR checks)
+  - [ ] Lint (ESLint + Prettier)
+  - [ ] Type check (`tsc --noEmit`)
+  - [ ] Unit tests (Jest / Vitest)
+  - [ ] Security scan (Snyk)
+  - [ ] Build check (mobile)
+  - [ ] `supabase db push --dry-run` (validate migrations)
+- [ ] Create GitHub Actions workflow: `deploy-staging.yml` (on merge to main)
+  - [ ] `supabase db push` (apply migrations to staging)
+  - [ ] `supabase functions deploy --all` (deploy Edge Functions)
+- [ ] Set up GitHub branch protection rules (require CI pass)
+- [ ] Configure Dependabot for automated dependency updates
+
+### 0.8 Android Alpha Distribution Setup (Week 1–2)
+
+- [ ] Create app listing in Google Play Console:
+  - [ ] App name: "Snacky"
+  - [ ] Default language: English (United States)
+  - [ ] Add translation: Polish (Poland)
+  - [ ] App category: Health & Fitness
+  - [ ] Complete content rating questionnaire
+  - [ ] Create placeholder store listing (icon, screenshots, description)
+- [ ] Configure app signing:
+  - [ ] Enroll in Google Play App Signing
+  - [ ] Generate upload key locally
+  - [ ] Store upload key securely in GitHub Secrets
+  - [ ] Register upload key fingerprint in Google Play Console
+- [ ] Create Closed Testing track (Alpha):
+  - [ ] Track name: "Alpha Testers"
+  - [ ] Create tester email list
+  - [ ] Add initial testers by email
+- [ ] Configure EAS Build:
+  - [ ] Create `eas.json` with `development`, `alpha`, and `production` profiles
+  - [ ] Configure `alpha` profile: release-signed AAB, auto-increment versionCode
+- [ ] Create GitHub Actions workflow: `android-alpha.yml`
+  - [ ] Trigger: push to main + manual dispatch
+  - [ ] Steps: checkout → setup-node → pnpm install → EAS build → submit to Alpha track
+  - [ ] Add Slack notification on successful upload
+- [ ] **Publish first Alpha APK by end of Week 2** (app shell with splash screen)
+- [ ] Verify tester can install from Google Play Alpha track
+
+### 0.9 Infrastructure as Code (Week 3–4)
+
+- [ ] Document Supabase project configuration as code (`supabase/config.toml`)
+- [ ] Create `supabase/migrations/` with versioned SQL files
+- [ ] Create Edge Function scaffolding in `supabase/functions/`:
+  - [ ] `_shared/` — CORS config, Supabase client initialization, error handling
+  - [ ] `meal-scan/` — placeholder
+  - [ ] `chat/` — placeholder
+  - [ ] `embed/` — placeholder
+  - [ ] `generate-plan/` — placeholder
+  - [ ] `send-notification/` — placeholder
+- [ ] Configure Supabase secrets for API keys (OpenAI, Google AI, Voyage AI, Anthropic, FCM)
+- [ ] Set up `supabase/seed.sql` with realistic test data
+- [ ] Verify full `supabase start` → `supabase db push` → `supabase functions serve` workflow
+- [ ] Create environment strategy documentation:
+  - [ ] Local (supabase start)
+  - [ ] Staging (Supabase cloud project)
+  - [ ] Production (separate Supabase project)
+
+### 0.10 Phase 0 Validation
+
+- [ ] **Deliverable checkpoint:** User can sign in with Google and see empty dashboard shell
+- [ ] Dashboard displays in Polish or English (auto-detected from device)
+- [ ] Android Alpha build installable via Google Play for developer and invited testers
+- [ ] CI pipeline passes on all checks
+- [ ] All UI strings use `t()` — no hardcoded strings
+
+---
+
+## Phase 1: Core Tracking (Weeks 5–10)
+
+### 1.1 Onboarding Questionnaire (Week 5–6)
+
+- [ ] Create `OnboardingNavigator` (Stack, modal presentation)
+- [ ] Implement `OnboardingStepScreen` — dynamic multi-step wizard
+- [ ] Build animated step transitions (Reanimated 4, spring easing)
+- [ ] Create step progress indicator
+- [ ] Implement Step 1 — `BiometricsStep.tsx`:
+  - [ ] Age picker (date of birth)
+  - [ ] Biological sex selector
+  - [ ] Height input (cm)
+  - [ ] Current weight input (kg)
+  - [ ] Zod validation schema
+- [ ] Implement Step 2 — `GoalStep.tsx`:
+  - [ ] Goal selection cards (lose weight, gain muscle, maintain, improve nutrition quality)
+  - [ ] Animated card selection
+- [ ] Implement Step 3 — Target parameters:
+  - [ ] Goal weight input (kg)
+  - [ ] Timeline picker (weeks)
+- [ ] Implement Step 4 — `DietaryRestrictionsStep.tsx`:
+  - [ ] Multi-select chips (vegetarian, vegan, gluten-free, lactose-free, etc.)
+  - [ ] Allergy multi-select + free text input
+- [ ] Implement Step 5 — `LifestyleStep.tsx`:
+  - [ ] Activity level selector (sedentary → extra active)
+  - [ ] Cooking frequency
+  - [ ] Cooking skill level
+  - [ ] Cuisine preferences multi-select
+- [ ] Implement Step 6 — `PsychoBehavioralStep.tsx`:
+  - [ ] Eating triggers multi-select (stress, boredom, social, emotional)
+  - [ ] Snacking patterns (none / occasional / frequent)
+  - [ ] CFC scale items (Consideration of Future Consequences)
+- [ ] Implement Step 7 — `NotificationPrefsStep.tsx`:
+  - [ ] Enable/disable notifications toggle
+  - [ ] Meal reminders, nudges, weekly report toggles
+  - [ ] Quiet hours time picker
+- [ ] Implement `OnboardingCompleteScreen` with success animation (Lottie)
+- [ ] Backend: Implement TDEE calculation (Mifflin-St Jeor equation)
+- [ ] Backend: Compute macro targets from goal type + TDEE
+- [ ] Backend: Generate psychological profile + AI persona calibration
+- [ ] Create Supabase Edge Function or PostgREST call to save onboarding data
+- [ ] Wire navigation: after login, if `onboarding_completed_at` is null → show onboarding
+- [ ] Add all onboarding translation keys to `en/onboarding.json` and `pl/onboarding.json`
+- [ ] Test: complete onboarding flow end-to-end on both platforms
+
+### 1.2 Meal Scanning Pipeline — Mobile (Week 6–7)
+
+- [ ] Install and configure `react-native-vision-camera` v4
+- [ ] Implement camera permissions request (iOS + Android)
+- [ ] Create `ScannerScreen` with camera view:
+  - [ ] `CameraOverlay.tsx` — viewfinder overlay with capture button
+  - [ ] Auto-focus and flash control
+  - [ ] Photo capture (min 1080x1080)
+  - [ ] Gallery picker alternative
+- [ ] Install and configure `@bam.tech/react-native-image-resizer`
+- [ ] Implement `useImageCompression.ts` hook:
+  - [ ] Compress to ≤ 500 KB, JPEG quality 85%
+  - [ ] Strip EXIF metadata
+  - [ ] Base64 encode
+- [ ] Implement `useScanAnalysis.ts` hook:
+  - [ ] POST to meal-scan Edge Function
+  - [ ] Handle loading, success, error states
+  - [ ] Handle clarification flow
+- [ ] Create `ScanResultScreen`:
+  - [ ] Skeleton loader animation (Reanimated 4, 1.5s loop)
+  - [ ] Staggered ingredient reveal animation (300ms per item, 80ms stagger)
+  - [ ] `ScanResultCard.tsx` — displays each detected ingredient
+  - [ ] `IngredientEditor.tsx` — manual portion/name override
+  - [ ] `PortionSlider.tsx` — adjust portion size
+  - [ ] Add/remove ingredient buttons
+- [ ] Create `ClarificationDialog.tsx`:
+  - [ ] Display targeted question when confidence < 0.7
+  - [ ] Option buttons + custom text input
+  - [ ] Submit clarification → re-estimation
+  - [ ] Max 3 clarification questions per scan
+- [ ] Create `CommentInput.tsx` — text field for user annotations
+- [ ] Create "Confirm & Log" button → saves meal to Supabase
+- [ ] Upload meal photo to Supabase Storage (`meal-photos` bucket)
+- [ ] Add scanner translation keys to `en/scanner.json` and `pl/scanner.json`
+
+### 1.3 Meal Scanning Pipeline — Backend (Week 6–8)
+
+- [ ] Implement `meal-scan` Edge Function:
+  - [ ] Image validation (format, size, corruption check)
+  - [ ] Build structured vision prompt (ingredient detection, portion estimation, confidence scoring, NOVA classification)
+  - [ ] Call GPT-5.4 Vision API (primary)
+  - [ ] Parse response with Zod strict validation
+  - [ ] Implement multi-model fallback:
+    - [ ] Timeout (>10s) or error → retry with Gemini 3.1 Pro
+    - [ ] If both fail → retry with Claude Sonnet 4.6
+    - [ ] If all fail → return graceful error, offer manual entry
+  - [ ] Cross-reference ingredients with USDA FoodData Central:
+    - [ ] Fuzzy match ingredient names to USDA entries
+    - [ ] Validate caloric estimates within ±30% of USDA values
+    - [ ] Flag deviations for review
+  - [ ] Handle clarification flow (accept clarification answers, re-run analysis)
+  - [ ] Return structured `MealScanResult` response
+  - [ ] Log model used, processing time, confidence scores
+- [ ] Create USDA food data seed script (`scripts/seed-usda.ts`):
+  - [ ] Download SR Legacy + Foundation datasets (~300K entries)
+  - [ ] Store in PostgreSQL `usda_foods` table with full-text search index
+- [ ] Create Supabase DB trigger: on `meals` INSERT → call `embed` Edge Function (async)
+
+### 1.4 Meal CRUD & Comments (Week 8–9)
+
+- [ ] Implement Meals list screen (`MealTimeline.tsx`):
+  - [ ] Grouped by day
+  - [ ] `MealCard.tsx` — thumbnail, meal type, calorie summary, time
+  - [ ] Pull-to-refresh
+  - [ ] Cursor-based pagination via TanStack Query
+- [ ] Implement Meal detail screen (`MealDetail.tsx`):
+  - [ ] Full-size meal photo (Supabase Storage signed URL)
+  - [ ] `NutritionBreakdown.tsx` — detailed macro/micro display
+  - [ ] Ingredient list with confidence indicators
+  - [ ] User modification diff (AI vs final values)
+  - [ ] Comments list
+- [ ] Implement `MealEditScreen`:
+  - [ ] Edit portions, add/remove ingredients
+  - [ ] Update nutritional totals
+  - [ ] Save changes via Supabase PostgREST
+- [ ] Implement meal delete (with confirmation dialog)
+- [ ] Implement manual meal entry fallback (no photo):
+  - [ ] Search USDA foods by name
+  - [ ] Manual ingredient + portion entry
+  - [ ] Auto-calculate nutritional values from USDA data
+- [ ] Implement meal comments:
+  - [ ] Add comment (`CommentInput.tsx`)
+  - [ ] List comments per meal
+  - [ ] Delete own comments
+- [ ] Add meals translation keys to `en/meals.json` and `pl/meals.json`
+
+### 1.5 Dashboard — Calorie & Macro Tracking (Week 9–10)
+
+- [ ] Implement `DashboardScreen` with Bento Grid layout:
+  - [ ] `CalorieBudgetTile.tsx`:
+    - [ ] Animated ring chart (Reanimated 4 SVG, 1200ms spring animation)
+    - [ ] Current / target kcal display
+    - [ ] Remaining budget
+  - [ ] `MacroSummaryTile.tsx`:
+    - [ ] `MacroProgressBars.tsx` — protein, carbs, fat progress bars
+    - [ ] Animated fill (Reanimated 4, 800ms ease-out)
+    - [ ] Percentage and gram values
+  - [ ] `RecentMealsTile.tsx`:
+    - [ ] Horizontal scrollable meal cards
+    - [ ] Tap → navigate to meal detail
+  - [ ] `QuickActionsTile.tsx`:
+    - [ ] Quick-scan FAB
+    - [ ] Quick-add weight
+  - [ ] `AIChatPreviewTile.tsx` (placeholder for Phase 2)
+- [ ] Implement daily summary data fetching (TanStack Query):
+  - [ ] Aggregate meals for current day
+  - [ ] Calculate remaining budget from profile targets
+- [ ] Implement card press feedback animation (Reanimated 4, 100ms scale 0.97)
+- [ ] Implement pull-to-refresh on dashboard
+- [ ] Add dashboard translation keys to `en/dashboard.json` and `pl/dashboard.json`
+
+### 1.6 Meal Photo History (Week 10)
+
+- [ ] Implement `MealPhotoGallery.tsx`:
+  - [ ] Scrollable grid of meal photos with dates
+  - [ ] Lazy image loading from Supabase Storage
+- [ ] Implement shared element transition (meal photo → detail):
+  - [ ] React Navigation Shared Element (350ms, ease-in-out)
+- [ ] Implement `MealPhotoDetailScreen` with full-resolution photo view
+
+### 1.7 Phase 1 Validation
+
+- [ ] **Deliverable checkpoint:** User can complete onboarding, scan meals, and view daily tracking dashboard
+- [ ] Onboarding: all 7 steps with animations, PL + EN
+- [ ] Scanning: camera capture → AI analysis → results → confirm & log
+- [ ] Clarification flow works for low-confidence ingredients
+- [ ] Dashboard updates in real time after meal logging
+- [ ] Meal list, detail, edit, delete, comments functional
+- [ ] All features continuously deployed to Alpha testers via Google Play
+- [ ] Unit tests for TDEE calculation, macro computation, Zod schemas
+- [ ] Integration tests for meal-scan Edge Function
+
+---
+
+## Phase 2: Intelligence (Weeks 11–16)
+
+### 2.1 RAG Pipeline — Embedding Generation (Week 11–12)
+
+- [ ] Implement `embed` Edge Function:
+  - [ ] Accept webhook from DB trigger (pg_net HTTP POST)
+  - [ ] Determine entity type (meal, comment, measurement)
+  - [ ] Serialize entity to text representation
+  - [ ] Generate embedding vector via voyage-4-large (Voyage AI)
+  - [ ] Upsert to `embeddings` table with metadata tags
+- [ ] Create DB triggers:
+  - [ ] `meals` INSERT → call `embed` function
+  - [ ] `meal_comments` INSERT → call `embed` function
+  - [ ] `measurements` INSERT → call `embed` function
+- [ ] Create batch embedding seed script (`scripts/generate-embeddings.ts`):
+  - [ ] Generate embeddings for USDA foods dataset
+  - [ ] Generate embeddings for nutritional guidelines corpus
+  - [ ] Generate embeddings for recipe database
+- [ ] Implement `match_embeddings` Postgres function:
+  - [ ] Filter by user_id and namespace
+  - [ ] Order by cosine distance (HNSW index)
+  - [ ] Return top-K results with similarity score
+
+### 2.2 AI Chat Assistant — Backend (Week 12–13)
+
+- [ ] Implement `chat` Edge Function:
+  - [ ] Create/retrieve chat session
+  - [ ] Intent classification (lightweight classifier):
+    - [ ] `nutrition_qa`
+    - [ ] `meal_suggestion`
+    - [ ] `plan_creation`
+    - [ ] `data_lookup`
+    - [ ] `health_insight`
+  - [ ] Context retrieval strategy (per intent — see doc Section 10.2)
+  - [ ] Prompt assembly:
+    - [ ] System prompt with user profile, persona calibration, guardrails
+    - [ ] Retrieved context documents
+    - [ ] Conversation history (last 10 messages)
+    - [ ] Locale instruction (respond in user's language)
+  - [ ] Call GPT-5.4 (complex queries) or GPT-5.4 mini (simple queries)
+  - [ ] SSE streaming response (Server-Sent Events)
+  - [ ] Post-processing:
+    - [ ] Validate nutritional claims against USDA data
+    - [ ] Inject rich content cards (recipe cards, nutrient badges) as JSON in stream
+    - [ ] Log token usage for cost tracking
+  - [ ] Store message in `chat_messages` table
+
+### 2.3 AI Chat Assistant — Mobile (Week 13–14)
+
+- [ ] Create `ChatScreen`:
+  - [ ] Persistent, scrollable chat history
+  - [ ] `ChatBubble.tsx` — user and assistant message bubbles
+  - [ ] `ChatInput.tsx` — text input with send button
+  - [ ] `StreamingMessage.tsx` — real-time token-by-token display
+- [ ] Implement `useChatStream.ts` hook:
+  - [ ] POST message → receive SSE stream
+  - [ ] Parse `message_start`, `content_delta`, `attachment`, `message_end` events
+  - [ ] Accumulate tokens into displayed message
+- [ ] Implement `useChatHistory.ts` hook:
+  - [ ] Fetch paginated message history
+  - [ ] TanStack Query with cursor-based pagination
+- [ ] Implement rich content rendering:
+  - [ ] `RecipeCard.tsx` — tappable inline recipe cards
+  - [ ] `NutrientBadge.tsx` — inline nutritional badges
+  - [ ] Meal reference links (tap → navigate to meal detail)
+- [ ] Implement chat message appear animation (Reanimated 4, 250ms spring)
+- [ ] Cache last 100 messages locally in MMKV
+- [ ] Add chat translation keys to `en/chat.json` and `pl/chat.json`
+
+### 2.4 Measurement Tracking (Week 14–15)
+
+- [ ] Create `MeasurementInputScreen`:
+  - [ ] Weight input (required) — numeric keyboard
+  - [ ] Waist, chest, hips measurements (optional)
+  - [ ] Body fat % (optional)
+  - [ ] Source indicator (manual / HealthKit / Health Connect)
+  - [ ] Save to `measurements` table via Supabase PostgREST
+- [ ] Implement quick-add weight from dashboard (`QuickActionsTile`)
+- [ ] Implement measurement list view (sortable by date)
+- [ ] Implement measurement delete
+- [ ] Add progress/measurements translation keys
+
+### 2.5 Progress Charts & Analytics (Week 15–16)
+
+- [ ] Install Victory Native + @shopify/react-native-skia
+- [ ] Create `ProgressDashboardScreen` with tab views:
+  - [ ] `WeightChart.tsx`:
+    - [ ] Line chart with trend line and goal marker
+    - [ ] Tap data point → navigate to day's log
+    - [ ] Sparkline variant for dashboard tile
+  - [ ] `MacroTrendChart.tsx`:
+    - [ ] Stacked area chart (protein, carbs, fat over time)
+  - [ ] Caloric intake vs. expenditure dual-axis line chart
+  - [ ] `DQIScoreCard.tsx` — weekly DQI-I score trend (placeholder, scoring in next task)
+  - [ ] `MealPhotoGallery.tsx` — scrollable grid with dates
+- [ ] Implement daily summary API (aggregate meals → totals per day)
+- [ ] Implement weekly report generation:
+  - [ ] `WeeklyReportCard.tsx`
+  - [ ] Caloric adherence percentage
+  - [ ] Nutrient gaps highlighted
+  - [ ] Top nutritional insights (LLM-generated)
+  - [ ] Personalized tips based on behavioral patterns
+
+### 2.6 DQI-I Diet Quality Scoring (Week 15)
+
+- [ ] Implement DQI-I scoring algorithm:
+  - [ ] Variety component
+  - [ ] Adequacy component (fruit, vegetable, grain, fiber, protein, minerals)
+  - [ ] Moderation component (total fat, saturated fat, cholesterol, sodium)
+  - [ ] Overall balance
+- [ ] Calculate weekly DQI-I score from meal data
+- [ ] Display on dashboard and progress screens
+- [ ] Include in weekly report narrative
+
+### 2.7 Push Notification / Nudge System (Week 16)
+
+- [ ] Install `@react-native-firebase/messaging`
+- [ ] Configure FCM for Android + APNs for iOS
+- [ ] Implement `send-notification` Edge Function:
+  - [ ] Accept notification payload
+  - [ ] Render template with Handlebars (per locale)
+  - [ ] Dispatch via FCM
+  - [ ] Log to `notification_log` table
+- [ ] Implement notification types:
+  - [ ] Meal Reminder (time-based, user's typical meal window ± 30min)
+  - [ ] Budget Alert (mid-day macro budget exceeded)
+  - [ ] Streak Maintenance (20:00 local time, no meals logged today)
+  - [ ] Weekly Report (Sunday 09:00 local time)
+- [ ] Set up pg_cron jobs for scheduled notifications
+- [ ] Create `NotificationProvider.tsx` for handling incoming notifications
+- [ ] Implement notification permission request flow
+- [ ] Add notification translation keys to `en/notifications.json` and `pl/notifications.json`
+
+### 2.8 Phase 2 Validation
+
+- [ ] **Deliverable checkpoint:** Full AI assistant operational; progress tracking live; intelligent notifications
+- [ ] Chat: streaming responses, rich content cards, conversation history
+- [ ] RAG: context-aware responses grounded in user's actual data
+- [ ] Weight/measurement tracking with charts
+- [ ] Weekly reports generated and displayed
+- [ ] Push notifications delivered for all nudge types
+- [ ] Integration tests for chat Edge Function with recorded API responses (VCR.py)
+- [ ] RAG retrieval quality test: precision@5 ≥ 0.8 for 50 curated queries
+
+---
+
+## Phase 3: Planning & Optimization (Weeks 17–22)
+
+### 3.1 MILP Diet Plan Solver — Backend (Week 17–18)
+
+- [ ] Set up Meal Planning Service (Python / FastAPI):
+  - [ ] Create service in `supabase/functions/generate-plan/` or separate container
+  - [ ] Install PuLP with CBC/GLPK solvers
+  - [ ] Install scikit-fuzzy for ad-hoc adjustments
+- [ ] Implement MILP formulation:
+  - [ ] Candidate food items from USDA + recipes DB
+  - [ ] Objective: minimize deviation from target macronutrient goals across N days
+  - [ ] Hard constraints: daily calorie ± 5%, allergens (zero tolerance), prep time
+  - [ ] Soft constraints: ingredient diversity (min 15 unique/week), cost, variety
+  - [ ] Each micronutrient ≥ 80% RDA per day (3-day window average)
+  - [ ] No ingredient repeated in same meal slot within 3 consecutive days
+- [ ] Implement solver timeout (30s) with fallback to heuristic generation
+- [ ] Output: nutrient matrix (Day × MealSlot × {foods, grams})
+- [ ] Store solver metadata (time, objective value, iterations)
+
+### 3.2 LLM Recipe Generation (Week 18–19)
+
+- [ ] Implement recipe generation pipeline:
+  - [ ] Input: ingredient list + gram amounts from MILP output
+  - [ ] Inject user context: cuisine preferences, cooking skill, taste profile (from comment embeddings)
+  - [ ] Call GPT-5.4 via LangChain with RAG context
+  - [ ] Output: recipe name, instructions, prep time, presentation suggestions
+- [ ] Implement fuzzy logic layer (scikit-fuzzy) for flexibility margins
+- [ ] Validate generated plans:
+  - [ ] Verify no allergen leakage
+  - [ ] Re-calculate exact nutrition from recipe ingredients
+  - [ ] Generate aggregated shopping list
+- [ ] Store complete plan in `diet_plans` + `diet_plan_meals` tables
+
+### 3.3 Diet Plan UI (Week 19–21)
+
+- [ ] Create `PlanConfigWizard.tsx` — plan creation wizard:
+  - [ ] Duration picker (1 week / 2 weeks / 1 month / custom)
+  - [ ] Meals per day selector (3 / 4 / 5 / custom)
+  - [ ] Excluded ingredients (pre-filled from allergies + user additions)
+  - [ ] Cuisine preferences
+  - [ ] Budget constraint (optional)
+  - [ ] Cooking time preference (quick / moderate / elaborate)
+  - [ ] "Generate Plan" button with loading state
+- [ ] Create `PlanCalendar.tsx`:
+  - [ ] Interactive calendar view with daily meal cards
+  - [ ] Swipe between days
+- [ ] Create `MealSlotCard.tsx`:
+  - [ ] Recipe photo, name, prep time, calorie summary
+  - [ ] Tap → navigate to recipe detail
+  - [ ] Swap button → AI suggests alternatives matching nutrient slot
+- [ ] Create `RecipeDetail.tsx`:
+  - [ ] Full recipe with ingredients, instructions, nutritional breakdown
+  - [ ] Prep time, difficulty level
+- [ ] Implement meal swapping:
+  - [ ] Request alternative meal for slot → server generates options
+  - [ ] User selects replacement → plan updated
+- [ ] Create `ShoppingList.tsx`:
+  - [ ] Aggregated ingredient list for selected days
+  - [ ] Grouped by category (produce, protein, dairy, etc.)
+  - [ ] Checkable items
+- [ ] Add diet plan translation keys to `en/dietPlan.json` and `pl/dietPlan.json`
+
+### 3.4 Plan Adherence Tracking (Week 21–22)
+
+- [ ] Implement plan reminder notifications:
+  - [ ] 30 min before planned meal time
+  - [ ] "Next up: [meal name]. Tap for the recipe."
+- [ ] When user scans actual meal → auto-compare to planned meal:
+  - [ ] Deviation analysis (caloric difference, macro differences)
+  - [ ] Visual diff display on meal detail screen
+- [ ] Link logged meals to plan meals (`logged_meal_id` on `diet_plan_meals`)
+- [ ] Implement plan adherence dashboard:
+  - [ ] Daily/weekly adherence percentage
+  - [ ] Skipped meals tracking
+  - [ ] Deviation trend over plan duration
+
+### 3.5 Ad-Hoc Dietary Adjustment Suggestions (Week 22)
+
+- [ ] Implement mid-day budget recalculation:
+  - [ ] After each logged meal, recalculate remaining daily allocation
+  - [ ] If user exceeds macro budget, trigger AI suggestion
+- [ ] Create proactive chat notification:
+  - [ ] "You're 400 kcal over on carbs. A grilled salmon with steamed broccoli tonight would balance your day."
+  - [ ] Suggestion rendered as push notification + chat message
+- [ ] Implement end-of-day summary notification with DQI-I score
+
+### 3.6 Phase 3 Validation
+
+- [ ] **Deliverable checkpoint:** End-to-end diet plan creation, following, and deviation management
+- [ ] Plan generation: MILP solver + LLM recipe output within 30s
+- [ ] Calendar view: browse days, view recipes, swap meals
+- [ ] Shopping list: aggregated and checkable
+- [ ] Plan adherence: scan → compare → deviation analysis
+- [ ] Mid-day adjustment suggestions working
+- [ ] MILP solver correctness test: all hard constraints satisfied
+- [ ] Prompt regression test: golden dataset for recipe generation
+
+---
+
+## Phase 4: Ecosystem & Polish (Weeks 23–28)
+
+### 4.1 Apple HealthKit Integration (Week 23–24)
+
+- [ ] Install `@kingstinct/react-native-healthkit`
+- [ ] Implement HealthKit permission request:
+  - [ ] Clear user-facing explanation per data type
+  - [ ] Read-only permissions: bodyMass, activeEnergyBurned, stepCount, heartRate, sleepAnalysis
+- [ ] Implement data sync:
+  - [ ] `HKObserverQuery` for weight changes (background delivery)
+  - [ ] Periodic anchored queries for activity/sleep data
+  - [ ] Normalize units (kg, kcal, UTC timestamps)
+  - [ ] Deduplicate by sample UUID
+  - [ ] Batch sync to backend every 15 minutes (or on app foreground)
+- [ ] Auto-create measurement records from HealthKit weight data
+- [ ] TDEE adjustment from HealthKit activity data
+- [ ] Log sync events to `health_sync_log` table
+- [ ] Test on physical iOS device
+
+### 4.2 Google Health Connect Integration (Week 23–24)
+
+- [ ] Install `react-native-health-connect`
+- [ ] Implement Health Connect permission request:
+  - [ ] WeightRecord, ActiveCaloriesBurnedRecord, StepsRecord, HeartRateRecord, SleepSessionRecord
+- [ ] Implement WorkManager-based background sync:
+  - [ ] Every 15 minutes periodic worker
+  - [ ] Same normalization pipeline as HealthKit path
+- [ ] Auto-create measurement records from Health Connect weight data
+- [ ] TDEE adjustment from activity data
+- [ ] Test on physical Android device
+
+### 4.3 Offline-First Hardening (Week 24–25)
+
+- [ ] Configure TanStack Query persistence with MMKV:
+  - [ ] `@tanstack/query-persist-client` setup
+  - [ ] staleTime: 5min, gcTime: 24h
+  - [ ] Background refetch on app foreground
+- [ ] Implement offline meal logging queue:
+  - [ ] Queue meals locally in MMKV when offline
+  - [ ] Save photo to device local storage
+  - [ ] Background upload on reconnect (exponential backoff)
+- [ ] Implement offline chat:
+  - [ ] Cache last 100 messages
+  - [ ] Queue new messages when offline
+  - [ ] Append-only sync (conflict-free)
+- [ ] Implement offline measurements:
+  - [ ] Save locally immediately
+  - [ ] Upsert sync with server timestamp conflict resolution
+- [ ] Implement diet plan offline caching:
+  - [ ] Full plan cached on device
+  - [ ] Pull-based refresh; immutable plan versions
+- [ ] Implement network status indicator (`useNetworkStatus.ts`)
+- [ ] Test: airplane mode → log meal → reconnect → verify sync
+
+### 4.4 Performance Optimization (Week 25–26)
+
+- [ ] Bundle size optimization:
+  - [ ] Analyze bundle with `react-native-bundle-visualizer`
+  - [ ] Lazy-load feature modules via React.lazy + Suspense
+  - [ ] Tree-shake unused Gluestack-UI components
+  - [ ] Target: ≤ 50 MB iOS, ≤ 40 MB Android
+- [ ] Animation performance:
+  - [ ] Profile all animations with Perf Monitor
+  - [ ] Ensure ≥ 58 FPS during scroll and animations
+  - [ ] Optimize Reanimated 4 worklet usage
+- [ ] Memory profiling:
+  - [ ] Profile during meal scan + dashboard rendering
+  - [ ] Target: ≤ 250 MB peak
+  - [ ] Optimize image memory (proper cleanup of camera frames)
+- [ ] Cold start optimization:
+  - [ ] Profile TurboModule lazy loading
+  - [ ] Target: ≤ 2.0s P95 on mid-range Android device
+- [ ] API response optimization:
+  - [ ] Verify PostgREST queries use indexes
+  - [ ] Verify CRUD operations ≤ 200ms P95
+
+### 4.5 Accessibility Audit (Week 26)
+
+- [ ] Audit all screens for WCAG 2.1 AA equivalent:
+  - [ ] Screen reader support (TalkBack / VoiceOver)
+  - [ ] Touch target sizes (min 44x44 dp)
+  - [ ] Color contrast ratios
+  - [ ] Focus management in modals and navigation
+  - [ ] Semantic headings and labels
+- [ ] Fix identified accessibility issues
+- [ ] Test with TalkBack on Android
+- [ ] Test with VoiceOver on iOS
+
+### 4.6 Dark Mode (Week 26)
+
+- [ ] Implement theme switching in `ThemeProvider.tsx`
+- [ ] Apply `surfaceDark` token values across all screens
+- [ ] Verify all charts render correctly in dark mode
+- [ ] Verify all Gluestack-UI components adapt to dark theme
+- [ ] Respect system theme preference (`useColorScheme()`)
+- [ ] Add manual toggle in Settings screen
+- [ ] Add settings translation keys to `en/settings.json` and `pl/settings.json`
+
+### 4.7 Full Localization Audit (Week 27)
+
+- [ ] Verify 100% PL/EN coverage — no missing translation keys
+- [ ] Review Polish translations for grammatical accuracy:
+  - [ ] Plural forms (1 / 2-4 / 5+) using `_one`, `_few`, `_many`
+  - [ ] Gender-specific context variants where needed
+- [ ] Test string expansion (Polish ~20-30% longer than English):
+  - [ ] Verify no text truncation or overflow
+  - [ ] All containers are flexible enough
+- [ ] Verify date/time formatting: `dd.MM.yyyy`, `HH:mm` (24h) for Polish
+- [ ] Verify decimal separator: comma for Polish
+- [ ] Test language switching in Settings (no app restart required)
+- [ ] Verify AI-generated content respects locale (chat, scan results, notifications)
+
+### 4.8 Security Audit (Week 27)
+
+- [ ] Penetration testing:
+  - [ ] API endpoint security (OWASP ZAP)
+  - [ ] RLS policy verification (attempt cross-user data access)
+  - [ ] Token handling (expiry, refresh, revocation)
+- [ ] Dependency vulnerability scan (Snyk report review)
+- [ ] Image upload security verification:
+  - [ ] File type validation (magic bytes)
+  - [ ] Size limits enforced
+- [ ] Certificate pinning verification on mobile
+- [ ] GDPR compliance check:
+  - [ ] Data export endpoint (`GET /api/v1/users/me/export`)
+  - [ ] Account deletion cascade (`DELETE /api/v1/users/me` + Storage cleanup)
+  - [ ] Consent management flow
+- [ ] Verify no secrets in code or environment variables at build time
+
+### 4.9 E2E Test Suite Completion (Week 27–28)
+
+- [ ] Set up Detox for iOS + Android E2E testing
+- [ ] Implement critical user journey tests:
+  - [ ] Onboarding flow (sign in → complete all steps → dashboard)
+  - [ ] Meal scan flow (camera → AI results → clarification → confirm → logged)
+  - [ ] Chat flow (send message → streaming response → rich content display)
+  - [ ] Measurement flow (add weight → chart update)
+  - [ ] Diet plan flow (configure → generate → browse → swap meal)
+- [ ] Add E2E tests to CI pipeline (pre-release gate)
+- [ ] Set up k6 load testing:
+  - [ ] Verify P95/P99 latency under load for core endpoints
+  - [ ] Verify meal scan E2E ≤ 5s P95
+- [ ] Run prompt regression test suite (100 golden meal images)
+- [ ] Run bias testing (meal recognition across 10+ cuisine categories)
+
+### 4.10 Observability Setup (Week 27)
+
+- [ ] Configure structured logging in all Edge Functions (JSON format)
+- [ ] Set up Logflare integration for centralized log search
+- [ ] Configure OpenTelemetry SDK for metrics collection
+- [ ] Set up Grafana Cloud dashboards:
+  - [ ] Operations Dashboard (request rates, latencies, error rates)
+  - [ ] AI Dashboard (scan accuracy, confidence distributions, model costs, fallback rates)
+  - [ ] Product Dashboard (DAU/MAU, meals scanned, chat messages, retention cohorts)
+  - [ ] Cost Dashboard (per-service costs, AI API costs, cost per user)
+- [ ] Configure alerting rules:
+  - [ ] API error rate > 1% for 5 min → Critical (PagerDuty + Slack)
+  - [ ] Scan latency P95 > 8s for 10 min → High (Slack)
+  - [ ] Vision API failure > 5% for 5 min → Critical (PagerDuty + Slack)
+  - [ ] DB connection pool > 80% → High (Slack)
+  - [ ] Cost anomaly: daily spend > 150% of 7-day average → Medium (Email + Slack)
+- [ ] Set up Grafana Tempo for distributed tracing
+
+### 4.11 Beta & Production Release (Week 28)
+
+- [ ] Promote Alpha → Open Testing (Beta) on Google Play:
+  - [ ] Create public opt-in link
+  - [ ] Update store listing (screenshots, description, privacy policy)
+- [ ] Collect and incorporate Beta feedback
+- [ ] Final stabilization and bug fixes
+- [ ] Configure EAS Build production profile for iOS
+- [ ] Submit to Apple App Store:
+  - [ ] Complete App Store listing
+  - [ ] App Store Review guidelines compliance check
+  - [ ] Privacy nutrition labels
+  - [ ] Submit for review
+- [ ] Promote Android Beta → Production:
+  - [ ] Staged rollout: 10% → 50% → 100%
+- [ ] iOS production release:
+  - [ ] Phased rollout: 1% → 5% → 20% → 100%
+
+### 4.12 Phase 4 Validation
+
+- [ ] **Deliverable checkpoint:** Production-ready application submitted to app stores
+- [ ] HealthKit + Health Connect integrations working on real devices
+- [ ] Offline-first: scan/log meals offline, auto-sync on reconnect
+- [ ] Dark mode fully functional
+- [ ] PL/EN localization 100% complete, no missing keys
+- [ ] Security audit passed, no critical findings
+- [ ] E2E tests pass for all critical user journeys
+- [ ] Performance budgets met (cold start ≤ 2s, scan ≤ 5s P95, ≥ 58 FPS)
+- [ ] Observability dashboards and alerting operational
+- [ ] Alpha → Beta → Production promotion completed
+
+---
+
+## Phase 5: Post-Launch (Ongoing)
+
+### 5.1 Monitoring & Iteration
+
+- [ ] Monitor production dashboards daily (first 2 weeks)
+- [ ] Triage and fix critical bugs from production telemetry
+- [ ] User feedback analysis (app store reviews, in-app feedback)
+- [ ] Weekly review of AI model accuracy metrics
+- [ ] Monthly cost optimization review (AI API spend vs budget)
+
+### 5.2 A/B Testing Framework
+
+- [ ] Set up A/B testing infrastructure for nudge strategies
+- [ ] Experiment: notification timing optimization
+- [ ] Experiment: AI chat persona tone variations
+- [ ] Experiment: dashboard layout alternatives
+
+### 5.3 Barcode Scanning (F22 — Could)
+
+- [ ] Research barcode scanning libraries for React Native
+- [ ] Integrate with Open Food Facts / product database
+- [ ] Implement barcode scanner UI in ScannerStack
+- [ ] Map scanned products to nutritional data
+- [ ] Fall back to AI scan if barcode not found
+
+### 5.4 Advanced Analytics
+
+- [ ] Implement correlation analysis (meal patterns → weight trends)
+- [ ] Implement predictive insights (projected goal date based on trend)
+- [ ] Create advanced reports with LLM narrative generation
+
+### 5.5 Adaptive TDEE Recalculation
+
+- [ ] Implement weekly TDEE recalculation:
+  - [ ] Exponential moving average of weight trend
+  - [ ] Compare actual vs predicted weight change
+  - [ ] Correct for metabolic adaptation
+- [ ] Notify user when targets are adjusted
+
+### 5.6 Future Roadmap Items (v2)
+
+- [ ] CGM device integration (F23)
+- [ ] Social/community features (F24)
+- [ ] Meal plan sharing / export as PDF (F19)
+- [ ] Gemini Embedding 2 for multimodal RAG (embed meal photos alongside text)
+
+---
+
+_This implementation plan is a living document. Update checkboxes as tasks are completed. Add new tasks as requirements evolve._

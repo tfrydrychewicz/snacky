@@ -1,0 +1,59 @@
+---
+description: Feature-Sliced Design enforcement — module boundaries, file placement, and dependency rules
+globs: apps/mobile/src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Feature-Sliced Design
+
+## Module Structure
+
+Every feature lives in `src/features/{name}/` with this structure:
+
+```
+features/{name}/
+├── api/          # TanStack Query hooks (useXxx.ts)
+├── components/   # UI components (XxxCard.tsx, XxxList.tsx)
+├── hooks/        # Feature-specific hooks
+├── screens/      # Screen components (XxxScreen.tsx)
+├── store/        # Zustand slices (optional)
+├── types.ts      # Feature-specific types
+└── validation/   # Zod schemas (optional)
+```
+
+## Import Rules
+
+```
+✅ feature → shared          (always allowed)
+✅ feature → packages/*      (always allowed)
+❌ feature → another feature (NEVER — extract to shared/)
+✅ app/    → features/*      (navigation wiring only)
+✅ app/    → shared           (providers, theme)
+```
+
+If two features need the same logic, move it to `src/shared/`.
+
+## File Naming
+
+- Components: `PascalCase.tsx` (e.g., `MealCard.tsx`)
+- Hooks: `camelCase.ts` prefixed with `use` (e.g., `useScanAnalysis.ts`)
+- Utils/constants: `camelCase.ts` (e.g., `imageProcessing.ts`)
+- Types: `types.ts` per feature, or `camelCase.ts` in `shared/types/`
+- Screens: `PascalCase.tsx` suffixed with `Screen` (e.g., `DashboardScreen.tsx`)
+
+## Feature Registry
+
+Active features: `auth`, `onboarding`, `scanner`, `meals`, `diet-plan`, `chat`, `progress`, `dashboard`, `notifications`. New features must follow the same structure.
+
+## Shared Code (`src/shared/`)
+
+```
+shared/
+├── api/          # Supabase client, error handler, response types
+├── components/   # SkeletonLoader, ErrorBoundary, EmptyState, AnimatedTransition
+├── constants/    # nutrition.ts (RDA values), config.ts
+├── hooks/        # useAppState, useNetworkStatus, useHealthData
+├── theme/        # tokens.ts, lightTheme.ts, darkTheme.ts
+├── types/        # nutrition.ts, user.ts, common.ts
+└── utils/        # dateTime.ts, unitConversion.ts, validation.ts
+```

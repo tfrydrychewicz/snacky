@@ -1,0 +1,44 @@
+---
+description: Core Snacky project context, architecture constraints, and coding standards that apply to all work
+alwaysApply: true
+---
+
+# Snacky — Project Context
+
+Snacky is an AI-powered mobile nutrition app (React Native, Supabase). The canonical design reference is `PRODUCT_AND_SYSTEM_DESIGN.md` at the repo root — always consult it for architecture decisions.
+
+## Monorepo Structure
+
+```
+snacky/
+├── apps/mobile/          # React Native app (Feature-Sliced Design)
+├── supabase/
+│   ├── migrations/       # SQL migrations (schema + RLS + triggers)
+│   ├── functions/        # Edge Functions (Deno/TypeScript)
+│   └── seed.sql
+├── packages/
+│   ├── shared-types/     # Shared TypeScript types + Zod schemas
+│   ├── api-client/       # Wrapper around @supabase/supabase-js
+│   └── eslint-config/
+├── scripts/              # seed-usda.ts, generate-embeddings.ts
+└── docs/                 # ADRs, API docs, runbooks
+```
+
+## Hard Constraints
+
+1. **TypeScript strict mode everywhere.** No `any` types. Use Zod for runtime validation.
+2. **All user-facing strings via `t('namespace.key')`.** Never hardcode text in JSX. Both `en/` and `pl/` translation files must be updated in the same change.
+3. **Row Level Security on every Supabase table.** No table without RLS policies.
+4. **React Native New Architecture only.** Fabric + TurboModules. No legacy bridge.
+5. **No raw SQL in application code.** Use Supabase JS SDK or PostgREST. Raw SQL only in `supabase/migrations/`.
+6. **All timestamps UTC ISO 8601.** Convert to local only in UI layer.
+7. **snake_case in API/DB, camelCase in TypeScript.** Transform at the boundary.
+8. **Feature modules are self-contained.** A feature never imports from another feature — extract shared code to `shared/`.
+
+## Key Tech Stack
+
+- React Native ≥ 0.84, TypeScript ≥ 6.0, React Navigation 7, Zustand 5, TanStack Query 5
+- NativeWind ≥ 4.2, Gluestack-UI v3, Reanimated 4 (no Moti)
+- Supabase (Auth, PostgREST, Storage, Edge Functions, pgvector, pg_cron)
+- AI: GPT-5.4 Vision (primary), Gemini 3.1 Pro (fallback), Claude Sonnet 4.6 (tertiary)
+- Embeddings: voyage-4-large (documents) / voyage-4-lite (queries)

@@ -1,0 +1,32 @@
+{
+  "name": "snacky",
+  "private": true,
+  "packageManager": "pnpm@10.10.0",
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=10"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint -- --fix",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:ci": "turbo run test:ci",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,mdc,yaml,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,mdc,yaml,yml}\"",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:reset": "supabase db reset",
+    "supabase:migrate": "supabase migration new",
+    "supabase:push": "supabase db push",
+    "supabase:functions:serve": "supabase functions serve --no-verify-jwt"
+  },
+  "devDependencies": {
+    "prettier": "^3.8.1",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "turbo": "^2.8.20",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,73 @@
+---
+description: React Native component patterns, hooks, and styling conventions for the Snacky mobile app
+globs: apps/mobile/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# React Native Patterns
+
+## Component Structure
+
+Functional components only. Export named, never default.
+
+```tsx
+// ✅ GOOD
+export const MealCard = ({ meal, onPress }: MealCardProps) => {
+  const { t } = useTranslation('meals');
+  // ...
+};
+
+// ❌ BAD — default export, no types
+export default function MealCard(props) { ... }
+```
+
+## Styling
+
+Use NativeWind classNames. Design tokens live in `shared/theme/tokens.ts`. Never use inline `style` objects for static styles.
+
+```tsx
+// ✅ GOOD
+<View className="bg-surface-card rounded-lg p-md shadow-low">
+
+// ❌ BAD
+<View style={{ backgroundColor: '#fff', borderRadius: 12, padding: 16 }}>
+```
+
+## State Management
+
+- **Server state** → TanStack Query (`useQuery`, `useMutation`). Never Zustand for API data.
+- **Global UI state** → Zustand slices in `features/{feature}/store/`.
+- **Form state** → React Hook Form + Zod resolver.
+- **Local UI state** → `useState` / `useReducer`.
+
+## Animations
+
+Use Reanimated 4 directly. Moti is NOT in the stack (incompatible with Reanimated 4).
+
+```tsx
+// ✅ GOOD — Reanimated 4 worklet
+const animatedStyle = useAnimatedStyle(() => ({
+  opacity: withTiming(isVisible.value ? 1 : 0, { duration: 250 }),
+}));
+
+// ❌ BAD — Moti
+import { MotiView } from 'moti';
+```
+
+## Data Fetching
+
+All API calls use `@supabase/supabase-js` wrapped in TanStack Query hooks. Place hooks in `features/{feature}/api/`.
+
+```tsx
+// features/meals/api/useMeals.ts
+export const useMeals = (date: string) =>
+  useQuery({
+    queryKey: ['meals', date],
+    queryFn: () => supabase.from('meals').select('*').eq('logged_at::date', date),
+    staleTime: 5 * 60 * 1000,
+  });
+```
+
+## Error Handling
+
+Wrap screens in `<ErrorBoundary>`. Use TanStack Query's `onError` for API errors. Show user-facing errors via translated strings.

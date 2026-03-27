@@ -1,0 +1,20 @@
+# Snacky CODEOWNERS
+# Default owner for everything
+*                           @tfrydrychewicz
+
+# Mobile app
+apps/mobile/                @tfrydrychewicz
+
+# Supabase (migrations, Edge Functions)
+supabase/migrations/        @tfrydrychewicz
+supabase/functions/         @tfrydrychewicz
+
+# Shared packages
+packages/                   @tfrydrychewicz
+
+# CI/CD
+.github/                    @tfrydrychewicz
+
+# Design docs
+PRODUCT_AND_SYSTEM_DESIGN.md @tfrydrychewicz
+IMPLEMENTATION_PLAN.md       @tfrydrychewicz

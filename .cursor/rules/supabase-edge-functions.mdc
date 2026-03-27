@@ -1,0 +1,64 @@
+---
+description: Supabase Edge Function conventions — Deno runtime, error handling, AI model fallback patterns
+globs: supabase/functions/**/*.ts
+alwaysApply: false
+---
+
+# Supabase Edge Functions
+
+## Runtime & Conventions
+
+- **Runtime**: Deno (TypeScript). Use `Deno.serve()` entry point.
+- **Imports**: Use `esm.sh` or `jsr:` imports. No npm.
+- **Validation**: Zod schemas from `packages/shared-types/` (import via URL or vendored).
+- **CORS**: Use shared CORS handler from `_shared/cors.ts`.
+- **Auth**: Extract JWT from `Authorization` header. Use `supabase.auth.getUser(token)` to verify.
+- **Secrets**: Read from `Deno.env.get('SECRET_NAME')`. Never hardcode API keys.
+
+## Error Handling
+
+Return RFC 7807 Problem Details for all errors:
+
+```typescript
+return new Response(JSON.stringify({
+  type: 'https://api.snacky.app/errors/vision-model-failure',
+  title: 'Vision Model Failure',
+  status: 502,
+  detail: 'All vision model providers failed. Please try again.',
+}), { status: 502, headers: { 'Content-Type': 'application/json' } });
+```
+
+## AI Model Fallback Pattern
+
+Vision pipeline uses triple-provider fallback:
+
+```typescript
+const providers = [
+  { name: 'gpt-5.4', fn: callOpenAI, timeout: 10_000 },
+  { name: 'gemini-3.1-pro', fn: callGemini, timeout: 10_000 },
+  { name: 'claude-sonnet-4.6', fn: callAnthropic, timeout: 10_000 },
+];
+
+for (const provider of providers) {
+  try {
+    return await withTimeout(provider.fn(imageBase64, prompt), provider.timeout);
+  } catch (err) {
+    log.warn(`${provider.name} failed, trying next`, { error: err });
+  }
+}
+return errorResponse(502, 'All providers failed');
+```
+
+## Structured Logging
+
+Use structured JSON logs. Fields: `timestamp`, `level`, `function_name`, `trace_id`, `user_id` (hashed), `message`, `metadata`. Never log raw PII.
+
+## Edge Function Registry
+
+| Function | Trigger | Purpose |
+|---|---|---|
+| `meal-scan` | HTTP POST | Vision pipeline (image → nutritional analysis) |
+| `chat` | HTTP POST (SSE) | RAG chat with streaming response |
+| `embed` | DB trigger (pg_net) | Async embedding generation |
+| `generate-plan` | HTTP POST | MILP solver + recipe generation |
+| `send-notification` | pg_cron (pg_net) | FCM push dispatch |

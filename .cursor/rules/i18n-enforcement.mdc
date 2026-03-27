@@ -1,0 +1,43 @@
+---
+description: Internationalization rules — all UI text must use i18next, both PL and EN required
+globs: apps/mobile/src/**/*.tsx
+alwaysApply: false
+---
+
+# Internationalization (i18n)
+
+Localization is a day-one requirement. Polish (`pl`) and English (`en`) ship from the first commit.
+
+## Rules
+
+1. **Every visible text** uses `t('namespace.key')`. No hardcoded strings in JSX.
+2. **Both `en/` and `pl/` updated** in the same change. Never add a key to one without the other.
+3. **One namespace per feature** matching the feature folder name (`scanner.json`, `meals.json`, etc.).
+4. **Key naming**: dot-nested camelCase — `scanner.result.ingredientConfidence`.
+
+## Usage
+
+```tsx
+// ✅ GOOD
+const { t } = useTranslation('meals');
+<Text>{t('meals.detail.totalCalories', { value: meal.totalCalories })}</Text>
+
+// ❌ BAD — hardcoded string
+<Text>Total Calories: {meal.totalCalories}</Text>
+
+// ❌ BAD — wrong namespace
+const { t } = useTranslation('common');
+<Text>{t('meals.detail.totalCalories')}</Text>  // key in wrong namespace
+```
+
+## Polish-Specific
+
+- **Plural forms**: use `_one`, `_few`, `_many` suffixes (Polish has 3 plural forms).
+- **Gender context**: use context suffix `_male`, `_female` where Polish grammar requires it.
+- **Number formatting**: `Intl.NumberFormat('pl-PL')` — comma decimal separator.
+- **Date formatting**: `dd.MM.yyyy`, `HH:mm` (24h) via `date-fns/locale/pl`.
+- **String expansion**: Polish is ~20-30% longer than English. UI containers must be flexible.
+
+## AI-Generated Content
+
+Chat responses, scan results, and clarification questions are localized at the prompt level — the LLM system prompt includes `locale: {user_locale}`. Push notification templates are stored per locale.

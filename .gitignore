@@ -1,0 +1,73 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Turborepo
+.turbo/
+
+# React Native
+apps/mobile/android/app/build/
+apps/mobile/android/.gradle/
+apps/mobile/android/build/
+apps/mobile/ios/Pods/
+apps/mobile/ios/build/
+apps/mobile/ios/*.xcworkspace
+apps/mobile/ios/*.xcodeproj/xcuserdata/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Metro
+.metro-health-check*
+
+# Expo (if used for tooling)
+.expo/
+
+# Supabase
+supabase/.temp/
+supabase/.branches/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.production
+.env.staging
+
+# IDE
+.idea/
+.vscode/settings.json
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+.nyc_output/
+
+# Keystore (Android signing)
+*.keystore
+*.jks
+upload-keystore.properties
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Secrets
+credentials.json
+service-account*.json
+google-services.json
+GoogleService-Info.plist

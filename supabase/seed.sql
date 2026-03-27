@@ -1,0 +1,3 @@
+-- Snacky development seed data
+-- This file is executed by `supabase db reset`
+-- Add seed data here as the schema evolves

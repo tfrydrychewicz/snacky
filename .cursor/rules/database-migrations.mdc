@@ -1,0 +1,68 @@
+---
+description: PostgreSQL migration standards — naming, RLS policies, indexes, and schema conventions
+globs: supabase/migrations/**/*.sql
+alwaysApply: false
+---
+
+# Database Migrations
+
+## File Naming
+
+Supabase CLI auto-generates timestamps. Append a descriptive slug:
+`20260327120000_create_meals_table.sql`
+
+## Schema Conventions
+
+- **Primary keys**: `id UUID PRIMARY KEY DEFAULT gen_random_uuid()`
+- **Timestamps**: `TIMESTAMPTZ NOT NULL DEFAULT NOW()` — always `created_at`, `updated_at`
+- **Foreign keys**: `REFERENCES {table}(id) ON DELETE CASCADE`
+- **Enums**: Use `VARCHAR` with comments listing valid values. No Postgres ENUMs (migration pain).
+- **JSON fields**: `JSONB` — never `JSON`.
+- **Arrays**: `TEXT[]` for simple lists (e.g., `dietary_restrictions`).
+- **Naming**: `snake_case` for tables and columns. Tables are plural (`meals`, `users`).
+
+## RLS Policies (Mandatory)
+
+Every table MUST have RLS enabled and at least one policy. Standard pattern:
+
+```sql
+ALTER TABLE meals ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can CRUD own meals"
+  ON meals FOR ALL
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+```
+
+For service-role–only writes (e.g., embeddings):
+
+```sql
+CREATE POLICY "Users can read own embeddings"
+  ON embeddings FOR SELECT
+  USING (auth.uid() = user_id);
+-- No INSERT/UPDATE policy → only service role can write
+```
+
+## Indexes
+
+Create indexes for frequent query patterns. Always index:
+- `(user_id, {sort_column} DESC)` for user-scoped lists
+- Foreign key columns used in JOINs
+- Full-text search columns with `GIN` index
+
+## Vector Columns
+
+```sql
+-- HNSW index for cosine similarity on embedding column
+CREATE INDEX idx_embeddings_vector
+  ON embeddings USING hnsw (embedding vector_cosine_ops)
+  WITH (m = 16, ef_construction = 64);
+```
+
+## Migration Checklist
+
+Before committing a migration, verify:
+1. RLS enabled + policies created for the new table
+2. Indexes added for user-scoped queries
+3. `updated_at` trigger exists (auto-set on UPDATE)
+4. No breaking changes to existing columns (additive only in production)

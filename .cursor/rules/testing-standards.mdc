@@ -1,0 +1,56 @@
+---
+description: Testing conventions — pyramid strategy, naming, mocking patterns for mobile, API, and AI tests
+globs: "**/*.{test,spec}.{ts,tsx}"
+alwaysApply: false
+---
+
+# Testing Standards
+
+## Testing Pyramid
+
+- **70% Unit tests** — business logic, utils, Zod schemas, store logic, hooks
+- **25% Integration tests** — API contracts, DB queries, AI pipeline with recorded responses
+- **5% E2E tests** — critical user journeys (Detox)
+
+## File Placement
+
+Test files live next to the code they test:
+
+```
+features/meals/hooks/useMealSummary.ts
+features/meals/hooks/useMealSummary.test.ts
+```
+
+## Naming
+
+```typescript
+describe('useMealSummary', () => {
+  it('calculates total calories from ingredients', () => { ... });
+  it('returns zero when no meals logged for the day', () => { ... });
+  it('handles missing micronutrient data gracefully', () => { ... });
+});
+```
+
+## Tools by Layer
+
+| Layer | Tool | Purpose |
+|---|---|---|
+| Unit (Mobile) | Jest + React Native Testing Library | Components, hooks, store |
+| Unit (Edge Functions) | Vitest | Route handlers, business logic |
+| Integration (API) | Supertest + Testcontainers | Full request lifecycle |
+| Integration (AI) | pytest + VCR.py | Vision pipeline with recorded responses |
+| E2E (Mobile) | Detox | Critical user journeys |
+| Visual | Storybook + Chromatic | Component visual regression |
+
+## Mocking Rules
+
+- Mock Supabase client with `vi.mock('@supabase/supabase-js')`.
+- Mock AI API calls with recorded responses (VCR cassettes). Never call real AI APIs in tests.
+- Use Testcontainers for integration tests that need a real Postgres instance.
+- Never mock what you're testing — mock only external boundaries.
+
+## AI-Specific Testing
+
+- **Prompt regression**: golden dataset of 100 meal images with expected outputs.
+- **Hallucination detection**: validate nutritional claims against USDA reference data.
+- **MILP correctness**: verify all hard constraints satisfied (allergens, calorie targets).
