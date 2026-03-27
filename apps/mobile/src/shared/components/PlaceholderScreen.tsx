@@ -1,9 +1,15 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { Text } from '@gluestack-ui/themed';
+import { useTranslation } from 'react-i18next';
 
-export const PlaceholderScreen = () => (
-  <View className="flex-1 items-center justify-center bg-surface-background">
-    <Text className="text-heading-2 text-primary">Snacky</Text>
-    <Text className="mt-sm text-body-md text-gray-500">App shell ready</Text>
-  </View>
-);
+export const PlaceholderScreen = () => {
+  const { t } = useTranslation('common');
+
+  return (
+    <View className="flex-1 items-center justify-center bg-surface-background">
+      <Text className="text-heading-2 text-primary">{t('common.appName')}</Text>
+      <Text className="mt-sm text-body-md text-gray-500">{t('common.loading')}</Text>
+    </View>
+  );
+};

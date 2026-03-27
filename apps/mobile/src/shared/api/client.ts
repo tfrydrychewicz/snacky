@@ -16,9 +16,16 @@ const mmkvAdapter = {
   },
 };
 
-export const supabase = createSupabaseClient({
-  supabaseUrl: Config.SUPABASE_URL ?? '',
-  supabaseAnonKey: Config.SUPABASE_ANON_KEY ?? '',
-  persistSession: true,
-  storageAdapter: mmkvAdapter,
-});
+let _supabase: ReturnType<typeof createSupabaseClient> | null = null;
+
+export const getSupabase = () => {
+  if (!_supabase) {
+    _supabase = createSupabaseClient({
+      supabaseUrl: Config.SUPABASE_URL ?? '',
+      supabaseAnonKey: Config.SUPABASE_ANON_KEY ?? '',
+      persistSession: true,
+      storageAdapter: mmkvAdapter,
+    });
+  }
+  return _supabase;
+};

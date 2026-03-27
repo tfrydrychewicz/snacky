@@ -4,10 +4,11 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
     "types": ["jest"],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
+      "~/*": ["src/*"],
       "@snacky/shared-types": ["../../packages/shared-types/src"],
       "@snacky/api-client": ["../../packages/api-client/src"]
     }

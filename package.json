@@ -21,11 +21,16 @@
     "supabase:reset": "supabase db reset",
     "supabase:migrate": "supabase migration new",
     "supabase:push": "supabase db push",
-    "supabase:functions:serve": "supabase functions serve --no-verify-jwt"
+    "supabase:functions:serve": "supabase functions serve --no-verify-jwt",
+    "i18n:check": "npx tsx scripts/check-i18n-parity.ts",
+    "ios": "pnpm --filter @snacky/mobile ios",
+    "android": "pnpm --filter @snacky/mobile android",
+    "start": "pnpm --filter @snacky/mobile start"
   },
   "devDependencies": {
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
+    "tsx": "^4.19.0",
     "turbo": "^2.8.20",
     "typescript": "^5.9.3"
   }

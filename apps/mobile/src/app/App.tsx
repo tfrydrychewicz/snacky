@@ -6,8 +6,6 @@ import { config } from '@gluestack-ui/config';
 import { QueryProvider } from './providers/QueryProvider';
 import { RootNavigator } from './navigation/RootNavigator';
 
-import '../global.css';
-
 export const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
 

@@ -61,17 +61,17 @@
 
 ### 0.3 Internationalization Setup (Week 1 — before any UI work)
 
-- [ ] Install i18n dependencies: `i18next`, `react-i18next`, `i18next-resources-to-backend`, `expo-localization`, `intl-pluralrules`
-- [ ] Create `src/i18n/index.ts` with configuration (fallback `en`, supported `['pl', 'en']`)
-- [ ] Create namespace-per-feature translation structure:
-  - [ ] `src/i18n/en/common.json` (shared UI strings)
-  - [ ] `src/i18n/pl/common.json`
-  - [ ] Empty namespace files for each feature: `auth`, `onboarding`, `scanner`, `meals`, `dietPlan`, `chat`, `progress`, `dashboard`, `notifications`, `settings`
-- [ ] Configure `expo-localization` for device locale detection
-- [ ] Add `eslint-plugin-i18next` to lint config — reject hardcoded strings in JSX
-- [ ] Verify Polish diacritics (ą, ć, ę, ł, ń, ó, ś, ź, ż) render correctly on both platforms
-- [ ] Create typed translation key helper (auto-generated types from JSON)
-- [ ] Add CI lint check that all `t()` keys exist in both `en/` and `pl/`
+- [x] Install i18n dependencies: `i18next`, `react-i18next`, `intl-pluralrules`, `react-native-localize`
+- [x] Create `src/i18n/index.ts` with configuration (fallback `en`, supported `['pl', 'en']`)
+- [x] Create namespace-per-feature translation structure:
+  - [x] `src/i18n/en/common.json` (shared UI strings)
+  - [x] `src/i18n/pl/common.json`
+  - [x] Empty namespace files for each feature: `auth`, `onboarding`, `scanner`, `meals`, `dietPlan`, `chat`, `progress`, `dashboard`, `notifications`, `settings`
+- [x] Configure `react-native-localize` for device locale detection (bare RN, not Expo)
+- [x] Add `eslint-plugin-i18next` to lint config — reject hardcoded strings in JSX
+- [x] Verify Polish diacritics (ą, ć, ę, ł, ń, ó, ś, ź, ż) in translation files
+- [x] Create typed translation key helper (`src/i18n/types.ts` — module augmentation for `i18next`)
+- [x] Add CI lint check that all `t()` keys exist in both `en/` and `pl/` (`scripts/check-i18n-parity.ts`)
 
 ### 0.4 Supabase Project Setup (Week 1–2)
 
