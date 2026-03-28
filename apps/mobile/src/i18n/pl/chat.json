@@ -1,3 +1,11 @@
 {
-  "input_placeholder": "Zapytaj o swoją dietę..."
+  "input_placeholder": "Zapytaj o swoją dietę...",
+  "assistant_label": "Snacky AI",
+  "thinking": "Myślę...",
+  "empty_title": "Porozmawiaj ze Snacky",
+  "empty_subtitle": "Zapytaj o odżywianie, poproś o propozycje posiłków lub przeanalizuj swoje nawyki żywieniowe.",
+  "recipe_suggestion": "Propozycja przepisu",
+  "error_generic": "Coś poszło nie tak. Spróbuj ponownie.",
+  "error_not_authenticated": "Zaloguj się, aby korzystać z czatu.",
+  "cancel_streaming": "Zatrzymaj"
 }

@@ -360,6 +360,7 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const message = body.message as string | undefined;
     const sessionId = body.session_id as string | undefined;
+    const useStreaming = (body.stream as boolean | undefined) !== false;
 
     if (!message || message.trim().length === 0) {
       return badRequest('Missing required field: message');
@@ -403,14 +404,96 @@ Deno.serve(async (req) => {
       { role: 'user' as const, content: message },
     ];
 
-    // 7. Store user message
+    // 6. Store user message
     await serviceSupabase.from('chat_messages').insert({
       session_id: resolvedSessionId,
       role: 'user',
       content: message,
     });
 
-    // 8. Stream response via SSE
+    // Helper: call OpenAI and store result
+    async function callOpenAIAndStore(streaming: boolean) {
+      const chatResp = await fetch(OPENAI_CHAT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: config.model,
+          messages,
+          stream: streaming,
+          max_tokens: 1024,
+          temperature: 0.7,
+        }),
+      });
+
+      return chatResp;
+    }
+
+    async function storeAssistantMessage(content: string, tokensUsed: number) {
+      const contextIds = context.map((c) => c.id);
+      await serviceSupabase.from('chat_messages').insert({
+        session_id: resolvedSessionId,
+        role: 'assistant',
+        content,
+        model_used: config.model,
+        tokens_used: tokensUsed || null,
+        retrieved_context_ids: contextIds.length > 0 ? contextIds : null,
+      });
+      await serviceSupabase
+        .from('chat_sessions')
+        .update({ last_message_at: new Date().toISOString() })
+        .eq('id', resolvedSessionId);
+      return contextIds;
+    }
+
+    // ---- Non-streaming JSON mode (for React Native) ----
+    if (!useStreaming) {
+      const chatResp = await callOpenAIAndStore(false);
+
+      if (!chatResp.ok) {
+        const errText = await chatResp.text();
+        log.error('OpenAI chat error', { status: chatResp.status, body: errText });
+        return internalError('AI model error');
+      }
+
+      const result = (await chatResp.json()) as {
+        choices: Array<{ message: { content: string } }>;
+        usage?: { total_tokens?: number };
+      };
+
+      const content = result.choices[0]?.message?.content ?? '';
+      const tokensUsed = result.usage?.total_tokens ?? 0;
+
+      const contextIds = await storeAssistantMessage(content, tokensUsed);
+
+      log.info('Chat response complete (non-streaming)', {
+        user_id: user.id,
+        session_id: resolvedSessionId,
+        intent,
+        model: config.model,
+        response_length: content.length,
+        tokens: tokensUsed,
+      });
+
+      return new Response(
+        JSON.stringify({
+          session_id: resolvedSessionId,
+          intent,
+          model: config.model,
+          content,
+          tokens_used: tokensUsed,
+          context_ids: contextIds,
+        }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        },
+      );
+    }
+
+    // ---- SSE streaming mode ----
     const stream = new ReadableStream({
       async start(controller) {
         const encoder = new TextEncoder();
@@ -427,20 +510,7 @@ Deno.serve(async (req) => {
         );
 
         try {
-          const chatResp = await fetch(OPENAI_CHAT_URL, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${apiKey}`,
-            },
-            body: JSON.stringify({
-              model: config.model,
-              messages,
-              stream: true,
-              max_tokens: 1024,
-              temperature: 0.7,
-            }),
-          });
+          const chatResp = await callOpenAIAndStore(true);
 
           if (!chatResp.ok || !chatResp.body) {
             const errText = await chatResp.text();
@@ -494,22 +564,7 @@ Deno.serve(async (req) => {
             }
           }
 
-          // 9. Store assistant response
-          const contextIds = context.map((c) => c.id);
-          await serviceSupabase.from('chat_messages').insert({
-            session_id: resolvedSessionId,
-            role: 'assistant',
-            content: fullResponse,
-            model_used: config.model,
-            tokens_used: totalTokens || null,
-            retrieved_context_ids: contextIds.length > 0 ? contextIds : null,
-          });
-
-          // Update session timestamp
-          await serviceSupabase
-            .from('chat_sessions')
-            .update({ last_message_at: new Date().toISOString() })
-            .eq('id', resolvedSessionId);
+          const contextIds = await storeAssistantMessage(fullResponse, totalTokens);
 
           controller.enqueue(
             encoder.encode(

@@ -465,25 +465,25 @@
 
 ### 2.3 AI Chat Assistant — Mobile (Week 13–14)
 
-- [ ] Create `ChatScreen`:
-  - [ ] Persistent, scrollable chat history
-  - [ ] `ChatBubble.tsx` — user and assistant message bubbles
-  - [ ] `ChatInput.tsx` — text input with send button
-  - [ ] `StreamingMessage.tsx` — real-time token-by-token display
-- [ ] Implement `useChatStream.ts` hook:
-  - [ ] POST message → receive SSE stream
-  - [ ] Parse `message_start`, `content_delta`, `attachment`, `message_end` events
-  - [ ] Accumulate tokens into displayed message
-- [ ] Implement `useChatHistory.ts` hook:
-  - [ ] Fetch paginated message history
-  - [ ] TanStack Query with cursor-based pagination
-- [ ] Implement rich content rendering:
-  - [ ] `RecipeCard.tsx` — tappable inline recipe cards
-  - [ ] `NutrientBadge.tsx` — inline nutritional badges
-  - [ ] Meal reference links (tap → navigate to meal detail)
-- [ ] Implement chat message appear animation (Reanimated 4, 250ms spring)
-- [ ] Cache last 100 messages locally in MMKV
-- [ ] Add chat translation keys to `en/chat.json` and `pl/chat.json`
+- [x] Create `ChatScreen`:
+  - [x] Persistent, scrollable chat history (FlatList with keyboard handling)
+  - [x] `ChatBubble.tsx` — user and assistant message bubbles
+  - [x] `ChatInput.tsx` — text input with send/stop button
+  - [x] `StreamingMessage.tsx` — real-time token-by-token display with blinking cursor
+- [x] Implement `useChatStream.ts` hook:
+  - [x] POST message → receive SSE stream via ReadableStream
+  - [x] Parse `message_start`, `content_delta`, `error`, `message_end` events
+  - [x] Accumulate tokens into displayed message with abort support
+- [x] Implement `useChatHistory.ts` hook:
+  - [x] Fetch paginated message history
+  - [x] TanStack Query with cursor-based pagination
+- [x] Implement rich content rendering:
+  - [x] `RecipeCard.tsx` — tappable inline recipe cards
+  - [x] `NutrientBadge.tsx` — inline nutritional badges
+  - [ ] Meal reference links (tap → navigate to meal detail) — deferred, requires structured output from backend
+- [x] Implement chat message appear animation (Reanimated 4, spring FadeInDown/FadeInRight)
+- [x] Cache last 100 messages locally in MMKV
+- [x] Add chat translation keys to `en/chat.json` and `pl/chat.json`
 
 ### 2.4 Measurement Tracking (Week 14–15)
 

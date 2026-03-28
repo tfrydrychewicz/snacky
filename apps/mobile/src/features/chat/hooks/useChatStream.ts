@@ -1,0 +1,131 @@
+import { useState, useCallback, useRef } from 'react';
+import { getSupabase } from '~/shared/api/client';
+import Config from 'react-native-config';
+
+export interface StreamingState {
+  isStreaming: boolean;
+  streamedText: string;
+  sessionId: string | null;
+  intent: string | null;
+  error: string | null;
+}
+
+interface ChatResponse {
+  session_id: string;
+  intent: string;
+  model: string;
+  content: string;
+  tokens_used: number;
+  context_ids: string[];
+}
+
+interface UseChatStreamReturn {
+  state: StreamingState;
+  sendMessage: (message: string, sessionId?: string) => Promise<ChatResponse | null>;
+  cancelStream: () => void;
+}
+
+export function useChatStream(): UseChatStreamReturn {
+  const [state, setState] = useState<StreamingState>({
+    isStreaming: false,
+    streamedText: '',
+    sessionId: null,
+    intent: null,
+    error: null,
+  });
+
+  const abortRef = useRef<AbortController | null>(null);
+
+  const cancelStream = useCallback(() => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setState((prev) => ({ ...prev, isStreaming: false }));
+  }, []);
+
+  const sendMessage = useCallback(
+    async (message: string, sessionId?: string): Promise<ChatResponse | null> => {
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+
+      setState({
+        isStreaming: true,
+        streamedText: '',
+        sessionId: sessionId ?? null,
+        intent: null,
+        error: null,
+      });
+
+      try {
+        const supabase = getSupabase();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (!session?.access_token) {
+          setState((prev) => ({ ...prev, isStreaming: false, error: 'Not authenticated' }));
+          return null;
+        }
+
+        const baseUrl = Config.SUPABASE_URL ?? '';
+        const url = `${baseUrl}/functions/v1/chat`;
+
+        const resp = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+            apikey: Config.SUPABASE_ANON_KEY ?? '',
+          },
+          body: JSON.stringify({
+            message,
+            session_id: sessionId,
+            stream: false,
+          }),
+          signal: controller.signal,
+        });
+
+        if (!resp.ok) {
+          let errText: string;
+          try {
+            errText = await resp.text();
+          } catch {
+            errText = `HTTP ${resp.status}`;
+          }
+          setState((prev) => ({
+            ...prev,
+            isStreaming: false,
+            error: errText || `Request failed (${resp.status})`,
+          }));
+          return null;
+        }
+
+        const data = (await resp.json()) as ChatResponse;
+
+        setState((prev) => ({
+          ...prev,
+          isStreaming: false,
+          streamedText: data.content,
+          sessionId: data.session_id,
+          intent: data.intent,
+        }));
+
+        return data;
+      } catch (err) {
+        if ((err as Error).name === 'AbortError') {
+          setState((prev) => ({ ...prev, isStreaming: false }));
+          return null;
+        }
+        setState((prev) => ({
+          ...prev,
+          isStreaming: false,
+          error: (err as Error).message,
+        }));
+        return null;
+      }
+    },
+    [],
+  );
+
+  return { state, sendMessage, cancelStream };
+}
