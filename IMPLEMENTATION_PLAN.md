@@ -441,27 +441,27 @@
 
 ### 2.2 AI Chat Assistant — Backend (Week 12–13)
 
-- [ ] Implement `chat` Edge Function:
-  - [ ] Create/retrieve chat session
-  - [ ] Intent classification (lightweight classifier):
-    - [ ] `nutrition_qa`
-    - [ ] `meal_suggestion`
-    - [ ] `plan_creation`
-    - [ ] `data_lookup`
-    - [ ] `health_insight`
-  - [ ] Context retrieval strategy (per intent — see doc Section 10.2)
-  - [ ] Prompt assembly:
-    - [ ] System prompt with user profile, persona calibration, guardrails
-    - [ ] Retrieved context documents
-    - [ ] Conversation history (last 10 messages)
-    - [ ] Locale instruction (respond in user's language)
-  - [ ] Call GPT-5.4 (complex queries) or GPT-5.4 mini (simple queries)
-  - [ ] SSE streaming response (Server-Sent Events)
-  - [ ] Post-processing:
-    - [ ] Validate nutritional claims against USDA data
-    - [ ] Inject rich content cards (recipe cards, nutrient badges) as JSON in stream
-    - [ ] Log token usage for cost tracking
-  - [ ] Store message in `chat_messages` table
+- [x] Implement `chat` Edge Function:
+  - [x] Create/retrieve chat session
+  - [x] Intent classification (lightweight GPT-4.1-nano classifier):
+    - [x] `nutrition_qa`
+    - [x] `meal_suggestion`
+    - [x] `plan_creation`
+    - [x] `data_lookup`
+    - [x] `health_insight`
+  - [x] Context retrieval strategy (per intent — see doc Section 10.2)
+  - [x] Prompt assembly:
+    - [x] System prompt with user profile, persona calibration, guardrails
+    - [x] Retrieved context documents (via match_embeddings RAG)
+    - [x] Conversation history (last 10 messages)
+    - [x] Locale instruction (respond in user's language)
+  - [x] Call GPT-4.1 (complex queries) or GPT-4.1-nano (simple queries)
+  - [x] SSE streaming response (Server-Sent Events)
+  - [x] Post-processing:
+    - [ ] Validate nutritional claims against USDA data (deferred — requires structured output parsing)
+    - [ ] Inject rich content cards (recipe cards, nutrient badges) as JSON in stream (deferred — requires client-side card rendering)
+    - [x] Log token usage for cost tracking
+  - [x] Store message in `chat_messages` table
 
 ### 2.3 AI Chat Assistant — Mobile (Week 13–14)
 
