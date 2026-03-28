@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, TextInput, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Controller } from 'react-hook-form';
-import type { OnboardingFormData } from '../schemas/onboarding';
 import type { StepFormProps } from './types';
 import { StepContainer } from './StepContainer';
 import { colors, spacing, typography, radii } from '~/shared/theme/tokens';

@@ -52,7 +52,7 @@ export const OnboardingCompleteScreen = ({ route }: Props) => {
   const { t } = useTranslation('onboarding');
   const insets = useSafeAreaInsets();
   const { refreshProfile } = useAuth();
-  const { tdee, targetKcal, proteinG, carbsG, fatG } = route.params;
+  const { targetKcal, proteinG, carbsG, fatG } = route.params;
 
   useEffect(() => {
     void refreshProfile();

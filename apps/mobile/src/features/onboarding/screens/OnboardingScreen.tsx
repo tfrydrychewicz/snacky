@@ -43,7 +43,7 @@ export const OnboardingScreen = () => {
     mode: 'onChange',
   });
 
-  const validateCurrentStep = useCallback(async (): Promise<boolean> => {
+  const validateCurrentStep = useCallback((): boolean => {
     const schema = STEP_SCHEMAS[currentStep];
     if (!schema) return true;
 
@@ -52,8 +52,8 @@ export const OnboardingScreen = () => {
     return result.success;
   }, [currentStep, form]);
 
-  const handleNext = useCallback(async () => {
-    const isValid = await validateCurrentStep();
+  const handleNext = useCallback(() => {
+    const isValid = validateCurrentStep();
     if (!isValid) {
       Alert.alert(t('title'), 'Please fill in all required fields.');
       return;

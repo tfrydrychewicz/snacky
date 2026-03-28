@@ -6,8 +6,8 @@ import {
   useCameraPermission,
   type PhotoFile,
 } from 'react-native-vision-camera';
+import type { TFunction } from 'i18next';
 import type { MealType } from '@snacky/shared-types';
-import { useTranslation } from 'react-i18next';
 import { CameraOverlay } from '../components/CameraOverlay';
 import { useImageCompression } from '../hooks/useImageCompression';
 import { colors, typography, spacing } from '~/shared/theme/tokens';
@@ -19,7 +19,7 @@ type Props = {
   onGallery: () => void;
   showLoader: boolean;
   error: string | null;
-  t: ReturnType<typeof useTranslation<'scanner'>>['t'];
+  t: TFunction<'scanner'>;
 };
 
 export const CameraViewInner = ({
