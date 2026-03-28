@@ -42,7 +42,7 @@
     "react-native-config": "^1.x",
     "react-native-keychain": "^10.x",
     "react-native-localize": "^3.7.0",
-    "react-native-mmkv": "^3.x",
+    "react-native-mmkv": "^4.x",
     "react-native-reanimated": "^4.3.0",
     "react-native-safe-area-context": "^5.5.2",
     "react-native-screens": "^4.x",
