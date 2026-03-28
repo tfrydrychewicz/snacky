@@ -29,11 +29,13 @@ const fetchTargets = async (userId: string): Promise<UserTargets> => {
   if (error || !data) return DEFAULTS;
 
   return {
-    targetKcal: (data as Record<string, unknown>).target_kcal as number ?? DEFAULTS.targetKcal,
-    targetProteinG: (data as Record<string, unknown>).target_protein_g as number ?? DEFAULTS.targetProteinG,
-    targetCarbsG: (data as Record<string, unknown>).target_carbs_g as number ?? DEFAULTS.targetCarbsG,
-    targetFatG: (data as Record<string, unknown>).target_fat_g as number ?? DEFAULTS.targetFatG,
-    tdeeKcal: (data as Record<string, unknown>).tdee_kcal as number ?? DEFAULTS.tdeeKcal,
+    targetKcal: ((data as Record<string, unknown>).target_kcal as number) ?? DEFAULTS.targetKcal,
+    targetProteinG:
+      ((data as Record<string, unknown>).target_protein_g as number) ?? DEFAULTS.targetProteinG,
+    targetCarbsG:
+      ((data as Record<string, unknown>).target_carbs_g as number) ?? DEFAULTS.targetCarbsG,
+    targetFatG: ((data as Record<string, unknown>).target_fat_g as number) ?? DEFAULTS.targetFatG,
+    tdeeKcal: ((data as Record<string, unknown>).tdee_kcal as number) ?? DEFAULTS.tdeeKcal,
   };
 };
 

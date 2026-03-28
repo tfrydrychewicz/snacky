@@ -65,9 +65,7 @@ export const useUpdateMeal = () => {
         sort_order: ing.sort_order,
       }));
 
-      const { error: insertError } = await supabase
-        .from('meal_ingredients')
-        .insert(rows);
+      const { error: insertError } = await supabase.from('meal_ingredients').insert(rows);
 
       if (insertError) throw new Error(insertError.message);
     },

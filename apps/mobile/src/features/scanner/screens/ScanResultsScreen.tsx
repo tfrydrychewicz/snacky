@@ -1,5 +1,14 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Image, ScrollView, View, Text, Pressable, Alert, StyleSheet, ActivityIndicator } from 'react-native';
+import {
+  Image,
+  ScrollView,
+  View,
+  Text,
+  Pressable,
+  Alert,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
@@ -159,7 +168,10 @@ export const ScanResultsScreen = () => {
     const nextIndex = clarificationIndex + 1;
     setClarificationIndex(nextIndex);
 
-    if (nextIndex >= currentScanResult.clarification_questions.length && clarificationAnswers.current.length > 0) {
+    if (
+      nextIndex >= currentScanResult.clarification_questions.length &&
+      clarificationAnswers.current.length > 0
+    ) {
       void triggerReanalysis();
     }
   }, [clarificationIndex, currentScanResult.clarification_questions.length, triggerReanalysis]);
@@ -271,7 +283,18 @@ export const ScanResultsScreen = () => {
     } finally {
       setIsLogging(false);
     }
-  }, [user, photoUri, mealType, ingredients, totals, scanResult, hasModifications, comment, navigation, t]);
+  }, [
+    user,
+    photoUri,
+    mealType,
+    ingredients,
+    totals,
+    scanResult,
+    hasModifications,
+    comment,
+    navigation,
+    t,
+  ]);
 
   const overallConfidence = Math.round(currentScanResult.overall_confidence * 100);
   const totalCalories = Math.round(totals.calories_kcal);
@@ -325,7 +348,10 @@ export const ScanResultsScreen = () => {
                 key={`${ing.name}-${i}`}
                 ingredient={ing}
                 index={i}
-                onEdit={() => { setIsNewIngredient(false); setEditingIndex(i); }}
+                onEdit={() => {
+                  setIsNewIngredient(false);
+                  setEditingIndex(i);
+                }}
                 onRemove={() => handleRemoveIngredient(i)}
               />
             ))}

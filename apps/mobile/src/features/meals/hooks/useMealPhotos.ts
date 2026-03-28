@@ -52,7 +52,7 @@ const fetchMealPhotos = async (cursor: string | null, userId: string): Promise<P
   }));
 
   const nextCursor =
-    photos.length === PAGE_SIZE ? photos[photos.length - 1]?.loggedAt ?? null : null;
+    photos.length === PAGE_SIZE ? (photos[photos.length - 1]?.loggedAt ?? null) : null;
 
   return { photos, nextCursor };
 };

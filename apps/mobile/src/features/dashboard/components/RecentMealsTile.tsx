@@ -24,17 +24,33 @@ export const RecentMealsTile = ({
 
   return (
     <Animated.View
-      entering={FadeInDown.delay(index * 50).duration(350).springify()}
+      entering={FadeInDown.delay(index * 50)
+        .duration(350)
+        .springify()}
       style={{
         backgroundColor: colors.surfaceContainerLow,
         borderRadius: radii.DEFAULT,
         padding: spacing.lg,
       }}
     >
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: spacing.md,
+        }}
+      >
         <Text style={{ ...typography.titleLg }}>{t('tiles.recentMeals')}</Text>
         <Pressable hitSlop={8} onPress={onViewHistory}>
-          <Text style={{ ...typography.labelMd, color: colors.primary, textTransform: 'uppercase', letterSpacing: 1 }}>
+          <Text
+            style={{
+              ...typography.labelMd,
+              color: colors.primary,
+              textTransform: 'uppercase',
+              letterSpacing: 1,
+            }}
+          >
             {t('tiles.viewHistory')}
           </Text>
         </Pressable>
@@ -43,12 +59,18 @@ export const RecentMealsTile = ({
       {meals.length === 0 ? (
         <View style={{ alignItems: 'center', paddingVertical: spacing.xl }}>
           <UtensilsCrossed size={32} color={colors.outlineVariant} strokeWidth={1.5} />
-          <Text style={{ ...typography.bodyMd, color: colors.onSurfaceVariant, marginTop: spacing.sm }}>
+          <Text
+            style={{ ...typography.bodyMd, color: colors.onSurfaceVariant, marginTop: spacing.sm }}
+          >
             {t('tiles.noMealsToday')}
           </Text>
         </View>
       ) : (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.sm }}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: spacing.sm }}
+        >
           {meals.slice(0, 5).map((meal) => (
             <RecentMealCard key={meal.id} meal={meal} onPress={() => onMealPress(meal.id)} />
           ))}
@@ -67,7 +89,10 @@ const MEAL_TYPE_LABEL: Record<string, string> = {
 
 const RecentMealCard = ({ meal, onPress }: { meal: MealRow; onPress: () => void }) => {
   const { data: imageUrl } = useMealPhoto(meal.image_key);
-  const time = new Date(meal.logged_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const time = new Date(meal.logged_at).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
   return (
     <Pressable
@@ -80,22 +105,31 @@ const RecentMealCard = ({ meal, onPress }: { meal: MealRow; onPress: () => void 
         transform: [{ scale: pressed ? 0.97 : 1 }],
       })}
     >
-      <View style={{
-        height: 100,
-        borderRadius: radii.sm,
-        backgroundColor: colors.surfaceContainerHigh,
-        marginBottom: spacing.sm,
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-      }}>
+      <View
+        style={{
+          height: 100,
+          borderRadius: radii.sm,
+          backgroundColor: colors.surfaceContainerHigh,
+          marginBottom: spacing.sm,
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+        }}
+      >
         {imageUrl ? (
-          <Image source={{ uri: imageUrl }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+          <Image
+            source={{ uri: imageUrl }}
+            style={{ width: '100%', height: '100%' }}
+            resizeMode="cover"
+          />
         ) : (
           <UtensilsCrossed size={28} color={colors.outlineVariant} strokeWidth={1.5} />
         )}
       </View>
-      <Text style={{ ...typography.labelMd, color: colors.onSurface, marginBottom: 2 }} numberOfLines={1}>
+      <Text
+        style={{ ...typography.labelMd, color: colors.onSurface, marginBottom: 2 }}
+        numberOfLines={1}
+      >
         {MEAL_TYPE_LABEL[meal.meal_type] ?? '🍽️'} {time}
       </Text>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>

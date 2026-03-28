@@ -47,7 +47,9 @@ export const CalorieBudgetTile = ({ consumed, target, index = 0 }: CalorieBudget
 
   return (
     <Animated.View
-      entering={FadeInDown.delay(index * 50).duration(350).springify()}
+      entering={FadeInDown.delay(index * 50)
+        .duration(350)
+        .springify()}
       style={{
         backgroundColor: colors.surfaceContainerLow,
         borderRadius: radii.DEFAULT,
@@ -57,25 +59,47 @@ export const CalorieBudgetTile = ({ consumed, target, index = 0 }: CalorieBudget
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <View style={{ flex: 1 }}>
-          <Text style={{ ...typography.titleLg, color: colors.onSurfaceVariant, marginBottom: spacing.lg }}>
+          <Text
+            style={{
+              ...typography.titleLg,
+              color: colors.onSurfaceVariant,
+              marginBottom: spacing.lg,
+            }}
+          >
             {t('tiles.calorieBudget')}
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-            <Text style={{ ...typography.displayLg, color: overBudget ? colors.error : colors.primary }}>
+            <Text
+              style={{ ...typography.displayLg, color: overBudget ? colors.error : colors.primary }}
+            >
               {consumed.toLocaleString()}
             </Text>
             <Text style={{ ...typography.titleMd, color: colors.onSurfaceVariant, marginLeft: 4 }}>
               / {target.toLocaleString()} {t('tiles.kcalUnit')}
             </Text>
           </View>
-          <Text style={{ ...typography.bodySm, color: colors.onSurfaceVariant, opacity: 0.7, marginTop: spacing.sm }}>
+          <Text
+            style={{
+              ...typography.bodySm,
+              color: colors.onSurfaceVariant,
+              opacity: 0.7,
+              marginTop: spacing.sm,
+            }}
+          >
             {overBudget
               ? t('tiles.over_budget', { kcal: consumed - target })
               : t('tiles.remaining', { kcal: remaining })}
           </Text>
         </View>
 
-        <View style={{ width: RING_SIZE, height: RING_SIZE, alignItems: 'center', justifyContent: 'center' }}>
+        <View
+          style={{
+            width: RING_SIZE,
+            height: RING_SIZE,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <Svg width={RING_SIZE} height={RING_SIZE} style={{ transform: [{ rotate: '-90deg' }] }}>
             <Circle
               cx={RING_SIZE / 2}

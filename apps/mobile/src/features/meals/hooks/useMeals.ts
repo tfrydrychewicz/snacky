@@ -30,7 +30,7 @@ const fetchMeals = async (cursor: string | null, userId: string): Promise<MealPa
 
   const meals = (data ?? []) as MealRow[];
   const nextCursor =
-    meals.length === PAGE_SIZE ? meals[meals.length - 1]?.logged_at ?? null : null;
+    meals.length === PAGE_SIZE ? (meals[meals.length - 1]?.logged_at ?? null) : null;
 
   return { meals, nextCursor };
 };

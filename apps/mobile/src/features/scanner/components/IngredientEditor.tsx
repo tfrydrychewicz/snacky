@@ -25,7 +25,13 @@ type Props = {
   onSave: (updated: IngredientAnalysis) => void;
 };
 
-export const IngredientEditor = ({ ingredient, visible, isNew = false, onClose, onSave }: Props) => {
+export const IngredientEditor = ({
+  ingredient,
+  visible,
+  isNew = false,
+  onClose,
+  onSave,
+}: Props) => {
   const { t } = useTranslation('scanner');
   const [name, setName] = useState(ingredient.name);
   const [portionG, setPortionG] = useState(ingredient.quantity_g);

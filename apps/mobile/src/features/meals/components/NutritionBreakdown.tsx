@@ -37,9 +37,18 @@ export const NutritionBreakdown = ({
       </View>
 
       <View style={styles.bar}>
-        <View style={[styles.segment, { width: `${proteinPct}%`, backgroundColor: colors.macro.protein }]} />
-        <View style={[styles.segment, { width: `${carbsPct}%`, backgroundColor: colors.macro.carbs }]} />
-        <View style={[styles.segment, { width: `${fatPct}%`, backgroundColor: colors.macro.fat }]} />
+        <View
+          style={[
+            styles.segment,
+            { width: `${proteinPct}%`, backgroundColor: colors.macro.protein },
+          ]}
+        />
+        <View
+          style={[styles.segment, { width: `${carbsPct}%`, backgroundColor: colors.macro.carbs }]}
+        />
+        <View
+          style={[styles.segment, { width: `${fatPct}%`, backgroundColor: colors.macro.fat }]}
+        />
       </View>
 
       <View style={styles.macroRow}>
@@ -50,9 +59,15 @@ export const NutritionBreakdown = ({
 
       {(fiber != null || sugar != null || sodium != null) && (
         <View style={styles.microRow}>
-          {fiber != null && <MicroItem label={t('nutrition_fiber')} value={`${Math.round(fiber)}g`} />}
-          {sugar != null && <MicroItem label={t('nutrition_sugar')} value={`${Math.round(sugar)}g`} />}
-          {sodium != null && <MicroItem label={t('nutrition_sodium')} value={`${Math.round(sodium)}mg`} />}
+          {fiber != null && (
+            <MicroItem label={t('nutrition_fiber')} value={`${Math.round(fiber)}g`} />
+          )}
+          {sugar != null && (
+            <MicroItem label={t('nutrition_sugar')} value={`${Math.round(sugar)}g`} />
+          )}
+          {sodium != null && (
+            <MicroItem label={t('nutrition_sodium')} value={`${Math.round(sodium)}mg`} />
+          )}
         </View>
       )}
     </View>

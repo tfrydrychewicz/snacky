@@ -33,7 +33,9 @@ export const MacroSummaryTile = ({
 
   return (
     <Animated.View
-      entering={FadeInDown.delay(index * 50).duration(350).springify()}
+      entering={FadeInDown.delay(index * 50)
+        .duration(350)
+        .springify()}
       style={{
         backgroundColor: colors.surfaceContainerLow,
         borderRadius: radii.DEFAULT,
@@ -92,18 +94,38 @@ const AnimatedMacroBar = ({ label, current, target, color, delay }: AnimatedMacr
 
   return (
     <View style={{ gap: 6 }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-        <Text style={{ ...typography.labelSm, color: colors.onSurfaceVariant, textTransform: 'uppercase', letterSpacing: 1.2 }}>
+      <View
+        style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}
+      >
+        <Text
+          style={{
+            ...typography.labelSm,
+            color: colors.onSurfaceVariant,
+            textTransform: 'uppercase',
+            letterSpacing: 1.2,
+          }}
+        >
           {label}
         </Text>
         <Text style={{ ...typography.labelMd, fontWeight: '700', color }}>
           {Math.round(current)}g / {target}g
         </Text>
       </View>
-      <View style={{ height: 6, backgroundColor: colors.surfaceContainerHigh, borderRadius: 3, overflow: 'hidden' }}>
-        <Animated.View style={[{ height: '100%', backgroundColor: color, borderRadius: 3 }, barStyle]} />
+      <View
+        style={{
+          height: 6,
+          backgroundColor: colors.surfaceContainerHigh,
+          borderRadius: 3,
+          overflow: 'hidden',
+        }}
+      >
+        <Animated.View
+          style={[{ height: '100%', backgroundColor: color, borderRadius: 3 }, barStyle]}
+        />
       </View>
-      <Text style={{ ...typography.labelSm, color: colors.onSurfaceVariant, alignSelf: 'flex-end' }}>
+      <Text
+        style={{ ...typography.labelSm, color: colors.onSurfaceVariant, alignSelf: 'flex-end' }}
+      >
         {Math.round(pct * 100)}%
       </Text>
     </View>

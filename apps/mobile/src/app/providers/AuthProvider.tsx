@@ -88,9 +88,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (session) {
         // Verify the user actually exists in auth (guards against stale
         // sessions after a local database reset)
-        const { error: userError } = await getSupabase().auth.getUser(
-          session.access_token,
-        );
+        const { error: userError } = await getSupabase().auth.getUser(session.access_token);
         if (userError) {
           console.warn('[Auth] Stale session detected, signing out:', userError.message);
           await getSupabase().auth.signOut();

@@ -27,8 +27,16 @@ export const DashboardScreen = () => {
   const navigation = useNavigation<Nav>();
   const { user } = useAuth();
 
-  const { data: summary, isRefetching: isSummaryRefetching, refetch: refetchSummary } = useDailySummary();
-  const { data: targets, isRefetching: isTargetsRefetching, refetch: refetchTargets } = useUserTargets();
+  const {
+    data: summary,
+    isRefetching: isSummaryRefetching,
+    refetch: refetchSummary,
+  } = useDailySummary();
+  const {
+    data: targets,
+    isRefetching: isTargetsRefetching,
+    refetch: refetchTargets,
+  } = useUserTargets();
 
   const fullName = String(user?.user_metadata?.full_name ?? '');
   const displayName = fullName.split(' ')[0] || 'User';
@@ -75,7 +83,14 @@ export const DashboardScreen = () => {
           <Text style={{ ...typography.displaySm, color: colors.onSurface }}>
             {t('greeting', { name: displayName })}
           </Text>
-          <Text style={{ ...typography.bodyLg, color: colors.onSurfaceVariant, marginTop: 4, fontWeight: '500' }}>
+          <Text
+            style={{
+              ...typography.bodyLg,
+              color: colors.onSurfaceVariant,
+              marginTop: 4,
+              fontWeight: '500',
+            }}
+          >
             {summary && summary.mealCount > 0
               ? t('subtitle_progress', { pct })
               : t('subtitle_no_meals')}
@@ -83,11 +98,7 @@ export const DashboardScreen = () => {
         </Animated.View>
 
         {/* Calorie Budget */}
-        <CalorieBudgetTile
-          consumed={Math.round(consumed)}
-          target={targetKcal}
-          index={0}
-        />
+        <CalorieBudgetTile consumed={Math.round(consumed)} target={targetKcal} index={0} />
 
         {/* Quick Actions */}
         <QuickActionsTile
@@ -120,9 +131,25 @@ export const DashboardScreen = () => {
 
         {/* Weight Trend (placeholder) */}
         <BentoTile index={5}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing.sm }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              marginBottom: spacing.sm,
+            }}
+          >
             <Text style={{ ...typography.titleLg, flex: 1 }}>{t('tiles.weightTrend')}</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: `${colors.primaryFixed}30`, paddingHorizontal: 8, paddingVertical: 3, borderRadius: radii.full }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: `${colors.primaryFixed}30`,
+                paddingHorizontal: 8,
+                paddingVertical: 3,
+                borderRadius: radii.full,
+              }}
+            >
               <TrendingDown size={12} color={colors.primary} strokeWidth={2.5} />
               <Text style={{ ...typography.labelSm, color: colors.primary, marginLeft: 2 }}>—</Text>
             </View>

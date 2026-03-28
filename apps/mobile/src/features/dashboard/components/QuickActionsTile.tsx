@@ -16,7 +16,9 @@ export const QuickActionsTile = ({ onScan, onManualEntry, index = 4 }: QuickActi
 
   return (
     <Animated.View
-      entering={FadeInDown.delay(index * 50).duration(350).springify()}
+      entering={FadeInDown.delay(index * 50)
+        .duration(350)
+        .springify()}
       style={{
         flexDirection: 'row',
         gap: spacing.sm,

@@ -14,47 +14,57 @@ export const AIChatPreviewTile = ({ index = 1 }: AIChatPreviewTileProps) => {
 
   return (
     <Animated.View
-      entering={FadeInDown.delay(index * 50).duration(350).springify()}
+      entering={FadeInDown.delay(index * 50)
+        .duration(350)
+        .springify()}
       style={{
         backgroundColor: colors.surfaceContainerLow,
         borderRadius: radii.DEFAULT,
         padding: spacing.lg,
       }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: spacing.md }}>
-        <View style={{
-          width: 36,
-          height: 36,
-          borderRadius: 18,
-          backgroundColor: `${colors.primary}15`,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
+      <View
+        style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: spacing.md }}
+      >
+        <View
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: 18,
+            backgroundColor: `${colors.primary}15`,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <Zap size={20} color={colors.primary} strokeWidth={2.5} />
         </View>
         <Text style={{ ...typography.titleLg }}>Snacky AI</Text>
       </View>
 
-      <View style={{
-        backgroundColor: colors.surfaceContainerLowest,
-        borderRadius: radii.DEFAULT,
-        padding: spacing.md,
-        marginBottom: spacing.md,
-      }}>
+      <View
+        style={{
+          backgroundColor: colors.surfaceContainerLowest,
+          borderRadius: radii.DEFAULT,
+          padding: spacing.md,
+          marginBottom: spacing.md,
+        }}
+      >
         <Text style={{ ...typography.bodySm, color: colors.onSurface, lineHeight: 20 }}>
           {t('ai_preview')}
         </Text>
       </View>
 
-      <Pressable style={({ pressed }) => ({
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: colors.surfaceContainerHighest,
-        borderRadius: radii.full,
-        paddingHorizontal: spacing.md,
-        paddingVertical: 10,
-        opacity: pressed ? 0.7 : 1,
-      })}>
+      <Pressable
+        style={({ pressed }) => ({
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: colors.surfaceContainerHighest,
+          borderRadius: radii.full,
+          paddingHorizontal: spacing.md,
+          paddingVertical: 10,
+          opacity: pressed ? 0.7 : 1,
+        })}
+      >
         <Text style={{ flex: 1, ...typography.bodySm, color: colors.onSurfaceVariant }}>
           {t('ai_ask')}
         </Text>

@@ -119,9 +119,7 @@ export const MealEditScreen = () => {
           text: t('edit_remove_ingredient'),
           style: 'destructive',
           onPress: () =>
-            setIngredients((prev) =>
-              (prev ?? editableIngredients).filter((_, i) => i !== index),
-            ),
+            setIngredients((prev) => (prev ?? editableIngredients).filter((_, i) => i !== index)),
         },
       ]);
     },
@@ -180,15 +178,31 @@ export const MealEditScreen = () => {
         {/* Total summary */}
         <View style={styles.totalBar}>
           <TotalChip label="kcal" value={Math.round(totals.calories)} />
-          <TotalChip label={t('nutrition_protein')} value={`${Math.round(totals.protein)}g`} color={colors.macro.protein} />
-          <TotalChip label={t('nutrition_carbs')} value={`${Math.round(totals.carbs)}g`} color={colors.macro.carbs} />
-          <TotalChip label={t('nutrition_fat')} value={`${Math.round(totals.fat)}g`} color={colors.macro.fat} />
+          <TotalChip
+            label={t('nutrition_protein')}
+            value={`${Math.round(totals.protein)}g`}
+            color={colors.macro.protein}
+          />
+          <TotalChip
+            label={t('nutrition_carbs')}
+            value={`${Math.round(totals.carbs)}g`}
+            color={colors.macro.carbs}
+          />
+          <TotalChip
+            label={t('nutrition_fat')}
+            value={`${Math.round(totals.fat)}g`}
+            color={colors.macro.fat}
+          />
         </View>
 
         {/* Ingredient editors */}
         <View style={styles.ingredientList}>
           {editableIngredients.map((ing, i) => (
-            <Animated.View key={ing.id ?? `new-${i}`} entering={FadeInDown.delay(i * 40).duration(300)} style={styles.ingredientCard}>
+            <Animated.View
+              key={ing.id ?? `new-${i}`}
+              entering={FadeInDown.delay(i * 40).duration(300)}
+              style={styles.ingredientCard}
+            >
               <View style={styles.ingredientHeader}>
                 <TextInput
                   style={styles.nameInput}
@@ -202,13 +216,37 @@ export const MealEditScreen = () => {
                 </Pressable>
               </View>
               <View style={styles.fieldRow}>
-                <NumberField label={t('edit_portion')} value={ing.portion_g} onChange={(v) => updateIngredient(i, 'portion_g', v)} suffix="g" />
-                <NumberField label="kcal" value={ing.calories} onChange={(v) => updateIngredient(i, 'calories', v)} />
+                <NumberField
+                  label={t('edit_portion')}
+                  value={ing.portion_g}
+                  onChange={(v) => updateIngredient(i, 'portion_g', v)}
+                  suffix="g"
+                />
+                <NumberField
+                  label="kcal"
+                  value={ing.calories}
+                  onChange={(v) => updateIngredient(i, 'calories', v)}
+                />
               </View>
               <View style={styles.fieldRow}>
-                <NumberField label={t('nutrition_protein')} value={ing.protein_g} onChange={(v) => updateIngredient(i, 'protein_g', v)} suffix="g" />
-                <NumberField label={t('nutrition_carbs')} value={ing.carbs_g} onChange={(v) => updateIngredient(i, 'carbs_g', v)} suffix="g" />
-                <NumberField label={t('nutrition_fat')} value={ing.fat_g} onChange={(v) => updateIngredient(i, 'fat_g', v)} suffix="g" />
+                <NumberField
+                  label={t('nutrition_protein')}
+                  value={ing.protein_g}
+                  onChange={(v) => updateIngredient(i, 'protein_g', v)}
+                  suffix="g"
+                />
+                <NumberField
+                  label={t('nutrition_carbs')}
+                  value={ing.carbs_g}
+                  onChange={(v) => updateIngredient(i, 'carbs_g', v)}
+                  suffix="g"
+                />
+                <NumberField
+                  label={t('nutrition_fat')}
+                  value={ing.fat_g}
+                  onChange={(v) => updateIngredient(i, 'fat_g', v)}
+                  suffix="g"
+                />
               </View>
             </Animated.View>
           ))}

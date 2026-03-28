@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, Image, Pressable, StyleSheet, ActivityIndicator, useWindowDimensions } from 'react-native';
+import {
+  View,
+  Image,
+  Pressable,
+  StyleSheet,
+  ActivityIndicator,
+  useWindowDimensions,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';

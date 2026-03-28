@@ -35,10 +35,7 @@ export const MealPhotoGalleryScreen = () => {
   const { data, isLoading, isRefetching, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } =
     useMealPhotos();
 
-  const photos = useMemo(
-    () => data?.pages.flatMap((p) => p.photos) ?? [],
-    [data],
-  );
+  const photos = useMemo(() => data?.pages.flatMap((p) => p.photos) ?? [], [data]);
 
   const cellSize = (width - GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS;
 
@@ -54,12 +51,7 @@ export const MealPhotoGalleryScreen = () => {
         <Header onBack={() => navigation.goBack()} title={t('gallery_title')} />
         <View style={styles.skeletonGrid}>
           {Array.from({ length: 12 }).map((_, i) => (
-            <SkeletonLoader
-              key={i}
-              width={cellSize}
-              height={cellSize}
-              borderRadius={0}
-            />
+            <SkeletonLoader key={i} width={cellSize} height={cellSize} borderRadius={0} />
           ))}
         </View>
       </View>

@@ -1,5 +1,14 @@
 import React, { useCallback } from 'react';
-import { View, Text, Image, ScrollView, Pressable, Alert, StyleSheet, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  Pressable,
+  Alert,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
@@ -70,7 +79,10 @@ export const MealDetailScreen = () => {
     );
   }
 
-  const MEAL_TYPE_I18N: Record<string, 'meal_type_breakfast' | 'meal_type_lunch' | 'meal_type_dinner' | 'meal_type_snack'> = {
+  const MEAL_TYPE_I18N: Record<
+    string,
+    'meal_type_breakfast' | 'meal_type_lunch' | 'meal_type_dinner' | 'meal_type_snack'
+  > = {
     breakfast: 'meal_type_breakfast',
     lunch: 'meal_type_lunch',
     dinner: 'meal_type_dinner',
@@ -112,7 +124,10 @@ export const MealDetailScreen = () => {
             </Pressable>
           </View>
           {overallConfidence != null && (
-            <Animated.View entering={FadeIn.delay(200).duration(400)} style={styles.confidenceBadge}>
+            <Animated.View
+              entering={FadeIn.delay(200).duration(400)}
+              style={styles.confidenceBadge}
+            >
               <ShieldCheck size={16} color={colors.primary} strokeWidth={2.5} />
               <Text style={styles.confidenceText}>{overallConfidence}%</Text>
             </Animated.View>
@@ -182,11 +197,7 @@ export const MealDetailScreen = () => {
             <View style={styles.ingredientList}>
               {meal.meal_ingredients.map((ing, i) => {
                 const confidenceLevel =
-                  ing.confidence >= 0.8
-                    ? 'high'
-                    : ing.confidence >= 0.5
-                      ? 'medium'
-                      : 'low';
+                  ing.confidence >= 0.8 ? 'high' : ing.confidence >= 0.5 ? 'medium' : 'low';
                 const confidenceColor =
                   confidenceLevel === 'high'
                     ? colors.primary
@@ -207,9 +218,7 @@ export const MealDetailScreen = () => {
                       </Text>
                     </View>
                     <View style={styles.ingredientMacros}>
-                      <Text style={styles.ingredientCal}>
-                        {Math.round(ing.calories)} kcal
-                      </Text>
+                      <Text style={styles.ingredientCal}>{Math.round(ing.calories)} kcal</Text>
                       <View style={[styles.confidenceDot, { backgroundColor: confidenceColor }]} />
                     </View>
                   </Animated.View>

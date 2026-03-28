@@ -23,7 +23,10 @@ const MEAL_TYPE_EMOJI: Record<string, string> = {
 export const MealCard = ({ meal, index, imageUrl, onPress }: MealCardProps) => {
   const { t } = useTranslation('meals');
 
-  const MEAL_TYPE_I18N: Record<string, 'meal_type_breakfast' | 'meal_type_lunch' | 'meal_type_dinner' | 'meal_type_snack'> = {
+  const MEAL_TYPE_I18N: Record<
+    string,
+    'meal_type_breakfast' | 'meal_type_lunch' | 'meal_type_dinner' | 'meal_type_snack'
+  > = {
     breakfast: 'meal_type_breakfast',
     lunch: 'meal_type_lunch',
     dinner: 'meal_type_dinner',
@@ -57,8 +60,7 @@ export const MealCard = ({ meal, index, imageUrl, onPress }: MealCardProps) => {
         <View style={styles.content}>
           <View style={styles.topRow}>
             <Text style={styles.mealType}>
-              {MEAL_TYPE_EMOJI[meal.meal_type] ?? '🍽️'}{' '}
-              {t(mealTypeKey)}
+              {MEAL_TYPE_EMOJI[meal.meal_type] ?? '🍽️'} {t(mealTypeKey)}
             </Text>
             <View style={styles.timeRow}>
               <Clock size={12} color={colors.onSurfaceVariant} strokeWidth={2} />
@@ -73,9 +75,21 @@ export const MealCard = ({ meal, index, imageUrl, onPress }: MealCardProps) => {
               <Text style={styles.calorieUnit}>kcal</Text>
             </View>
             <View style={styles.macroChips}>
-              <MacroChip label={t('nutrition_protein')} value={meal.total_protein_g} color={colors.macro.protein} />
-              <MacroChip label={t('nutrition_carbs')} value={meal.total_carbs_g} color={colors.macro.carbs} />
-              <MacroChip label={t('nutrition_fat')} value={meal.total_fat_g} color={colors.macro.fat} />
+              <MacroChip
+                label={t('nutrition_protein')}
+                value={meal.total_protein_g}
+                color={colors.macro.protein}
+              />
+              <MacroChip
+                label={t('nutrition_carbs')}
+                value={meal.total_carbs_g}
+                color={colors.macro.carbs}
+              />
+              <MacroChip
+                label={t('nutrition_fat')}
+                value={meal.total_fat_g}
+                color={colors.macro.fat}
+              />
             </View>
           </View>
         </View>

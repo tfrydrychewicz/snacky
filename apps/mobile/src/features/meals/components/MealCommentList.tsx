@@ -11,7 +11,13 @@ interface MealCommentListProps {
   mealId: string;
 }
 
-const formatRelativeTime = (dateStr: string): { key: 'comments_just_now' | 'comments_minutes_ago' | 'comments_hours_ago'; opts?: { count: number }; fallback?: string } => {
+const formatRelativeTime = (
+  dateStr: string,
+): {
+  key: 'comments_just_now' | 'comments_minutes_ago' | 'comments_hours_ago';
+  opts?: { count: number };
+  fallback?: string;
+} => {
   const now = Date.now();
   const then = new Date(dateStr).getTime();
   const diffMs = now - then;
@@ -71,7 +77,11 @@ export const MealCommentList = ({ mealId }: MealCommentListProps) => {
       ) : (
         <View style={styles.list}>
           {comments.map((comment, i) => (
-            <Animated.View key={comment.id} entering={FadeInDown.delay(i * 40).duration(300)} style={styles.comment}>
+            <Animated.View
+              key={comment.id}
+              entering={FadeInDown.delay(i * 40).duration(300)}
+              style={styles.comment}
+            >
               <View style={styles.commentContent}>
                 <Text style={styles.commentText}>{comment.content}</Text>
                 <Text style={styles.commentTime}>

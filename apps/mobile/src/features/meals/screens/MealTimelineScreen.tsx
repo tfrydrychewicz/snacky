@@ -84,7 +84,12 @@ export const MealTimelineScreen = () => {
         </View>
         <View style={styles.skeletonList}>
           {Array.from({ length: 5 }).map((_, i) => (
-            <SkeletonLoader key={i} height={80} borderRadius={radii.DEFAULT} style={{ marginBottom: spacing.sm, marginHorizontal: spacing.md }} />
+            <SkeletonLoader
+              key={i}
+              height={80}
+              borderRadius={radii.DEFAULT}
+              style={{ marginBottom: spacing.sm, marginHorizontal: spacing.md }}
+            />
           ))}
         </View>
       </View>
