@@ -16,14 +16,11 @@ const bgMap = {
   high: colors.surfaceContainerHigh,
 };
 
-export const BentoTile = ({
-  children,
-  style,
-  index = 0,
-  variant = 'low',
-}: BentoTileProps) => (
+export const BentoTile = ({ children, style, index = 0, variant = 'low' }: BentoTileProps) => (
   <Animated.View
-    entering={FadeInDown.delay(index * 50).duration(350).springify()}
+    entering={FadeInDown.delay(index * 50)
+      .duration(350)
+      .springify()}
     style={[
       {
         backgroundColor: bgMap[variant],

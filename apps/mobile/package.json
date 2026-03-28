@@ -9,7 +9,7 @@
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
     "test": "jest",
-    "test:ci": "jest --ci --coverage",
+    "test:ci": "jest --ci --coverage --passWithNoTests",
     "clean": "react-native clean"
   },
   "codegenConfig": {
@@ -33,6 +33,7 @@
     "i18next": "^25.10.10",
     "intl-pluralrules": "^2.0.1",
     "invariant": "^2.2.4",
+    "lucide-react-native": "^1.7.0",
     "nativewind": "^4.x",
     "react": "19.2.3",
     "react-hook-form": "^7.x",

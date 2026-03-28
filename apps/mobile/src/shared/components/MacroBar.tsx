@@ -10,18 +10,14 @@ interface MacroBarProps {
   unit?: string;
 }
 
-export const MacroBar = ({
-  label,
-  current,
-  target,
-  color,
-  unit = 'g',
-}: MacroBarProps) => {
+export const MacroBar = ({ label, current, target, color, unit = 'g' }: MacroBarProps) => {
   const pct = target > 0 ? Math.min((current / target) * 100, 100) : 0;
 
   return (
     <View style={{ gap: 6 }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+      <View
+        style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}
+      >
         <Text
           style={{
             ...typography.labelSm,
@@ -33,7 +29,9 @@ export const MacroBar = ({
           {label}
         </Text>
         <Text style={{ ...typography.labelMd, fontWeight: '700', color }}>
-          {current}{unit} / {target}{unit}
+          {current}
+          {unit} / {target}
+          {unit}
         </Text>
       </View>
       <View

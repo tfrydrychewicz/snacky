@@ -12,12 +12,12 @@ When a user reports "Unable to resolve module X from Y", follow this systematic 
 
 ## Step 1: Classify the Error
 
-| Pattern | Likely Cause |
-|---|---|
-| `Unable to resolve module X from .../node_modules/react-native/...` | Missing hoisted dependency |
-| `Unable to resolve module ~/...` or `@/...` | Path alias misconfiguration |
-| `Unable to resolve module @snacky/...` | Workspace package `main` field wrong |
-| `Unable to resolve module ...` after adding new package | Metro cache stale |
+| Pattern                                                             | Likely Cause                         |
+| ------------------------------------------------------------------- | ------------------------------------ |
+| `Unable to resolve module X from .../node_modules/react-native/...` | Missing hoisted dependency           |
+| `Unable to resolve module ~/...` or `@/...`                         | Path alias misconfiguration          |
+| `Unable to resolve module @snacky/...`                              | Workspace package `main` field wrong |
+| `Unable to resolve module ...` after adding new package             | Metro cache stale                    |
 
 ## Step 2: Check Root Causes
 
@@ -63,10 +63,10 @@ pnpm start --reset-cache
 
 ## Common Fixes Quick Reference
 
-| Error | Fix |
-|---|---|
-| `invariant could not be found` | Add `invariant` to `apps/mobile/package.json`, pnpm install |
-| `@/shared/...` not found | Change all `@/` imports to `~/` |
-| `@snacky/api-client ... dist/index.js` not found | Set `"main": "src/index.ts"` in package |
-| `Cannot assign to property 'protocol'` | Add `react-native-url-polyfill/auto` as first import in `index.js` |
-| Any module not found after install | Restart Metro with `--reset-cache` |
+| Error                                            | Fix                                                                |
+| ------------------------------------------------ | ------------------------------------------------------------------ |
+| `invariant could not be found`                   | Add `invariant` to `apps/mobile/package.json`, pnpm install        |
+| `@/shared/...` not found                         | Change all `@/` imports to `~/`                                    |
+| `@snacky/api-client ... dist/index.js` not found | Set `"main": "src/index.ts"` in package                            |
+| `Cannot assign to property 'protocol'`           | Add `react-native-url-polyfill/auto` as first import in `index.js` |
+| Any module not found after install               | Restart Metro with `--reset-cache`                                 |

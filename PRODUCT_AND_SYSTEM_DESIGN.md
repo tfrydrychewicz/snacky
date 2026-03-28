@@ -458,25 +458,25 @@ The application's nutritional logic is built on peer-reviewed, evidence-based fr
 
 ### 7.1 React Native Stack
 
-| Layer                | Technology                                                        | Version | Purpose                                              |
-| -------------------- | ----------------------------------------------------------------- | ------- | ---------------------------------------------------- |
-| Framework            | React Native (New Architecture)                                           | ≥ 0.84  | Cross-platform mobile framework                      |
-| Language             | TypeScript                                                                | ≥ 6.0   | Type-safe development                                |
-| Navigation           | React Navigation v7 (Native Stack)                                        | ≥ 7.x   | Screen navigation with native transitions            |
-| State Management     | Zustand                                                                   | ≥ 5.x   | Lightweight, scalable global state                   |
-| Server State         | TanStack Query (React Query) v5                                           | ≥ 5.x   | API caching, offline persistence, optimistic updates |
-| UI Components        | Gluestack-UI v3 (`@gluestack-ui/core` + `@gluestack-ui/utils`)            | ≥ 3.x   | Headless component creators with NativeWind styling  |
-| Styling              | NativeWind (Tailwind CSS for RN)                                          | ≥ 4.2   | Utility-first styling with design tokens             |
-| Animations           | React Native Reanimated 4                                                 | ≥ 4.x   | 60fps UI-thread animations                           |
-| Charts               | Victory Native + @shopify/react-native-skia                               | Latest  | Health data visualization                            |
-| Camera               | react-native-vision-camera v4                                             | ≥ 4.x   | High-perf camera with frame processor support        |
-| Image Processing     | @bam.tech/react-native-image-resizer                                      | ≥ 3.x   | On-device compression before upload                  |
-| Push Notifications   | @react-native-firebase/messaging                                          | Latest  | FCM (Android) + APNs (iOS)                           |
-| Secure Storage       | react-native-keychain                                                     | ≥ 10.x  | Biometric-protected token storage                    |
-| Health Integration   | @kingstinct/react-native-healthkit (iOS) / react-native-health-connect (Android) | Latest  | HealthKit and Health Connect bridges          |
-| Offline Storage      | @tanstack/query-persist-client + react-native-mmkv                        | Latest  | Persistent cache for offline-first                   |
-| Forms                | React Hook Form + Zod                                                     | Latest  | Validated form handling (onboarding, measurements)   |
-| Internationalization | i18next + react-i18next                                                   | Latest  | Multi-language support                               |
+| Layer                | Technology                                                                       | Version | Purpose                                              |
+| -------------------- | -------------------------------------------------------------------------------- | ------- | ---------------------------------------------------- |
+| Framework            | React Native (New Architecture)                                                  | ≥ 0.84  | Cross-platform mobile framework                      |
+| Language             | TypeScript                                                                       | ≥ 6.0   | Type-safe development                                |
+| Navigation           | React Navigation v7 (Native Stack)                                               | ≥ 7.x   | Screen navigation with native transitions            |
+| State Management     | Zustand                                                                          | ≥ 5.x   | Lightweight, scalable global state                   |
+| Server State         | TanStack Query (React Query) v5                                                  | ≥ 5.x   | API caching, offline persistence, optimistic updates |
+| UI Components        | Gluestack-UI v3 (`@gluestack-ui/core` + `@gluestack-ui/utils`)                   | ≥ 3.x   | Headless component creators with NativeWind styling  |
+| Styling              | NativeWind (Tailwind CSS for RN)                                                 | ≥ 4.2   | Utility-first styling with design tokens             |
+| Animations           | React Native Reanimated 4                                                        | ≥ 4.x   | 60fps UI-thread animations                           |
+| Charts               | Victory Native + @shopify/react-native-skia                                      | Latest  | Health data visualization                            |
+| Camera               | react-native-vision-camera v4                                                    | ≥ 4.x   | High-perf camera with frame processor support        |
+| Image Processing     | @bam.tech/react-native-image-resizer                                             | ≥ 3.x   | On-device compression before upload                  |
+| Push Notifications   | @react-native-firebase/messaging                                                 | Latest  | FCM (Android) + APNs (iOS)                           |
+| Secure Storage       | react-native-keychain                                                            | ≥ 10.x  | Biometric-protected token storage                    |
+| Health Integration   | @kingstinct/react-native-healthkit (iOS) / react-native-health-connect (Android) | Latest  | HealthKit and Health Connect bridges                 |
+| Offline Storage      | @tanstack/query-persist-client + react-native-mmkv                               | Latest  | Persistent cache for offline-first                   |
+| Forms                | React Hook Form + Zod                                                            | Latest  | Validated form handling (onboarding, measurements)   |
+| Internationalization | i18next + react-i18next                                                          | Latest  | Multi-language support                               |
 
 ### 7.2 New Architecture Enforcement
 
@@ -1013,15 +1013,15 @@ Subject to:
 
 ### 8.2 Communication Patterns
 
-| Communication                     | Protocol                       | Use Case                               |
-| --------------------------------- | ------------------------------ | -------------------------------------- |
-| Client → PostgREST                | REST (HTTPS)                   | All CRUD operations (auto-generated)   |
-| Client → Supabase Auth            | REST (HTTPS)                   | Authentication, token refresh          |
-| Client → Edge Functions           | REST + SSE (HTTPS)             | Meal scan, chat streaming, plan gen    |
-| Client → Supabase Storage         | REST (HTTPS)                   | Meal photo upload/download             |
-| DB Trigger → Edge Function (embed)| pg_net HTTP POST               | Async embedding generation on insert   |
-| pg_cron → Edge Function (notif)   | pg_net HTTP POST               | Scheduled notification dispatch        |
-| Edge Functions → External APIs    | REST (HTTPS)                   | OpenAI, Google AI, Voyage AI, FCM      |
+| Communication                      | Protocol           | Use Case                             |
+| ---------------------------------- | ------------------ | ------------------------------------ |
+| Client → PostgREST                 | REST (HTTPS)       | All CRUD operations (auto-generated) |
+| Client → Supabase Auth             | REST (HTTPS)       | Authentication, token refresh        |
+| Client → Edge Functions            | REST + SSE (HTTPS) | Meal scan, chat streaming, plan gen  |
+| Client → Supabase Storage          | REST (HTTPS)       | Meal photo upload/download           |
+| DB Trigger → Edge Function (embed) | pg_net HTTP POST   | Async embedding generation on insert |
+| pg_cron → Edge Function (notif)    | pg_net HTTP POST   | Scheduled notification dispatch      |
+| Edge Functions → External APIs     | REST (HTTPS)       | OpenAI, Google AI, Voyage AI, FCM    |
 
 ---
 
@@ -1271,28 +1271,28 @@ All vector embeddings are stored in a single `embeddings` table within the same 
 
 **Table: `public.embeddings`**
 
-| Column       | Type             | Description                                           |
-| ------------ | ---------------- | ----------------------------------------------------- |
-| id           | UUID (PK)        | Auto-generated                                        |
-| user_id      | UUID (FK → auth) | Owner (NULL for knowledge-base entries)               |
-| namespace    | VARCHAR(50)      | Logical grouping (see below)                          |
-| source_type  | VARCHAR(30)      | 'meal', 'comment', 'measurement', 'usda_food', etc.  |
-| source_id    | UUID             | ID of the source record                               |
-| content_text | TEXT             | Serialized text representation of the source          |
-| embedding    | VECTOR(2048)     | voyage-4-large embedding vector                       |
-| metadata     | JSONB            | Additional filterable metadata                        |
-| created_at   | TIMESTAMPTZ      | Insertion timestamp                                   |
+| Column       | Type             | Description                                         |
+| ------------ | ---------------- | --------------------------------------------------- |
+| id           | UUID (PK)        | Auto-generated                                      |
+| user_id      | UUID (FK → auth) | Owner (NULL for knowledge-base entries)             |
+| namespace    | VARCHAR(50)      | Logical grouping (see below)                        |
+| source_type  | VARCHAR(30)      | 'meal', 'comment', 'measurement', 'usda_food', etc. |
+| source_id    | UUID             | ID of the source record                             |
+| content_text | TEXT             | Serialized text representation of the source        |
+| embedding    | VECTOR(2048)     | voyage-4-large embedding vector                     |
+| metadata     | JSONB            | Additional filterable metadata                      |
+| created_at   | TIMESTAMPTZ      | Insertion timestamp                                 |
 
 **Namespaces:**
 
-| Namespace              | Scope    | Populated by                                      |
-| ---------------------- | -------- | ------------------------------------------------- |
-| `user_meals`           | Per-user | DB trigger on `meals` INSERT → `embed` Edge Fn    |
-| `user_comments`        | Per-user | DB trigger on `meal_comments` INSERT → `embed`    |
-| `user_measurements`    | Per-user | DB trigger on `measurements` INSERT → `embed`     |
-| `usda_foods`           | Global   | Batch seed script                                 |
-| `nutrition_guidelines` | Global   | Batch seed script                                 |
-| `recipes`              | Global   | Batch seed script                                 |
+| Namespace              | Scope    | Populated by                                   |
+| ---------------------- | -------- | ---------------------------------------------- |
+| `user_meals`           | Per-user | DB trigger on `meals` INSERT → `embed` Edge Fn |
+| `user_comments`        | Per-user | DB trigger on `meal_comments` INSERT → `embed` |
+| `user_measurements`    | Per-user | DB trigger on `measurements` INSERT → `embed`  |
+| `usda_foods`           | Global   | Batch seed script                              |
+| `nutrition_guidelines` | Global   | Batch seed script                              |
+| `recipes`              | Global   | Batch seed script                              |
 
 **Similarity search** is performed via the `match_embeddings` Postgres function, which filters by user_id and namespace, then orders by cosine distance using the HNSW index.
 
@@ -1300,14 +1300,14 @@ All vector embeddings are stored in a single `embeddings` table within the same 
 
 Redis has been eliminated. The previous Redis responsibilities are handled as follows:
 
-| Previous Redis Use               | Replacement                                              |
-| -------------------------------- | -------------------------------------------------------- |
-| Session tokens                   | Supabase Auth (manages JWT + refresh tokens internally)  |
-| Rate limiting                    | Supabase platform rate limits + Edge Function logic      |
-| Dashboard cache                  | TanStack Query `staleTime` (5min) on client              |
-| Pre-signed image URLs            | Supabase Storage signed URLs (generated on demand)       |
-| Async job queue (BullMQ)         | DB triggers → Edge Functions (pg_net HTTP POST)          |
-| Streak count                     | Computed from `meals` table query (no materialized cache)|
+| Previous Redis Use       | Replacement                                               |
+| ------------------------ | --------------------------------------------------------- |
+| Session tokens           | Supabase Auth (manages JWT + refresh tokens internally)   |
+| Rate limiting            | Supabase platform rate limits + Edge Function logic       |
+| Dashboard cache          | TanStack Query `staleTime` (5min) on client               |
+| Pre-signed image URLs    | Supabase Storage signed URLs (generated on demand)        |
+| Async job queue (BullMQ) | DB triggers → Edge Functions (pg_net HTTP POST)           |
+| Streak count             | Computed from `meals` table query (no materialized cache) |
 
 ---
 
@@ -1559,22 +1559,22 @@ Supabase Auth handles all token management internally: JWT issuance, refresh tok
 
 ### 11.2 Token Strategy
 
-| Token         | Type          | Expiry     | Storage                                           | Refresh                            |
-| ------------- | ------------- | ---------- | ------------------------------------------------- | ---------------------------------- |
-| Access Token  | JWT (HS256)   | 1 hour     | @supabase/supabase-js (AsyncStorage, auto-managed) | Auto-refresh by Supabase client    |
-| Refresh Token | Opaque        | 30 days    | @supabase/supabase-js (AsyncStorage, auto-managed) | Rotation on use; managed by Supabase|
+| Token         | Type        | Expiry  | Storage                                            | Refresh                              |
+| ------------- | ----------- | ------- | -------------------------------------------------- | ------------------------------------ |
+| Access Token  | JWT (HS256) | 1 hour  | @supabase/supabase-js (AsyncStorage, auto-managed) | Auto-refresh by Supabase client      |
+| Refresh Token | Opaque      | 30 days | @supabase/supabase-js (AsyncStorage, auto-managed) | Rotation on use; managed by Supabase |
 
 ### 11.3 Authorization Model (Row Level Security)
 
-| Resource      | Owner Access    | Other Users | Enforcement                              |
-| ------------- | --------------- | ----------- | ---------------------------------------- |
-| User profile  | Full CRUD       | None        | RLS: `auth.uid() = user_id`              |
-| Meals         | Full CRUD       | None        | RLS: `auth.uid() = user_id`              |
-| Diet plans    | Full CRUD       | None        | RLS: `auth.uid() = user_id`              |
-| Measurements  | Full CRUD       | None        | RLS: `auth.uid() = user_id`              |
-| Chat history  | Read + Create   | None        | RLS: session owner via join              |
-| Meal comments | Full CRUD (own) | None        | RLS: `auth.uid() = user_id`              |
-| Meal photos   | Upload + View   | None        | Storage RLS: folder = `auth.uid()`       |
+| Resource      | Owner Access    | Other Users | Enforcement                                 |
+| ------------- | --------------- | ----------- | ------------------------------------------- |
+| User profile  | Full CRUD       | None        | RLS: `auth.uid() = user_id`                 |
+| Meals         | Full CRUD       | None        | RLS: `auth.uid() = user_id`                 |
+| Diet plans    | Full CRUD       | None        | RLS: `auth.uid() = user_id`                 |
+| Measurements  | Full CRUD       | None        | RLS: `auth.uid() = user_id`                 |
+| Chat history  | Read + Create   | None        | RLS: session owner via join                 |
+| Meal comments | Full CRUD (own) | None        | RLS: `auth.uid() = user_id`                 |
+| Meal photos   | Upload + View   | None        | Storage RLS: folder = `auth.uid()`          |
 | Embeddings    | Read (own)      | None        | RLS: `auth.uid() = user_id`; service writes |
 
 All authorization enforced at the PostgreSQL level via RLS policies. No application-level middleware required. Edge Functions use the service role key for operations that bypass RLS (embedding insertion, notification dispatch).
@@ -1865,7 +1865,10 @@ const tokens = {
 **Implementation via `@kingstinct/react-native-healthkit`:**
 
 ```typescript
-import { HKQuantityTypeIdentifier, HKCategoryTypeIdentifier } from '@kingstinct/react-native-healthkit';
+import {
+  HKQuantityTypeIdentifier,
+  HKCategoryTypeIdentifier,
+} from '@kingstinct/react-native-healthkit';
 
 const permissions = {
   read: [
@@ -1943,16 +1946,16 @@ const permissions = {
 
 ### 15.2 Scalability Strategy
 
-| Component             | Scaling Strategy               | Trigger                                       |
-| --------------------- | ------------------------------ | --------------------------------------------- |
-| Edge Functions        | Auto-scaling (Supabase managed) | Request queue depth > 100                      |
-| AI Service (FastAPI)  | Horizontal + GPU scaling        | Queue depth > 50 or response latency P95 > 4s |
-| Meal Planning Service | Horizontal                      | Queue depth > 10 (MILP is CPU-intensive)       |
-| PostgreSQL            | Supabase managed + Read replicas| Read latency P95 > 100ms                       |
-| Redis (Upstash)       | Serverless auto-scaling         | Memory > 75% or connections > 80% max          |
-| pgvector              | Scales with Postgres instance   | Query latency P95 > 200ms                      |
-| Supabase Storage      | Infinite (managed)              | N/A                                            |
-| Supabase CDN          | Auto (managed)                  | N/A                                            |
+| Component             | Scaling Strategy                 | Trigger                                       |
+| --------------------- | -------------------------------- | --------------------------------------------- |
+| Edge Functions        | Auto-scaling (Supabase managed)  | Request queue depth > 100                     |
+| AI Service (FastAPI)  | Horizontal + GPU scaling         | Queue depth > 50 or response latency P95 > 4s |
+| Meal Planning Service | Horizontal                       | Queue depth > 10 (MILP is CPU-intensive)      |
+| PostgreSQL            | Supabase managed + Read replicas | Read latency P95 > 100ms                      |
+| Redis (Upstash)       | Serverless auto-scaling          | Memory > 75% or connections > 80% max         |
+| pgvector              | Scales with Postgres instance    | Query latency P95 > 200ms                     |
+| Supabase Storage      | Infinite (managed)               | N/A                                           |
+| Supabase CDN          | Auto (managed)                   | N/A                                           |
 
 ### 15.3 Caching Strategy
 
@@ -1983,23 +1986,23 @@ const permissions = {
 
 ### 16.2 Security Controls
 
-| Control               | Implementation                                                               |
-| --------------------- | ---------------------------------------------------------------------------- |
-| Authentication        | Google OAuth 2.0 (PKCE) + JWT (RS256, 15min expiry)                          |
-| Token storage         | react-native-keychain with biometric protection                              |
-| API security          | HTTPS-only, HSTS, certificate pinning on mobile                              |
-| Input validation      | Zod schemas on client + Pydantic/Zod on server (double validation)           |
-| SQL injection         | Parameterized queries via Drizzle ORM (no raw SQL)                           |
-| XSS                   | React Native (no DOM); API returns JSON only                                 |
-| Rate limiting         | Redis sliding window per user per endpoint                                   |
-| DDoS protection       | CloudFlare WAF                                                               |
+| Control               | Implementation                                                                  |
+| --------------------- | ------------------------------------------------------------------------------- |
+| Authentication        | Google OAuth 2.0 (PKCE) + JWT (RS256, 15min expiry)                             |
+| Token storage         | react-native-keychain with biometric protection                                 |
+| API security          | HTTPS-only, HSTS, certificate pinning on mobile                                 |
+| Input validation      | Zod schemas on client + Pydantic/Zod on server (double validation)              |
+| SQL injection         | Parameterized queries via Drizzle ORM (no raw SQL)                              |
+| XSS                   | React Native (no DOM); API returns JSON only                                    |
+| Rate limiting         | Redis sliding window per user per endpoint                                      |
+| DDoS protection       | CloudFlare WAF                                                                  |
 | Secrets management    | Supabase Vault + Edge Function secrets; no secrets in code or env vars at build |
-| Dependency scanning   | Snyk / Dependabot automated PR reviews                                       |
-| SAST                  | SonarQube in CI pipeline                                                     |
-| Image upload security | File type validation (magic bytes), size limits, virus scan (ClamAV)         |
-| Data export           | GDPR Article 20: `GET /api/v1/users/me/export` returns all user data as JSON |
+| Dependency scanning   | Snyk / Dependabot automated PR reviews                                          |
+| SAST                  | SonarQube in CI pipeline                                                        |
+| Image upload security | File type validation (magic bytes), size limits, virus scan (ClamAV)            |
+| Data export           | GDPR Article 20: `GET /api/v1/users/me/export` returns all user data as JSON    |
 | Data deletion         | GDPR Article 17: `DELETE /api/v1/users/me` cascading deletion + Storage cleanup |
-| Audit logging         | All data mutations logged with actor, timestamp, IP, action                  |
+| Audit logging         | All data mutations logged with actor, timestamp, IP, action                     |
 
 ### 16.3 Compliance
 

@@ -3,6 +3,7 @@ import { View, Text, Pressable, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Leaf } from 'lucide-react-native';
 import { useAuth } from '~/app/providers/AuthProvider';
 import { colors, spacing, typography, radii, elevation } from '~/shared/theme/tokens';
 
@@ -19,8 +20,7 @@ export const LoginScreen = () => {
     try {
       await signInWithGoogle();
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : t('auth.login.error.generic');
+      const message = err instanceof Error ? err.message : t('auth.login.error.generic');
       setError(message);
     } finally {
       setIsSigningIn(false);
@@ -53,7 +53,7 @@ export const LoginScreen = () => {
               ...elevation.ambient,
             }}
           >
-            <Text style={{ fontSize: 44 }}>🥗</Text>
+            <Leaf size={44} color={colors.onPrimary} strokeWidth={1.8} />
           </View>
           <Text
             style={{
@@ -80,10 +80,7 @@ export const LoginScreen = () => {
           </Text>
         </Animated.View>
 
-        <Animated.View
-          entering={FadeInDown.delay(300).duration(600)}
-          style={{ width: '100%' }}
-        >
+        <Animated.View entering={FadeInDown.delay(300).duration(600)} style={{ width: '100%' }}>
           <Pressable
             onPress={handleGoogleSignIn}
             disabled={isSigningIn}

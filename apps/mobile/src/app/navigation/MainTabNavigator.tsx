@@ -3,6 +3,7 @@ import { View, Text, Pressable, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { LayoutGrid, Camera, MessageCircle, TrendingUp } from 'lucide-react-native';
 import { DashboardScreen } from '~/features/dashboard/screens/DashboardScreen';
 import { ScanResultsScreen } from '~/features/scanner/screens/ScanResultsScreen';
 import { ChatScreen } from '~/features/chat/screens/ChatScreen';
@@ -12,10 +13,10 @@ import { colors, typography, radii, spacing } from '~/shared/theme/tokens';
 const Tab = createBottomTabNavigator();
 
 const TABS = [
-  { name: 'Dashboard', icon: '▦', iconActive: '▦', labelKey: 'tabs.dashboard' },
-  { name: 'Scanner', icon: '📷', iconActive: '📷', labelKey: 'tabs.scanner' },
-  { name: 'Chat', icon: '💬', iconActive: '💬', labelKey: 'tabs.assistant' },
-  { name: 'Trends', icon: '📈', iconActive: '📈', labelKey: 'tabs.trends' },
+  { name: 'Dashboard', Icon: LayoutGrid, labelKey: 'tabs.dashboard' },
+  { name: 'Scanner', Icon: Camera, labelKey: 'tabs.scanner' },
+  { name: 'Chat', Icon: MessageCircle, labelKey: 'tabs.assistant' },
+  { name: 'Trends', Icon: TrendingUp, labelKey: 'tabs.trends' },
 ] as const;
 
 const SCREEN_MAP: Record<string, React.ComponentType> = {
@@ -47,7 +48,8 @@ const GlassTabBar = ({ state, descriptors, navigation }: any) => {
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-around',
-          backgroundColor: Platform.OS === 'ios' ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.95)',
+          backgroundColor:
+            Platform.OS === 'ios' ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.95)',
           borderRadius: radii.lg,
           borderWidth: 1,
           borderColor: `${colors.outlineVariant}25`,
@@ -61,10 +63,16 @@ const GlassTabBar = ({ state, descriptors, navigation }: any) => {
       >
         {state.routes.map((route: any, index: number) => {
           const tab = TABS[index];
+          if (!tab) return null;
           const isFocused = state.index === index;
+          const IconComponent = tab.Icon;
 
           const onPress = () => {
-            const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+            const event = navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+              canPreventDefault: true,
+            });
             if (!isFocused && !event.defaultPrevented) {
               navigation.navigate(route.name);
             }
@@ -90,7 +98,7 @@ const GlassTabBar = ({ state, descriptors, navigation }: any) => {
                   elevation: 4,
                 })}
               >
-                <Text style={{ fontSize: 18, color: colors.onPrimary }}>{tab.iconActive}</Text>
+                <IconComponent size={20} color={colors.onPrimary} strokeWidth={2.5} />
               </Pressable>
             );
           }
@@ -106,7 +114,7 @@ const GlassTabBar = ({ state, descriptors, navigation }: any) => {
                 opacity: pressed ? 0.6 : 1,
               })}
             >
-              <Text style={{ fontSize: 18, color: colors.outline, marginBottom: 2 }}>{tab.icon}</Text>
+              <IconComponent size={20} color={colors.outline} strokeWidth={1.8} />
               <Text
                 style={{
                   ...typography.labelSm,
@@ -114,6 +122,7 @@ const GlassTabBar = ({ state, descriptors, navigation }: any) => {
                   textTransform: 'uppercase',
                   letterSpacing: 0.5,
                   fontSize: 9,
+                  marginTop: 2,
                 }}
               >
                 {t(tab.labelKey)}
@@ -131,8 +140,10 @@ export const MainTabNavigator = () => (
     tabBar={(props) => <GlassTabBar {...props} />}
     screenOptions={{ headerShown: false }}
   >
-    {TABS.map((tab) => (
-      <Tab.Screen key={tab.name} name={tab.name} component={SCREEN_MAP[tab.name]} />
-    ))}
+    {TABS.map((tab) => {
+      const component = SCREEN_MAP[tab.name];
+      if (!component) return null;
+      return <Tab.Screen key={tab.name} name={tab.name} component={component} />;
+    })}
   </Tab.Navigator>
 );

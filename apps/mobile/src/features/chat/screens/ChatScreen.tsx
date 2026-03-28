@@ -1,8 +1,25 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
+import {
+  Bot,
+  AlertTriangle,
+  UtensilsCrossed,
+  Dumbbell,
+  Clock,
+  PlusCircle,
+  ArrowUp,
+} from 'lucide-react-native';
 import { AppHeader } from '~/shared/components/AppHeader';
 import { colors, spacing, typography, radii, elevation } from '~/shared/theme/tokens';
 
@@ -62,9 +79,16 @@ const AssistantBubble = ({ msg }: { msg: ChatMessage }) => (
           justifyContent: 'center',
         }}
       >
-        <Text style={{ fontSize: 12 }}>🤖</Text>
+        <Bot size={14} color={colors.onPrimaryContainer} strokeWidth={2.5} />
       </View>
-      <Text style={{ ...typography.labelSm, color: colors.outline, textTransform: 'uppercase', letterSpacing: 1.5 }}>
+      <Text
+        style={{
+          ...typography.labelSm,
+          color: colors.outline,
+          textTransform: 'uppercase',
+          letterSpacing: 1.5,
+        }}
+      >
         AI Assistant
       </Text>
     </View>
@@ -82,11 +106,25 @@ const AssistantBubble = ({ msg }: { msg: ChatMessage }) => (
         gap: spacing.md,
       }}
     >
-      <Text style={{ ...typography.bodyLg, color: colors.onSurfaceVariant, fontWeight: '500', lineHeight: 24 }}>
-        {msg.text.split('68g').length > 1
-          ? <>{msg.text.split('68g')[0]}<Text style={{ color: colors.secondary, fontWeight: '700' }}>68g</Text>{msg.text.split('68g')[1].split('72%')[0]}<Text style={{ color: colors.secondary, fontWeight: '700' }}>72%</Text>{msg.text.split('72%')[1]}</>
-          : msg.text
-        }
+      <Text
+        style={{
+          ...typography.bodyLg,
+          color: colors.onSurfaceVariant,
+          fontWeight: '500',
+          lineHeight: 24,
+        }}
+      >
+        {msg.text.split('68g').length > 1 ? (
+          <>
+            {msg.text.split('68g')[0]}
+            <Text style={{ color: colors.secondary, fontWeight: '700' }}>68g</Text>
+            {(msg.text.split('68g')[1] ?? '').split('72%')[0]}
+            <Text style={{ color: colors.secondary, fontWeight: '700' }}>72%</Text>
+            {msg.text.split('72%')[1] ?? ''}
+          </>
+        ) : (
+          msg.text
+        )}
       </Text>
 
       {msg.badge && (
@@ -110,19 +148,54 @@ const AssistantBubble = ({ msg }: { msg: ChatMessage }) => (
               justifyContent: 'center',
             }}
           >
-            <Text style={{ fontSize: 18 }}>⚠️</Text>
+            <AlertTriangle size={20} color={colors.secondary} strokeWidth={2} />
           </View>
           <View style={{ flex: 1 }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <Text style={{ ...typography.labelSm, color: colors.secondary, textTransform: 'uppercase', letterSpacing: 1 }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: 6,
+              }}
+            >
+              <Text
+                style={{
+                  ...typography.labelSm,
+                  color: colors.secondary,
+                  textTransform: 'uppercase',
+                  letterSpacing: 1,
+                }}
+              >
                 {msg.badge.label}
               </Text>
-              <View style={{ backgroundColor: colors.secondary, paddingHorizontal: 8, paddingVertical: 2, borderRadius: radii.full }}>
+              <View
+                style={{
+                  backgroundColor: colors.secondary,
+                  paddingHorizontal: 8,
+                  paddingVertical: 2,
+                  borderRadius: radii.full,
+                }}
+              >
                 <Text style={{ ...typography.labelSm, color: '#FFF' }}>{msg.badge.value}</Text>
               </View>
             </View>
-            <View style={{ height: 5, backgroundColor: `${colors.secondary}15`, borderRadius: 3, overflow: 'hidden' }}>
-              <View style={{ height: '100%', backgroundColor: colors.secondary, borderRadius: 3, width: `${msg.badge.pct}%` }} />
+            <View
+              style={{
+                height: 5,
+                backgroundColor: `${colors.secondary}15`,
+                borderRadius: 3,
+                overflow: 'hidden',
+              }}
+            >
+              <View
+                style={{
+                  height: '100%',
+                  backgroundColor: colors.secondary,
+                  borderRadius: 3,
+                  width: `${msg.badge.pct}%`,
+                }}
+              />
             </View>
           </View>
         </View>
@@ -144,22 +217,53 @@ const AssistantBubble = ({ msg }: { msg: ChatMessage }) => (
             transform: [{ scale: pressed ? 0.98 : 1 }],
           })}
         >
-          <View style={{ width: 80, backgroundColor: colors.surfaceContainerHigh, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontSize: 36 }}>🥑</Text>
+          <View
+            style={{
+              width: 80,
+              backgroundColor: colors.surfaceContainerHigh,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <UtensilsCrossed size={28} color={colors.primary} strokeWidth={1.5} />
           </View>
           <View style={{ flex: 1, padding: spacing.md, justifyContent: 'center' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-              <Text style={{ fontSize: 12 }}>🍽️</Text>
-              <Text style={{ ...typography.labelSm, color: colors.primary, textTransform: 'uppercase', letterSpacing: 1 }}>
+              <UtensilsCrossed size={12} color={colors.primary} strokeWidth={2} />
+              <Text
+                style={{
+                  ...typography.labelSm,
+                  color: colors.primary,
+                  textTransform: 'uppercase',
+                  letterSpacing: 1,
+                }}
+              >
                 Breakfast Suggestion
               </Text>
             </View>
-            <Text style={{ ...typography.titleMd, fontWeight: '700', color: colors.onSurface, marginBottom: 4 }}>
+            <Text
+              style={{
+                ...typography.titleMd,
+                fontWeight: '700',
+                color: colors.onSurface,
+                marginBottom: 4,
+              }}
+            >
               {msg.suggestion.title}
             </Text>
             <View style={{ flexDirection: 'row', gap: spacing.md }}>
-              <Text style={{ ...typography.bodySm, color: colors.secondary }}>💪 {msg.suggestion.protein}</Text>
-              <Text style={{ ...typography.bodySm, color: colors.outline }}>⏱ {msg.suggestion.time}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <Dumbbell size={13} color={colors.secondary} strokeWidth={2} />
+                <Text style={{ ...typography.bodySm, color: colors.secondary }}>
+                  {msg.suggestion.protein}
+                </Text>
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <Clock size={13} color={colors.outline} strokeWidth={2} />
+                <Text style={{ ...typography.bodySm, color: colors.outline }}>
+                  {msg.suggestion.time}
+                </Text>
+              </View>
             </View>
           </View>
         </Pressable>
@@ -215,8 +319,10 @@ export const ChatScreen = () => {
               gap: spacing.xs,
             }}
           >
-            <Pressable style={{ width: 36, height: 36, alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={{ fontSize: 20, color: colors.outline }}>＋</Text>
+            <Pressable
+              style={{ width: 36, height: 36, alignItems: 'center', justifyContent: 'center' }}
+            >
+              <PlusCircle size={22} color={colors.outline} strokeWidth={1.5} />
             </Pressable>
             <TextInput
               value={input}
@@ -241,7 +347,7 @@ export const ChatScreen = () => {
                 opacity: pressed ? 0.8 : 1,
               })}
             >
-              <Text style={{ color: colors.onPrimary, fontWeight: '700', fontSize: 16 }}>↑</Text>
+              <ArrowUp size={18} color={colors.onPrimary} strokeWidth={2.5} />
             </Pressable>
           </View>
         </View>

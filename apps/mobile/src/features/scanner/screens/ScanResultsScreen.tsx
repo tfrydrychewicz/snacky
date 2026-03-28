@@ -3,13 +3,43 @@ import { ScrollView, View, Text, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
+import {
+  ShieldCheck,
+  Drumstick,
+  Wheat,
+  Leaf,
+  Check,
+  PencilLine,
+  ImageIcon,
+} from 'lucide-react-native';
 import { AppHeader } from '~/shared/components/AppHeader';
 import { colors, spacing, typography, radii, elevation } from '~/shared/theme/tokens';
 
 const INGREDIENTS = [
-  { icon: '🍗', name: 'Grilled Chicken Breast', weight: '180g', tag: 'Lean Protein', tagColor: colors.macro.protein, cal: 297 },
-  { icon: '🍚', name: 'Brown Rice', weight: '150g', tag: 'Complex Carb', tagColor: colors.macro.carbs, cal: 166.5 },
-  { icon: '🥦', name: 'Steamed Broccoli', weight: '100g', tag: 'Micros', tagColor: colors.primary, cal: 35 },
+  {
+    Icon: Drumstick,
+    name: 'Grilled Chicken Breast',
+    weight: '180g',
+    tag: 'Lean Protein',
+    tagColor: colors.macro.protein,
+    cal: 297,
+  },
+  {
+    Icon: Wheat,
+    name: 'Brown Rice',
+    weight: '150g',
+    tag: 'Complex Carb',
+    tagColor: colors.macro.carbs,
+    cal: 166.5,
+  },
+  {
+    Icon: Leaf,
+    name: 'Steamed Broccoli',
+    weight: '100g',
+    tag: 'Micros',
+    tagColor: colors.primary,
+    cal: 35,
+  },
 ];
 
 const MACRO_SPLIT = { protein: 52, carbs: 42, fat: 8.5 };
@@ -27,8 +57,15 @@ export const ScanResultsScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         {/* Meal Photo Banner */}
-        <View style={{ height: 280, backgroundColor: colors.surfaceContainerHigh, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ fontSize: 80 }}>🥘</Text>
+        <View
+          style={{
+            height: 280,
+            backgroundColor: colors.surfaceContainerHigh,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <ImageIcon size={64} color={colors.outline} strokeWidth={1.2} />
           {/* Confidence badge */}
           <Animated.View
             entering={FadeIn.delay(200).duration(400)}
@@ -46,7 +83,7 @@ export const ScanResultsScreen = () => {
               ...elevation.ambient,
             }}
           >
-            <Text style={{ fontSize: 14 }}>✅</Text>
+            <ShieldCheck size={16} color={colors.primary} strokeWidth={2.5} />
             <Text style={{ ...typography.labelMd, color: colors.onSurface }}>
               {t('confidence', { pct: 91 })}
             </Text>
@@ -66,7 +103,14 @@ export const ScanResultsScreen = () => {
           }}
         >
           {/* Title + Total */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing.xl }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              marginBottom: spacing.xl,
+            }}
+          >
             <View>
               <Text style={{ ...typography.headlineLg, color: colors.onSurface }}>
                 {t('results_title')}
@@ -84,13 +128,27 @@ export const ScanResultsScreen = () => {
                 alignItems: 'center',
               }}
             >
-              <Text style={{ ...typography.labelSm, color: colors.primaryFixed, textTransform: 'uppercase', letterSpacing: 1.5 }}>
+              <Text
+                style={{
+                  ...typography.labelSm,
+                  color: colors.primaryFixed,
+                  textTransform: 'uppercase',
+                  letterSpacing: 1.5,
+                }}
+              >
                 {t('total')}
               </Text>
               <Text style={{ ...typography.headlineMd, color: colors.onPrimary }}>
                 {TOTAL_KCAL}
               </Text>
-              <Text style={{ ...typography.labelSm, color: colors.primaryFixed, textTransform: 'uppercase', letterSpacing: 1.5 }}>
+              <Text
+                style={{
+                  ...typography.labelSm,
+                  color: colors.primaryFixed,
+                  textTransform: 'uppercase',
+                  letterSpacing: 1.5,
+                }}
+              >
                 kcal
               </Text>
             </View>
@@ -121,17 +179,22 @@ export const ScanResultsScreen = () => {
                     marginRight: spacing.md,
                   }}
                 >
-                  <Text style={{ fontSize: 20 }}>{item.icon}</Text>
+                  <item.Icon size={22} color={item.tagColor} strokeWidth={2} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ ...typography.titleMd, color: colors.onSurface }}>{item.name}</Text>
+                  <Text style={{ ...typography.titleMd, color: colors.onSurface }}>
+                    {item.name}
+                  </Text>
                   <Text style={{ ...typography.labelSm, color: colors.onSurfaceVariant }}>
-                    {item.weight} • <Text style={{ color: item.tagColor, fontWeight: '600' }}>{item.tag}</Text>
+                    {item.weight} •{' '}
+                    <Text style={{ color: item.tagColor, fontWeight: '600' }}>{item.tag}</Text>
                   </Text>
                 </View>
                 <View style={{ alignItems: 'flex-end' }}>
                   <Text style={{ ...typography.titleLg, color: colors.onSurface }}>{item.cal}</Text>
-                  <Text style={{ ...typography.labelSm, color: colors.onSurfaceVariant }}>kcal</Text>
+                  <Text style={{ ...typography.labelSm, color: colors.onSurfaceVariant }}>
+                    kcal
+                  </Text>
                 </View>
               </Animated.View>
             ))}
@@ -146,23 +209,51 @@ export const ScanResultsScreen = () => {
               marginBottom: spacing.xl,
             }}
           >
-            <Text style={{ ...typography.labelSm, color: colors.onSurfaceVariant, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: spacing.sm }}>
+            <Text
+              style={{
+                ...typography.labelSm,
+                color: colors.onSurfaceVariant,
+                textTransform: 'uppercase',
+                letterSpacing: 1.5,
+                marginBottom: spacing.sm,
+              }}
+            >
               {t('macro_breakdown')}
             </Text>
             {/* Stacked bar */}
-            <View style={{ flexDirection: 'row', height: 10, borderRadius: 5, overflow: 'hidden', marginBottom: spacing.md }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                height: 10,
+                borderRadius: 5,
+                overflow: 'hidden',
+                marginBottom: spacing.md,
+              }}
+            >
               <View style={{ width: '45%', backgroundColor: colors.macro.protein }} />
               <View style={{ width: '40%', backgroundColor: colors.macro.carbs }} />
               <View style={{ width: '15%', backgroundColor: colors.macro.fat }} />
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               {[
-                { label: t('protein'), value: `${MACRO_SPLIT.protein}g`, color: colors.macro.protein },
+                {
+                  label: t('protein'),
+                  value: `${MACRO_SPLIT.protein}g`,
+                  color: colors.macro.protein,
+                },
                 { label: t('carbs'), value: `${MACRO_SPLIT.carbs}g`, color: colors.macro.carbs },
                 { label: t('fats'), value: `${MACRO_SPLIT.fat}g`, color: colors.macro.fat },
               ].map((m) => (
                 <View key={m.label}>
-                  <Text style={{ ...typography.labelSm, color: colors.onSurfaceVariant, textTransform: 'uppercase' }}>{m.label}</Text>
+                  <Text
+                    style={{
+                      ...typography.labelSm,
+                      color: colors.onSurfaceVariant,
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {m.label}
+                  </Text>
                   <Text style={{ ...typography.titleLg, color: m.color }}>{m.value}</Text>
                 </View>
               ))}
@@ -187,7 +278,7 @@ export const ScanResultsScreen = () => {
               <Text style={{ ...typography.titleMd, color: colors.onPrimary, fontWeight: '700' }}>
                 {t('confirm_log')}
               </Text>
-              <Text style={{ fontSize: 18, color: colors.onPrimary }}>✓</Text>
+              <Check size={18} color={colors.onPrimary} strokeWidth={2.5} />
             </Pressable>
             <Pressable
               style={({ pressed }) => ({
@@ -204,7 +295,7 @@ export const ScanResultsScreen = () => {
               <Text style={{ ...typography.titleMd, color: colors.onSurface, fontWeight: '700' }}>
                 {t('edit')}
               </Text>
-              <Text style={{ fontSize: 18 }}>✏️</Text>
+              <PencilLine size={18} color={colors.onSurface} strokeWidth={2} />
             </Pressable>
           </View>
         </Animated.View>

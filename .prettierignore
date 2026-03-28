@@ -8,3 +8,5 @@ ios
 .expo
 supabase/.temp
 *.lock
+*.mdc
+vendor

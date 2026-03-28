@@ -10,6 +10,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  NODE_VERSION_FILE: '.nvmrc'
+
 jobs:
   lint:
     name: Lint & Format
@@ -19,8 +22,8 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
-          cache: "pnpm"
+          node-version-file: ${{ env.NODE_VERSION_FILE }}
+          cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm format:check
       - run: pnpm lint
@@ -34,8 +37,8 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
-          cache: "pnpm"
+          node-version-file: ${{ env.NODE_VERSION_FILE }}
+          cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
 
@@ -47,10 +50,43 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
-          cache: "pnpm"
+          node-version-file: ${{ env.NODE_VERSION_FILE }}
+          cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm test:ci
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ${{ env.NODE_VERSION_FILE }}
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm audit --audit-level=high
+        continue-on-error: true
+
+  build-mobile:
+    name: Build Check (Mobile)
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ${{ env.NODE_VERSION_FILE }}
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - name: Bundle Android (release)
+        working-directory: apps/mobile
+        run: npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output /tmp/android.bundle
+      - name: Bundle iOS (release)
+        working-directory: apps/mobile
+        run: npx react-native bundle --platform ios --dev false --entry-file index.js --bundle-output /tmp/ios.bundle
 
   supabase-validate:
     name: Validate Migrations
@@ -61,5 +97,6 @@ jobs:
       - uses: supabase/setup-cli@v1
         with:
           version: latest
+      - run: supabase init --with-intellij-settings=false || true
       - run: supabase db start
-      - run: supabase db push --dry-run
+      - run: supabase db lint

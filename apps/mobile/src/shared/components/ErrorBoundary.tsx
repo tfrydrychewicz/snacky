@@ -1,6 +1,7 @@
 import React, { Component, type ErrorInfo, type ReactNode } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { AlertTriangle } from 'lucide-react-native';
 import { colors, spacing, typography, radii } from '~/shared/theme/tokens';
 
 interface Props {
@@ -13,13 +14,7 @@ interface State {
   error: Error | null;
 }
 
-const ErrorFallback = ({
-  error,
-  onRetry,
-}: {
-  error: Error | null;
-  onRetry: () => void;
-}) => {
+const ErrorFallback = ({ error, onRetry }: { error: Error | null; onRetry: () => void }) => {
   const { t } = useTranslation('common');
 
   return (
@@ -32,7 +27,7 @@ const ErrorFallback = ({
         paddingHorizontal: spacing.lg,
       }}
     >
-      <Text style={{ fontSize: 40 }}>⚠️</Text>
+      <AlertTriangle size={40} color={colors.error} strokeWidth={1.8} />
       <Text style={{ ...typography.titleLg, color: colors.onSurface, marginTop: spacing.md }}>
         {t('common.error.generic')}
       </Text>

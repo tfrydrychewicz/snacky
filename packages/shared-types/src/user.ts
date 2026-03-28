@@ -4,10 +4,22 @@ import { TimestampedSchema } from './common';
 export const GenderSchema = z.enum(['male', 'female', 'other', 'prefer_not_to_say']);
 export type Gender = z.infer<typeof GenderSchema>;
 
-export const GoalTypeSchema = z.enum(['lose_weight', 'maintain_weight', 'gain_weight', 'build_muscle', 'improve_health']);
+export const GoalTypeSchema = z.enum([
+  'lose_weight',
+  'maintain_weight',
+  'gain_weight',
+  'build_muscle',
+  'improve_health',
+]);
 export type GoalType = z.infer<typeof GoalTypeSchema>;
 
-export const ActivityLevelSchema = z.enum(['sedentary', 'lightly_active', 'moderately_active', 'very_active', 'extra_active']);
+export const ActivityLevelSchema = z.enum([
+  'sedentary',
+  'lightly_active',
+  'moderately_active',
+  'very_active',
+  'extra_active',
+]);
 export type ActivityLevel = z.infer<typeof ActivityLevelSchema>;
 
 export const UserProfileSchema = TimestampedSchema.extend({

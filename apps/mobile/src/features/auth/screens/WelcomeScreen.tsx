@@ -9,6 +9,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Leaf } from 'lucide-react-native';
 import type { AuthStackParamList } from '~/app/navigation/types';
 import { colors, typography } from '~/shared/theme/tokens';
 
@@ -36,7 +37,10 @@ export const WelcomeScreen = ({ navigation }: Props) => {
     titleOpacity.value = withDelay(STAGGER, withTiming(1, { duration: ANIM_MS, easing: ease }));
     titleY.value = withDelay(STAGGER, withTiming(0, { duration: ANIM_MS, easing: ease }));
 
-    subtitleOpacity.value = withDelay(STAGGER * 2, withTiming(1, { duration: ANIM_MS, easing: ease }));
+    subtitleOpacity.value = withDelay(
+      STAGGER * 2,
+      withTiming(1, { duration: ANIM_MS, easing: ease }),
+    );
     subtitleY.value = withDelay(STAGGER * 2, withTiming(0, { duration: ANIM_MS, easing: ease }));
 
     const timer = setTimeout(() => navigation.replace('Login'), 2800);
@@ -82,7 +86,7 @@ export const WelcomeScreen = ({ navigation }: Props) => {
           },
         ]}
       >
-        <Text style={{ fontSize: 52 }}>🥗</Text>
+        <Leaf size={52} color={colors.onPrimary} strokeWidth={1.8} />
       </Animated.View>
 
       <Animated.View style={titleStyle}>

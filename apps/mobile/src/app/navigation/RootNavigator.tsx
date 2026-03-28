@@ -11,7 +11,9 @@ import type { RootStackParamList } from './types';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const LoadingScreen = () => (
-  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F9F9F9' }}>
+  <View
+    style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F9F9F9' }}
+  >
     <ActivityIndicator size="large" color="#006E1C" />
   </View>
 );

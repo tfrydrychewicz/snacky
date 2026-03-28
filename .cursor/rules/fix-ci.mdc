@@ -1,0 +1,18 @@
+---
+description: Check recent GitHub CI results and fix errors
+alwaysApply: false
+---
+
+# Fix CI Errors
+
+When invoked, follow the `fix-ci` skill at `.cursor/skills/fix-ci/SKILL.md`.
+
+## Quick Reference
+
+1. **Fetch failures**: `gh run list --limit 5` then `gh run view <RUN_ID> --log-failed`
+2. **Classify**: Lint, TypeCheck, Test, Security, Build, or Migration error
+3. **Fix**: Edit the source files to resolve each error
+4. **Verify locally**: Run `pnpm lint`, `pnpm typecheck`, `pnpm test` before pushing
+5. **Push & watch**: Commit, push, then `gh run watch`
+
+Always read the full error log before fixing — never guess. If all checks pass, report success and stop.

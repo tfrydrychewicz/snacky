@@ -18,6 +18,7 @@ When creating a new feature module or adding significant new functionality to an
 ### 1. Determine Feature Scope
 
 Ask (if not clear from context):
+
 - Feature name (lowercase, hyphenated: `diet-plan`, `scanner`)
 - Primary screens needed
 - API endpoints it will consume (PostgREST or Edge Functions?)

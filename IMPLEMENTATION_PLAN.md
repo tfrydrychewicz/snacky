@@ -167,18 +167,18 @@
 
 ### 0.7 CI/CD Pipeline Setup (Week 2–3)
 
-- [ ] Create GitHub Actions workflow: `ci.yml` (PR checks)
-  - [ ] Lint (ESLint + Prettier)
-  - [ ] Type check (`tsc --noEmit`)
-  - [ ] Unit tests (Jest / Vitest)
-  - [ ] Security scan (Snyk)
-  - [ ] Build check (mobile)
-  - [ ] `supabase db push --dry-run` (validate migrations)
-- [ ] Create GitHub Actions workflow: `deploy-staging.yml` (on merge to main)
-  - [ ] `supabase db push` (apply migrations to staging)
-  - [ ] `supabase functions deploy --all` (deploy Edge Functions)
-- [ ] Set up GitHub branch protection rules (require CI pass)
-- [ ] Configure Dependabot for automated dependency updates
+- [x] Create GitHub Actions workflow: `ci.yml` (PR checks)
+  - [x] Lint (ESLint + Prettier)
+  - [x] Type check (`tsc --noEmit`)
+  - [x] Unit tests (Jest / Vitest)
+  - [x] Security scan (`pnpm audit`)
+  - [x] Build check (mobile — Android + iOS bundles)
+  - [x] Validate migrations (`supabase db lint`)
+- [x] Create GitHub Actions workflow: `deploy-staging.yml` (on merge to main)
+  - [x] `supabase db push` (apply migrations to staging)
+  - [x] `supabase functions deploy --all` (deploy Edge Functions)
+- [ ] Set up GitHub branch protection rules (require CI pass) ← manual step in GitHub Settings
+- [x] Configure Dependabot for automated dependency updates
 
 ### 0.8 Android Alpha Distribution Setup (Week 1–2)
 

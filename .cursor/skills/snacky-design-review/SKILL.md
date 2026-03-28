@@ -66,6 +66,7 @@ AI/ML (if applicable):
 ## How to Report
 
 For each finding, provide:
+
 1. File and line reference
 2. The specific rule violated (reference design doc section if applicable)
 3. Concrete fix example (show the corrected code)

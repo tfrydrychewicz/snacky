@@ -7,6 +7,7 @@ import type enDietPlan from './en/dietPlan.json';
 import type enChat from './en/chat.json';
 import type enProgress from './en/progress.json';
 import type enDashboard from './en/dashboard.json';
+import type enTrends from './en/trends.json';
 import type enNotifications from './en/notifications.json';
 import type enSettings from './en/settings.json';
 
@@ -20,6 +21,7 @@ interface TranslationResources {
   chat: typeof enChat;
   progress: typeof enProgress;
   dashboard: typeof enDashboard;
+  trends: typeof enTrends;
   notifications: typeof enNotifications;
   settings: typeof enSettings;
 }

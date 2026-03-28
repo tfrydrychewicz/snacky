@@ -10,11 +10,13 @@ export const RecipeSchema = z.object({
   prep_time_min: z.number().int().nonnegative(),
   cook_time_min: z.number().int().nonnegative(),
   servings: z.number().int().positive(),
-  ingredients_list: z.array(z.object({
-    name: z.string(),
-    quantity: z.string(),
-    unit: z.string(),
-  })),
+  ingredients_list: z.array(
+    z.object({
+      name: z.string(),
+      quantity: z.string(),
+      unit: z.string(),
+    }),
+  ),
   macros_per_serving: MacroBreakdownSchema,
 });
 
@@ -22,11 +24,13 @@ export type Recipe = z.infer<typeof RecipeSchema>;
 
 export const DietPlanDaySchema = z.object({
   date: z.string().date(),
-  slots: z.array(z.object({
-    meal_type: MealTypeSchema,
-    recipe_id: z.string().uuid(),
-    macros: MacroBreakdownSchema,
-  })),
+  slots: z.array(
+    z.object({
+      meal_type: MealTypeSchema,
+      recipe_id: z.string().uuid(),
+      macros: MacroBreakdownSchema,
+    }),
+  ),
   total_macros: MacroBreakdownSchema,
 });
 

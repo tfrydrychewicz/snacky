@@ -12,9 +12,9 @@ export const RDA = {
 
 /** Acceptable Macronutrient Distribution Ranges (AMDR) as percentage of total calories */
 export const AMDR = {
-  protein: { min: 0.10, max: 0.35 },
+  protein: { min: 0.1, max: 0.35 },
   carbohydrates: { min: 0.45, max: 0.65 },
-  fat: { min: 0.20, max: 0.35 },
+  fat: { min: 0.2, max: 0.35 },
 } as const;
 
 /** Calories per gram for each macronutrient */

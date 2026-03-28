@@ -1,0 +1,49 @@
+version: 2
+
+updates:
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    open-pull-requests-limit: 10
+    labels:
+      - 'dependencies'
+    groups:
+      react-native:
+        patterns:
+          - 'react-native*'
+          - '@react-native*'
+          - '@react-navigation/*'
+        update-types:
+          - 'minor'
+          - 'patch'
+      supabase:
+        patterns:
+          - '@supabase/*'
+          - 'supabase'
+      linting:
+        patterns:
+          - 'eslint*'
+          - '@typescript-eslint/*'
+          - 'prettier*'
+      testing:
+        patterns:
+          - 'jest*'
+          - '@types/jest'
+          - 'react-test-renderer'
+    ignore:
+      - dependency-name: 'react'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'react-native'
+        update-types: ['version-update:semver-major']
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    open-pull-requests-limit: 5
+    labels:
+      - 'ci'
+      - 'dependencies'
