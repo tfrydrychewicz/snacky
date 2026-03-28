@@ -46,7 +46,13 @@ export const CircularProgress = ({
         />
       </Svg>
       <View style={{ position: 'absolute', alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ ...typography.headlineMd, color: colors.onSurface }}>
+        <Text
+          style={{
+            fontSize: size * 0.18,
+            fontWeight: '700',
+            color: colors.onSurface,
+          }}
+        >
           {Math.round(percentage)}%
         </Text>
       </View>

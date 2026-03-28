@@ -48,40 +48,36 @@ export const DashboardScreen = () => {
 
         {/* Hero Calorie Budget Tile */}
         <BentoTile index={0} style={{ marginBottom: spacing.lg, paddingVertical: spacing.xl }}>
-          <View
-            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-          >
-            <View style={{ flex: 1 }}>
-              <Text
-                style={{
-                  ...typography.titleLg,
-                  color: colors.onSurfaceVariant,
-                  marginBottom: spacing.lg,
-                }}
-              >
-                {t('tiles.calorieBudget')}
-              </Text>
-              <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-                <Text style={{ ...typography.displayLg, color: colors.primary }}>1,450</Text>
-                <Text
-                  style={{ ...typography.titleMd, color: colors.onSurfaceVariant, marginLeft: 4 }}
-                >
-                  / 2,100 {t('tiles.kcalUnit')}
-                </Text>
-              </View>
-              <Text
-                style={{
-                  ...typography.bodySm,
-                  color: colors.onSurfaceVariant,
-                  opacity: 0.7,
-                  marginTop: spacing.sm,
-                }}
-              >
-                {t('tiles.remaining', { kcal: 650 })}
-              </Text>
-            </View>
-            <CircularProgress percentage={65} size={140} />
+          <View style={{ position: 'absolute', top: spacing.md, right: spacing.md }}>
+            <CircularProgress percentage={65} size={56} strokeWidth={6} />
           </View>
+          <Text
+            style={{
+              ...typography.titleLg,
+              color: colors.onSurfaceVariant,
+              marginBottom: spacing.lg,
+            }}
+          >
+            {t('tiles.calorieBudget')}
+          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+            <Text style={{ ...typography.displayLg, color: colors.primary }}>1,450</Text>
+            <Text
+              style={{ ...typography.titleMd, color: colors.onSurfaceVariant, marginLeft: 4 }}
+            >
+              / 2,100 {t('tiles.kcalUnit')}
+            </Text>
+          </View>
+          <Text
+            style={{
+              ...typography.bodySm,
+              color: colors.onSurfaceVariant,
+              opacity: 0.7,
+              marginTop: spacing.sm,
+            }}
+          >
+            {t('tiles.remaining', { kcal: 650 })}
+          </Text>
         </BentoTile>
 
         {/* Snacky AI Preview */}
@@ -222,46 +218,46 @@ export const DashboardScreen = () => {
               flexDirection: 'row',
               justifyContent: 'space-between',
               alignItems: 'flex-start',
-              marginBottom: spacing.lg,
+              marginBottom: spacing.sm,
             }}
           >
-            <View>
-              <Text style={{ ...typography.titleLg, marginBottom: 2 }}>
-                {t('tiles.weightTrend')}
+            <Text style={{ ...typography.titleLg, flex: 1 }}>
+              {t('tiles.weightTrend')}
+            </Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: `${colors.primaryFixed}30`,
+                paddingHorizontal: 8,
+                paddingVertical: 3,
+                borderRadius: radii.full,
+              }}
+            >
+              <TrendingDown size={12} color={colors.primary} strokeWidth={2.5} />
+              <Text style={{ ...typography.labelSm, color: colors.primary, marginLeft: 2 }}>
+                0.8%
               </Text>
-              <Text
-                style={{ ...typography.bodySm, color: colors.onSurfaceVariant, fontWeight: '500' }}
-              >
-                {t('tiles.weightLost', { lbs: '2.4' })}
-              </Text>
-            </View>
-            <View style={{ alignItems: 'flex-end' }}>
-              <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-                <Text style={{ ...typography.headlineLg }}>138.6</Text>
-                <Text
-                  style={{ ...typography.labelMd, color: colors.onSurfaceVariant, marginLeft: 4 }}
-                >
-                  lbs
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  backgroundColor: `${colors.primaryFixed}30`,
-                  paddingHorizontal: 8,
-                  paddingVertical: 3,
-                  borderRadius: radii.full,
-                  marginTop: 4,
-                }}
-              >
-                <TrendingDown size={12} color={colors.primary} strokeWidth={2.5} />
-                <Text style={{ ...typography.labelSm, color: colors.primary, marginLeft: 2 }}>
-                  0.8%
-                </Text>
-              </View>
             </View>
           </View>
+          <View style={{ flexDirection: 'row', alignItems: 'baseline', marginBottom: 2 }}>
+            <Text style={{ ...typography.headlineLg }}>138.6</Text>
+            <Text
+              style={{ ...typography.labelMd, color: colors.onSurfaceVariant, marginLeft: 4 }}
+            >
+              lbs
+            </Text>
+          </View>
+          <Text
+            style={{
+              ...typography.bodySm,
+              color: colors.onSurfaceVariant,
+              fontWeight: '500',
+              marginBottom: spacing.md,
+            }}
+          >
+            {t('tiles.weightLost', { lbs: '2.4' })}
+          </Text>
           {/* Sparkline bars */}
           <View style={{ height: 100, flexDirection: 'row', alignItems: 'flex-end', gap: 3 }}>
             {[60, 58, 62, 55, 52, 48, 50, 45, 42, 44, 38, 35].map((h, i) => (
