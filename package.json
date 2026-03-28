@@ -27,7 +27,9 @@
     "seed:usda": "npx tsx scripts/seed-usda.ts",
     "ios": "pnpm --filter @snacky/mobile ios",
     "android": "pnpm --filter @snacky/mobile android",
-    "start": "pnpm --filter @snacky/mobile start"
+    "start": "pnpm --filter @snacky/mobile start",
+    "setup": "bash scripts/setup.sh",
+    "setup:check": "bash scripts/setup.sh --check-only"
   },
   "devDependencies": {
     "@supabase/supabase-js": "^2.49.0",

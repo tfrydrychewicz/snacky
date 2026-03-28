@@ -22,6 +22,17 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.340390284578-uenc4ckjqp89b9s7m92g8217kdoh7jdm</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -33,8 +44,14 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Snacky needs camera access to scan and analyze your meals.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Snacky does not use the microphone but the camera framework requires this permission.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Snacky needs photo library access so you can select meal photos for analysis.</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -54,24 +71,7 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
-	<key>NSCameraUsageDescription</key>
-	<string>Snacky needs camera access to scan and analyze your meals.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Snacky needs photo library access so you can select meal photos for analysis.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Snacky does not use the microphone but the camera framework requires this permission.</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.340390284578-uenc4ckjqp89b9s7m92g8217kdoh7jdm</string>
-			</array>
-		</dict>
-	</array>
 </dict>
 </plist>
