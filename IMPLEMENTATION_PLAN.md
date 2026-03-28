@@ -420,24 +420,24 @@
 
 ### 2.1 RAG Pipeline — Embedding Generation (Week 11–12)
 
-- [ ] Implement `embed` Edge Function:
-  - [ ] Accept webhook from DB trigger (pg_net HTTP POST)
-  - [ ] Determine entity type (meal, comment, measurement)
-  - [ ] Serialize entity to text representation
-  - [ ] Generate embedding vector via voyage-4-large (Voyage AI)
-  - [ ] Upsert to `embeddings` table with metadata tags
-- [ ] Create DB triggers:
-  - [ ] `meals` INSERT → call `embed` function
-  - [ ] `meal_comments` INSERT → call `embed` function
-  - [ ] `measurements` INSERT → call `embed` function
-- [ ] Create batch embedding seed script (`scripts/generate-embeddings.ts`):
-  - [ ] Generate embeddings for USDA foods dataset
-  - [ ] Generate embeddings for nutritional guidelines corpus
+- [x] Implement `embed` Edge Function:
+  - [x] Accept webhook from DB trigger (pg_net HTTP POST)
+  - [x] Determine entity type (meal, comment, measurement)
+  - [x] Serialize entity to text representation
+  - [x] Generate embedding vector via OpenAI text-embedding-3-small (1024 dims)
+  - [x] Upsert to `embeddings` table with metadata tags
+- [x] Create DB triggers:
+  - [x] `meals` INSERT → call `embed` function
+  - [x] `meal_comments` INSERT → call `embed` function
+  - [x] `measurements` INSERT → call `embed` function
+- [x] Create batch embedding seed script (`scripts/generate-embeddings.ts`):
+  - [x] Generate embeddings for USDA foods dataset
+  - [x] Generate embeddings for nutritional guidelines corpus
   - [ ] Generate embeddings for recipe database
-- [ ] Implement `match_embeddings` Postgres function:
-  - [ ] Filter by user_id and namespace
-  - [ ] Order by cosine distance (HNSW index)
-  - [ ] Return top-K results with similarity score
+- [x] Implement `match_embeddings` Postgres function:
+  - [x] Filter by user_id and namespace
+  - [x] Order by cosine distance (HNSW index)
+  - [x] Return top-K results with similarity score
 
 ### 2.2 AI Chat Assistant — Backend (Week 12–13)
 
