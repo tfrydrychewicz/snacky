@@ -1,12 +1,76 @@
 {
+  "camera_title": "Scan Meal",
+  "camera_permission_title": "Camera Permission Required",
+  "camera_permission_message": "Snacky needs camera access to scan your meals. Please enable it in Settings.",
+  "camera_permission_settings": "Open Settings",
+  "camera_no_device": "No camera device available",
+  "capture": "Capture",
+  "flash_on": "Flash On",
+  "flash_off": "Flash Off",
+  "gallery": "Gallery",
+  "gallery_pick": "Pick from Gallery",
+
+  "meal_type_title": "What meal is this?",
+  "meal_type_breakfast": "Breakfast",
+  "meal_type_lunch": "Lunch",
+  "meal_type_dinner": "Dinner",
+  "meal_type_snack": "Snack",
+
+  "analyzing": "Analyzing your meal...",
+  "analyzing_subtitle": "Our AI is identifying ingredients and calculating nutrition",
+
   "confidence": "{{pct}}% Confidence",
   "results_title": "Scan Results",
-  "identified_count": "Identified {{count}} primary components",
+  "identified_count_one": "Identified {{count}} ingredient",
+  "identified_count_other": "Identified {{count}} ingredients",
   "total": "Total",
   "macro_breakdown": "Macro Breakdown",
   "protein": "Protein",
   "carbs": "Carbs",
   "fats": "Fats",
+  "fiber": "Fiber",
+  "sugar": "Sugar",
+  "sodium": "Sodium",
+
+  "ingredient_name": "Ingredient",
+  "portion_g": "{{value}}g",
+  "portion_label": "Portion",
+  "portion_adjust": "Adjust Portion",
+  "calories_label": "kcal",
+
+  "edit": "Edit",
+  "edit_ingredient": "Edit Ingredient",
+  "edit_name": "Name",
+  "edit_portion": "Portion (g)",
+  "edit_save": "Save",
+  "edit_cancel": "Cancel",
+
+  "add_ingredient": "Add Ingredient",
+  "remove_ingredient": "Remove",
+  "remove_ingredient_confirm": "Remove \"{{name}}\" from this meal?",
+
+  "clarification_title": "Quick Question",
+  "clarification_subtitle": "Help us improve the analysis",
+  "clarification_custom_placeholder": "Type your answer...",
+  "clarification_submit": "Submit",
+  "clarification_skip": "Skip",
+  "clarification_round": "Question {{current}} of {{max}}",
+
+  "comment_placeholder": "Add a note about this meal...",
+  "comment_label": "Your Notes",
+
   "confirm_log": "Confirm & Log",
-  "edit": "Edit"
+  "logging": "Saving meal...",
+  "log_success": "Meal logged successfully!",
+  "log_error": "Failed to save meal. Please try again.",
+
+  "scan_error": "Analysis failed. Please try again.",
+  "scan_retry": "Retry",
+  "scan_cancel": "Cancel",
+
+  "nova_class": "NOVA {{class}}",
+  "nova_1": "Unprocessed",
+  "nova_2": "Processed Ingredients",
+  "nova_3": "Processed Foods",
+  "nova_4": "Ultra-processed"
 }

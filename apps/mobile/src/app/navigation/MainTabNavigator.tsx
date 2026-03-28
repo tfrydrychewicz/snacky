@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { LayoutGrid, Camera, MessageCircle, TrendingUp } from 'lucide-react-native';
 import { DashboardScreen } from '~/features/dashboard/screens/DashboardScreen';
-import { ScanResultsScreen } from '~/features/scanner/screens/ScanResultsScreen';
+import { ScannerNavigator } from './ScannerNavigator';
 import { ChatScreen } from '~/features/chat/screens/ChatScreen';
 import { TrendsScreen } from '~/features/trends/screens/TrendsScreen';
 import { colors, typography, radii, spacing } from '~/shared/theme/tokens';
@@ -22,7 +22,7 @@ const TABS = [
 
 const SCREEN_MAP: Record<string, React.ComponentType> = {
   Dashboard: DashboardScreen,
-  Scanner: ScanResultsScreen,
+  Scanner: ScannerNavigator,
   Chat: ChatScreen,
   Trends: TrendsScreen,
 };

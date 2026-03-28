@@ -54,6 +54,12 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Snacky needs camera access to scan and analyze your meals.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Snacky needs photo library access so you can select meal photos for analysis.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Snacky does not use the microphone but the camera framework requires this permission.</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>CFBundleURLTypes</key>

@@ -33,8 +33,11 @@ updates:
           - '@types/jest'
           - 'react-test-renderer'
     ignore:
+      # react and react-test-renderer are pinned to 19.2.3 to match
+      # react-native-renderer bundled with react-native 0.84.1.
+      # Unpin when react-native upgrades its renderer version.
       - dependency-name: 'react'
-        update-types: ['version-update:semver-major']
+      - dependency-name: 'react-test-renderer'
       - dependency-name: 'react-native'
         update-types: ['version-update:semver-major']
 

@@ -1,3 +1,5 @@
+import type { MealScanResult, MealType } from '@snacky/shared-types';
+
 export type RootStackParamList = {
   Auth: undefined;
   Main: undefined;
@@ -17,6 +19,15 @@ export type OnboardingStackParamList = {
     proteinG: number;
     carbsG: number;
     fatG: number;
+  };
+};
+
+export type ScannerStackParamList = {
+  Capture: undefined;
+  Results: {
+    scanResult: MealScanResult;
+    photoUri: string;
+    mealType: MealType;
   };
 };
 

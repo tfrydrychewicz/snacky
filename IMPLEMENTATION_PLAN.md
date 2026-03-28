@@ -284,38 +284,38 @@
 
 ### 1.2 Meal Scanning Pipeline — Mobile (Week 6–7)
 
-- [ ] Install and configure `react-native-vision-camera` v4
-- [ ] Implement camera permissions request (iOS + Android)
-- [ ] Create `ScannerScreen` with camera view:
-  - [ ] `CameraOverlay.tsx` — viewfinder overlay with capture button
-  - [ ] Auto-focus and flash control
-  - [ ] Photo capture (min 1080x1080)
-  - [ ] Gallery picker alternative
-- [ ] Install and configure `@bam.tech/react-native-image-resizer`
-- [ ] Implement `useImageCompression.ts` hook:
-  - [ ] Compress to ≤ 500 KB, JPEG quality 85%
-  - [ ] Strip EXIF metadata
-  - [ ] Base64 encode
-- [ ] Implement `useScanAnalysis.ts` hook:
-  - [ ] POST to meal-scan Edge Function
-  - [ ] Handle loading, success, error states
-  - [ ] Handle clarification flow
-- [ ] Create `ScanResultScreen`:
-  - [ ] Skeleton loader animation (Reanimated 4, 1.5s loop)
-  - [ ] Staggered ingredient reveal animation (300ms per item, 80ms stagger)
-  - [ ] `ScanResultCard.tsx` — displays each detected ingredient
-  - [ ] `IngredientEditor.tsx` — manual portion/name override
-  - [ ] `PortionSlider.tsx` — adjust portion size
-  - [ ] Add/remove ingredient buttons
-- [ ] Create `ClarificationDialog.tsx`:
-  - [ ] Display targeted question when confidence < 0.7
-  - [ ] Option buttons + custom text input
-  - [ ] Submit clarification → re-estimation
-  - [ ] Max 3 clarification questions per scan
-- [ ] Create `CommentInput.tsx` — text field for user annotations
-- [ ] Create "Confirm & Log" button → saves meal to Supabase
-- [ ] Upload meal photo to Supabase Storage (`meal-photos` bucket)
-- [ ] Add scanner translation keys to `en/scanner.json` and `pl/scanner.json`
+- [x] Install and configure `react-native-vision-camera` v4
+- [x] Implement camera permissions request (iOS + Android)
+- [x] Create `ScannerScreen` with camera view:
+  - [x] `CameraOverlay.tsx` — viewfinder overlay with capture button
+  - [x] Auto-focus and flash control
+  - [x] Photo capture (min 1080x1080)
+  - [x] Gallery picker alternative
+- [x] Install and configure `@bam.tech/react-native-image-resizer`
+- [x] Implement `useImageCompression.ts` hook:
+  - [x] Compress to ≤ 500 KB, JPEG quality 85%
+  - [x] Strip EXIF metadata
+  - [x] Base64 encode
+- [x] Implement `useScanAnalysis.ts` hook:
+  - [x] POST to meal-scan Edge Function
+  - [x] Handle loading, success, error states
+  - [x] Handle clarification flow
+- [x] Create `ScanResultScreen`:
+  - [x] Skeleton loader animation (Reanimated 4, 1.5s loop)
+  - [x] Staggered ingredient reveal animation (300ms per item, 80ms stagger)
+  - [x] `ScanResultCard.tsx` — displays each detected ingredient
+  - [x] `IngredientEditor.tsx` — manual portion/name override
+  - [x] `PortionSlider.tsx` — adjust portion size
+  - [x] Add/remove ingredient buttons
+- [x] Create `ClarificationDialog.tsx`:
+  - [x] Display targeted question when confidence < 0.7
+  - [x] Option buttons + custom text input
+  - [x] Submit clarification → re-estimation
+  - [x] Max 3 clarification questions per scan
+- [x] Create `CommentInput.tsx` — text field for user annotations
+- [x] Create "Confirm & Log" button → saves meal to Supabase
+- [x] Upload meal photo to Supabase Storage (`meal-photos` bucket)
+- [x] Add scanner translation keys to `en/scanner.json` and `pl/scanner.json`
 
 ### 1.3 Meal Scanning Pipeline — Backend (Week 6–8)
 

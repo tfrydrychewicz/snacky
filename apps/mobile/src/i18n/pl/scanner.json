@@ -1,12 +1,78 @@
 {
+  "camera_title": "Skanuj posiłek",
+  "camera_permission_title": "Wymagane uprawnienia do aparatu",
+  "camera_permission_message": "Snacky potrzebuje dostępu do aparatu, aby skanować Twoje posiłki. Włącz to w Ustawieniach.",
+  "camera_permission_settings": "Otwórz Ustawienia",
+  "camera_no_device": "Brak dostępnego aparatu",
+  "capture": "Zrób zdjęcie",
+  "flash_on": "Lampa wł.",
+  "flash_off": "Lampa wył.",
+  "gallery": "Galeria",
+  "gallery_pick": "Wybierz z galerii",
+
+  "meal_type_title": "Jaki to posiłek?",
+  "meal_type_breakfast": "Śniadanie",
+  "meal_type_lunch": "Obiad",
+  "meal_type_dinner": "Kolacja",
+  "meal_type_snack": "Przekąska",
+
+  "analyzing": "Analizuję Twój posiłek...",
+  "analyzing_subtitle": "Nasza AI identyfikuje składniki i oblicza wartości odżywcze",
+
   "confidence": "{{pct}}% pewności",
   "results_title": "Wyniki skanu",
-  "identified_count": "Zidentyfikowano {{count}} składniki",
+  "identified_count_one": "Zidentyfikowano {{count}} składnik",
+  "identified_count_few": "Zidentyfikowano {{count}} składniki",
+  "identified_count_many": "Zidentyfikowano {{count}} składników",
+  "identified_count_other": "Zidentyfikowano {{count}} składników",
   "total": "Razem",
   "macro_breakdown": "Rozkład makroskładników",
   "protein": "Białko",
   "carbs": "Węgle",
   "fats": "Tłuszcze",
+  "fiber": "Błonnik",
+  "sugar": "Cukier",
+  "sodium": "Sód",
+
+  "ingredient_name": "Składnik",
+  "portion_g": "{{value}}g",
+  "portion_label": "Porcja",
+  "portion_adjust": "Dostosuj porcję",
+  "calories_label": "kcal",
+
+  "edit": "Edytuj",
+  "edit_ingredient": "Edytuj składnik",
+  "edit_name": "Nazwa",
+  "edit_portion": "Porcja (g)",
+  "edit_save": "Zapisz",
+  "edit_cancel": "Anuluj",
+
+  "add_ingredient": "Dodaj składnik",
+  "remove_ingredient": "Usuń",
+  "remove_ingredient_confirm": "Usunąć \"{{name}}\" z tego posiłku?",
+
+  "clarification_title": "Szybkie pytanie",
+  "clarification_subtitle": "Pomóż nam poprawić analizę",
+  "clarification_custom_placeholder": "Wpisz odpowiedź...",
+  "clarification_submit": "Wyślij",
+  "clarification_skip": "Pomiń",
+  "clarification_round": "Pytanie {{current}} z {{max}}",
+
+  "comment_placeholder": "Dodaj notatkę o tym posiłku...",
+  "comment_label": "Twoje notatki",
+
   "confirm_log": "Potwierdź i zapisz",
-  "edit": "Edytuj"
+  "logging": "Zapisuję posiłek...",
+  "log_success": "Posiłek zapisany pomyślnie!",
+  "log_error": "Nie udało się zapisać posiłku. Spróbuj ponownie.",
+
+  "scan_error": "Analiza nie powiodła się. Spróbuj ponownie.",
+  "scan_retry": "Spróbuj ponownie",
+  "scan_cancel": "Anuluj",
+
+  "nova_class": "NOVA {{class}}",
+  "nova_1": "Nieprzetworzone",
+  "nova_2": "Przetworzone składniki",
+  "nova_3": "Żywność przetworzona",
+  "nova_4": "Ultraprzetworzone"
 }
