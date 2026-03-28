@@ -5,24 +5,24 @@ They are available as `Deno.env.get('SECRET_NAME')` inside Edge Functions.
 
 ## Required Secrets
 
-| Secret | Description | Used By |
-|---|---|---|
-| `OPENAI_API_KEY` | OpenAI API key (GPT-5.4 Vision + Chat) | `meal-scan`, `chat`, `generate-plan` |
-| `GOOGLE_AI_API_KEY` | Google AI API key (Gemini 3.1 Pro fallback) | `meal-scan` |
-| `ANTHROPIC_API_KEY` | Anthropic API key (Claude Sonnet 4.6 fallback) | `meal-scan` |
-| `VOYAGE_API_KEY` | Voyage AI API key (voyage-4-large embeddings) | `embed` |
-| `FCM_SERVICE_ACCOUNT_JSON` | Firebase Cloud Messaging service account (base64-encoded) | `send-notification` |
+| Secret                     | Description                                               | Used By                              |
+| -------------------------- | --------------------------------------------------------- | ------------------------------------ |
+| `OPENAI_API_KEY`           | OpenAI API key (GPT-5.4 Vision + Chat)                    | `meal-scan`, `chat`, `generate-plan` |
+| `GOOGLE_AI_API_KEY`        | Google AI API key (Gemini 3.1 Pro fallback)               | `meal-scan`                          |
+| `ANTHROPIC_API_KEY`        | Anthropic API key (Claude Sonnet 4.6 fallback)            | `meal-scan`                          |
+| `VOYAGE_API_KEY`           | Voyage AI API key (voyage-4-large embeddings)             | `embed`                              |
+| `FCM_SERVICE_ACCOUNT_JSON` | Firebase Cloud Messaging service account (base64-encoded) | `send-notification`                  |
 
 ## Auto-provided by Supabase
 
 These are automatically available in all Edge Functions — do **not** set them manually:
 
-| Secret | Description |
-|---|---|
-| `SUPABASE_URL` | Project API URL |
-| `SUPABASE_ANON_KEY` | Public anon key |
+| Secret                      | Description                                |
+| --------------------------- | ------------------------------------------ |
+| `SUPABASE_URL`              | Project API URL                            |
+| `SUPABASE_ANON_KEY`         | Public anon key                            |
 | `SUPABASE_SERVICE_ROLE_KEY` | Service role key (full access, bypass RLS) |
-| `SUPABASE_DB_URL` | Direct Postgres connection string |
+| `SUPABASE_DB_URL`           | Direct Postgres connection string          |
 
 ## Setting Secrets
 

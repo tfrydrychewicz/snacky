@@ -10,7 +10,12 @@ interface LogEntry {
   metadata?: Record<string, unknown>;
 }
 
-const write = (level: LogLevel, fnName: string, message: string, meta?: Record<string, unknown>) => {
+const write = (
+  level: LogLevel,
+  fnName: string,
+  message: string,
+  meta?: Record<string, unknown>,
+) => {
   const entry: LogEntry = {
     timestamp: new Date().toISOString(),
     level,
