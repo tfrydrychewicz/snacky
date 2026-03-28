@@ -51,9 +51,9 @@ export const IngredientEditor = ({ ingredient, visible, isNew = false, onClose, 
         protein_g: lookupBaseMacros.protein_g * r,
         carbohydrates_g: lookupBaseMacros.carbohydrates_g * r,
         fat_g: lookupBaseMacros.fat_g * r,
-        fiber_g: lookupBaseMacros.fiber_g != null ? lookupBaseMacros.fiber_g * r : null,
-        sugar_g: lookupBaseMacros.sugar_g != null ? lookupBaseMacros.sugar_g * r : null,
-        sodium_mg: lookupBaseMacros.sodium_mg != null ? lookupBaseMacros.sodium_mg * r : null,
+        fiber_g: lookupBaseMacros.fiber_g != null ? lookupBaseMacros.fiber_g * r : undefined,
+        sugar_g: lookupBaseMacros.sugar_g != null ? lookupBaseMacros.sugar_g * r : undefined,
+        sodium_mg: lookupBaseMacros.sodium_mg != null ? lookupBaseMacros.sodium_mg * r : undefined,
       };
     }
 

@@ -8,6 +8,10 @@ import { AuthNavigator } from './AuthNavigator';
 import { MainTabNavigator } from './MainTabNavigator';
 import { OnboardingNavigator } from './OnboardingNavigator';
 import { SettingsScreen } from '~/features/settings/screens/SettingsScreen';
+import { MealTimelineScreen } from '~/features/meals/screens/MealTimelineScreen';
+import { MealDetailScreen } from '~/features/meals/screens/MealDetailScreen';
+import { MealEditScreen } from '~/features/meals/screens/MealEditScreen';
+import { ManualMealEntryScreen } from '~/features/meals/screens/ManualMealEntryScreen';
 import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -50,6 +54,26 @@ export const RootNavigator = () => {
               name="Settings"
               component={SettingsScreen}
               options={{ animation: 'slide_from_right' }}
+            />
+            <Stack.Screen
+              name="MealTimeline"
+              component={MealTimelineScreen}
+              options={{ animation: 'slide_from_right' }}
+            />
+            <Stack.Screen
+              name="MealDetail"
+              component={MealDetailScreen}
+              options={{ animation: 'slide_from_right' }}
+            />
+            <Stack.Screen
+              name="MealEdit"
+              component={MealEditScreen}
+              options={{ animation: 'slide_from_right' }}
+            />
+            <Stack.Screen
+              name="ManualMealEntry"
+              component={ManualMealEntryScreen}
+              options={{ animation: 'slide_from_bottom' }}
             />
           </>
         )}

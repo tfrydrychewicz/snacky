@@ -252,6 +252,17 @@ export const ScanResultsScreen = () => {
         console.warn('Failed to save ingredients:', ingError.message);
       }
 
+      if (comment.trim() && user) {
+        const { error: commentError } = await supabase.from('meal_comments').insert({
+          meal_id: (meal as { id: string }).id,
+          user_id: user.id,
+          content: comment.trim(),
+        });
+        if (commentError) {
+          console.warn('Failed to save comment:', commentError.message);
+        }
+      }
+
       Alert.alert(t('log_success'));
       navigation.goBack();
     } catch (err) {
@@ -260,7 +271,7 @@ export const ScanResultsScreen = () => {
     } finally {
       setIsLogging(false);
     }
-  }, [user, photoUri, mealType, ingredients, totals, scanResult, hasModifications, navigation, t]);
+  }, [user, photoUri, mealType, ingredients, totals, scanResult, hasModifications, comment, navigation, t]);
 
   const overallConfidence = Math.round(currentScanResult.overall_confidence * 100);
   const totalCalories = Math.round(totals.calories_kcal);

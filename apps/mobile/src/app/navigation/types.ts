@@ -5,6 +5,10 @@ export type RootStackParamList = {
   Main: undefined;
   Onboarding: undefined;
   Settings: undefined;
+  MealTimeline: undefined;
+  MealDetail: { mealId: string };
+  MealEdit: { mealId: string };
+  ManualMealEntry: undefined;
 };
 
 export type AuthStackParamList = {

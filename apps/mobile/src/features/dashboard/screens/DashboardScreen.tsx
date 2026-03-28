@@ -170,7 +170,7 @@ export const DashboardScreen = () => {
             }}
           >
             <Text style={{ ...typography.titleLg }}>{t('tiles.recentMeals')}</Text>
-            <Pressable hitSlop={8}>
+            <Pressable hitSlop={8} onPress={() => navigation.navigate('MealTimeline')}>
               <Text
                 style={{
                   ...typography.labelMd,

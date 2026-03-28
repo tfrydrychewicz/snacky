@@ -49,3 +49,61 @@ export const MealSchema = TimestampedSchema.extend({
 });
 
 export type Meal = z.infer<typeof MealSchema>;
+
+export const MealRowSchema = z.object({
+  id: z.string().uuid(),
+  user_id: z.string().uuid(),
+  meal_type: z.string(),
+  logged_at: z.string(),
+  timezone_offset: z.number().nullable(),
+  image_key: z.string().nullable(),
+  ai_analysis: z.record(z.unknown()).nullable(),
+  total_calories: z.number(),
+  total_protein_g: z.number(),
+  total_carbs_g: z.number(),
+  total_fat_g: z.number(),
+  total_fiber_g: z.number(),
+  total_sugar_g: z.number(),
+  total_sodium_mg: z.number(),
+  user_modified: z.boolean(),
+  modification_diff: z.record(z.unknown()).nullable(),
+  source: z.string(),
+  nova_class: z.number().nullable(),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
+export type MealRow = z.infer<typeof MealRowSchema>;
+
+export const MealIngredientRowSchema = z.object({
+  id: z.string().uuid(),
+  meal_id: z.string().uuid(),
+  name: z.string(),
+  usda_fdc_id: z.number().nullable(),
+  portion_g: z.number(),
+  calories: z.number(),
+  protein_g: z.number(),
+  carbs_g: z.number(),
+  fat_g: z.number(),
+  confidence: z.number(),
+  user_verified: z.boolean(),
+  sort_order: z.number(),
+});
+
+export type MealIngredientRow = z.infer<typeof MealIngredientRowSchema>;
+
+export const MealCommentRowSchema = z.object({
+  id: z.string().uuid(),
+  meal_id: z.string().uuid(),
+  user_id: z.string().uuid(),
+  content: z.string(),
+  created_at: z.string(),
+});
+
+export type MealCommentRow = z.infer<typeof MealCommentRowSchema>;
+
+export const MealWithIngredientsSchema = MealRowSchema.extend({
+  meal_ingredients: z.array(MealIngredientRowSchema),
+});
+
+export type MealWithIngredients = z.infer<typeof MealWithIngredientsSchema>;

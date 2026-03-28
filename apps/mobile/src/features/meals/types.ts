@@ -1,1 +1,10 @@
-export type { Meal, MealType, MealScanResult, IngredientAnalysis } from '@snacky/shared-types';
+export type {
+  Meal,
+  MealType,
+  MealScanResult,
+  IngredientAnalysis,
+  MealRow,
+  MealIngredientRow,
+  MealCommentRow,
+  MealWithIngredients,
+} from '@snacky/shared-types';

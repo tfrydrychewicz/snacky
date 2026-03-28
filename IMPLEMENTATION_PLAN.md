@@ -342,31 +342,31 @@
 
 ### 1.4 Meal CRUD & Comments (Week 8–9)
 
-- [ ] Implement Meals list screen (`MealTimeline.tsx`):
-  - [ ] Grouped by day
-  - [ ] `MealCard.tsx` — thumbnail, meal type, calorie summary, time
-  - [ ] Pull-to-refresh
-  - [ ] Cursor-based pagination via TanStack Query
-- [ ] Implement Meal detail screen (`MealDetail.tsx`):
-  - [ ] Full-size meal photo (Supabase Storage signed URL)
-  - [ ] `NutritionBreakdown.tsx` — detailed macro/micro display
-  - [ ] Ingredient list with confidence indicators
-  - [ ] User modification diff (AI vs final values)
-  - [ ] Comments list
-- [ ] Implement `MealEditScreen`:
-  - [ ] Edit portions, add/remove ingredients
-  - [ ] Update nutritional totals
-  - [ ] Save changes via Supabase PostgREST
-- [ ] Implement meal delete (with confirmation dialog)
-- [ ] Implement manual meal entry fallback (no photo):
-  - [ ] Search USDA foods by name
-  - [ ] Manual ingredient + portion entry
-  - [ ] Auto-calculate nutritional values from USDA data
-- [ ] Implement meal comments:
-  - [ ] Add comment (`CommentInput.tsx`)
-  - [ ] List comments per meal
-  - [ ] Delete own comments
-- [ ] Add meals translation keys to `en/meals.json` and `pl/meals.json`
+- [x] Implement Meals list screen (`MealTimeline.tsx`):
+  - [x] Grouped by day
+  - [x] `MealCard.tsx` — thumbnail, meal type, calorie summary, time
+  - [x] Pull-to-refresh
+  - [x] Cursor-based pagination via TanStack Query
+- [x] Implement Meal detail screen (`MealDetail.tsx`):
+  - [x] Full-size meal photo (Supabase Storage signed URL)
+  - [x] `NutritionBreakdown.tsx` — detailed macro/micro display
+  - [x] Ingredient list with confidence indicators
+  - [x] User modification diff (AI vs final values)
+  - [x] Comments list
+- [x] Implement `MealEditScreen`:
+  - [x] Edit portions, add/remove ingredients
+  - [x] Update nutritional totals
+  - [x] Save changes via Supabase PostgREST
+- [x] Implement meal delete (with confirmation dialog)
+- [x] Implement manual meal entry fallback (no photo):
+  - [x] Search USDA foods by name
+  - [x] Manual ingredient + portion entry
+  - [x] Auto-calculate nutritional values from USDA data
+- [x] Implement meal comments:
+  - [x] Add comment (`CommentInput.tsx`)
+  - [x] List comments per meal
+  - [x] Delete own comments
+- [x] Add meals translation keys to `en/meals.json` and `pl/meals.json`
 
 ### 1.5 Dashboard — Calorie & Macro Tracking (Week 9–10)
 
