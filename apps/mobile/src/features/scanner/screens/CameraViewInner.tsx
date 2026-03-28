@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Platform } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ActivityIndicator, Platform } from 'react-native';
 import {
   Camera,
   useCameraDevice,
@@ -8,9 +8,10 @@ import {
 } from 'react-native-vision-camera';
 import type { TFunction } from 'i18next';
 import type { MealType } from '@snacky/shared-types';
+import { CameraIcon, ImageIcon } from 'lucide-react-native';
 import { CameraOverlay } from '../components/CameraOverlay';
 import { useImageCompression } from '../hooks/useImageCompression';
-import { colors, typography, spacing } from '~/shared/theme/tokens';
+import { colors, typography, spacing, radii } from '~/shared/theme/tokens';
 
 type Props = {
   mealType: MealType;
@@ -65,19 +66,27 @@ export const CameraViewInner = ({
     }
   }, [flashEnabled, compress, onAnalyze, mealType]);
 
-  if (!hasPermission) {
+  if (!hasPermission || !device) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.text}>{t('camera_permission_message')}</Text>
-      </View>
-    );
-  }
+        <CameraIcon size={64} color={colors.outline} strokeWidth={1.2} />
+        <Text style={styles.fallbackTitle}>{t('camera_title')}</Text>
+        <Text style={styles.text}>
+          {!hasPermission ? t('camera_permission_message') : t('camera_no_device')}
+        </Text>
 
-  if (!device) {
-    return (
-      <View style={styles.center}>
-        <Text style={styles.text}>{t('camera_no_device')}</Text>
+        <Pressable
+          onPress={onGallery}
+          disabled={showLoader}
+          style={[styles.galleryFallbackButton, showLoader && { opacity: 0.6 }]}
+        >
+          <ImageIcon size={22} color={colors.onPrimary} strokeWidth={2} />
+          <Text style={styles.galleryFallbackText}>
+            {showLoader ? t('analyzing') : t('gallery_pick')}
+          </Text>
+        </Pressable>
+
+        {error && <Text style={styles.errorFallback}>{t('scan_error')}</Text>}
       </View>
     );
   }
@@ -134,9 +143,38 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     padding: spacing.xl,
   },
+  fallbackTitle: {
+    ...typography.headlineLg,
+    color: colors.onSurface,
+    marginTop: spacing.md,
+  },
   text: {
-    ...typography.bodyLg,
+    ...typography.bodyMd,
     color: colors.onSurfaceVariant,
+    textAlign: 'center',
+    paddingHorizontal: spacing.lg,
+    marginTop: spacing.xs,
+  },
+  galleryFallbackButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.primary,
+    paddingVertical: 16,
+    paddingHorizontal: spacing.xl,
+    borderRadius: radii.full,
+    marginTop: spacing.lg,
+    width: '100%',
+  },
+  galleryFallbackText: {
+    ...typography.titleMd,
+    color: colors.onPrimary,
+    fontWeight: '700',
+  },
+  errorFallback: {
+    ...typography.bodyMd,
+    color: colors.error,
     textAlign: 'center',
     marginTop: spacing.md,
   },
