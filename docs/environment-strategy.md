@@ -34,6 +34,38 @@ pnpm ios   # or pnpm android
 supabase db reset   # drops, re-applies migrations, runs seed.sql
 ```
 
+### Wireless Device Testing (Physical Phone)
+
+When testing on a physical device over WiFi, `127.0.0.1` won't work — the phone
+needs your Mac's LAN IP to reach both Metro and the local Supabase stack.
+
+**Quick start:**
+
+```bash
+# One command: detects LAN IP, generates .env.wireless, starts Metro on 0.0.0.0
+pnpm start:wireless
+```
+
+**Step by step (if you need separate build & serve):**
+
+```bash
+# 1. Generate .env.wireless with your LAN IP (no Metro)
+pnpm start:wireless:env
+
+# 2. Build the app using the wireless env file
+ENVFILE=.env.wireless pnpm ios   # or android
+
+# 3. Start Metro bound to all interfaces
+pnpm start:wireless
+```
+
+The script auto-detects your Mac's LAN IP (from `en0`–`en3`) and writes
+`apps/mobile/.env.wireless` with `SUPABASE_URL=http://<LAN_IP>:54321`.
+This file is gitignored.
+
+> **Note:** Supabase Docker containers already bind to `0.0.0.0`, so they are
+> reachable from the LAN without any config changes to `supabase/config.toml`.
+
 ### Staging
 
 | Component          | Configuration                                                  |
@@ -70,6 +102,7 @@ supabase functions deploy --all   # deploy all Edge Functions
 | `supabase/config.toml`                 | Local dev Docker config                    | Yes             |
 | `supabase/.env`                        | Local secrets (OAuth, API keys)            | No (gitignored) |
 | `apps/mobile/.env`                     | Mobile app config (Supabase URL, anon key) | No (gitignored) |
+| `apps/mobile/.env.wireless`            | Auto-generated for wireless testing        | No (gitignored) |
 | `apps/mobile/.env.example`             | Template for mobile env vars               | Yes             |
 | `.github/workflows/deploy-staging.yml` | Staging deploy automation                  | Yes             |
 

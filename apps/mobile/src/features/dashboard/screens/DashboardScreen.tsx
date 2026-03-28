@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ScrollView, View, Text, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { Zap, Send, UtensilsCrossed, TrendingDown } from 'lucide-react-native';
 import { useAuth } from '~/app/providers/AuthProvider';
+import type { RootStackParamList } from '~/app/navigation/types';
 import { AppHeader } from '~/shared/components/AppHeader';
 import { CircularProgress } from '~/shared/components/CircularProgress';
 import { MacroBar } from '~/shared/components/MacroBar';
@@ -14,14 +17,19 @@ import { colors, spacing, typography, radii } from '~/shared/theme/tokens';
 export const DashboardScreen = () => {
   const { t } = useTranslation('dashboard');
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { user } = useAuth();
 
   const fullName = String(user?.user_metadata?.full_name ?? '');
   const displayName = fullName.split(' ')[0] || 'User';
 
+  const openSettings = useCallback(() => {
+    navigation.navigate('Settings');
+  }, [navigation]);
+
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface }}>
-      <AppHeader />
+      <AppHeader onSettingsPress={openSettings} />
       <ScrollView
         contentContainerStyle={{
           paddingHorizontal: spacing.lg,

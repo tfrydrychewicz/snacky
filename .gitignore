@@ -39,6 +39,7 @@ supabase/.branches/
 .env.*.local
 .env.production
 .env.staging
+.env.wireless
 
 # IDE
 .idea/

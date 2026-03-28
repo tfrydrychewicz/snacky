@@ -6,6 +6,7 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
+    "start:wireless": "ENVFILE=.env.wireless react-native start --host 0.0.0.0",
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
     "test": "jest",
