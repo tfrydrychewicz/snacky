@@ -6,6 +6,7 @@ import { useAuth } from '~/app/providers/AuthProvider';
 import { useTheme } from '~/app/providers/ThemeProvider';
 import { AuthNavigator } from './AuthNavigator';
 import { MainTabNavigator } from './MainTabNavigator';
+import { OnboardingNavigator } from './OnboardingNavigator';
 import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -19,7 +20,7 @@ const LoadingScreen = () => (
 );
 
 export const RootNavigator = () => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, hasCompletedOnboarding } = useAuth();
   const { theme } = useTheme();
 
   if (isLoading) {
@@ -29,14 +30,20 @@ export const RootNavigator = () => {
   return (
     <NavigationContainer theme={theme}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {isAuthenticated ? (
-          <Stack.Screen name="Main" component={MainTabNavigator} />
-        ) : (
+        {!isAuthenticated ? (
           <Stack.Screen
             name="Auth"
             component={AuthNavigator}
             options={{ animationTypeForReplace: 'pop' }}
           />
+        ) : !hasCompletedOnboarding ? (
+          <Stack.Screen
+            name="Onboarding"
+            component={OnboardingNavigator}
+            options={{ animation: 'fade' }}
+          />
+        ) : (
+          <Stack.Screen name="Main" component={MainTabNavigator} />
         )}
       </Stack.Navigator>
     </NavigationContainer>

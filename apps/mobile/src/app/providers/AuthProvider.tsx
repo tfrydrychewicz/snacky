@@ -20,11 +20,13 @@ interface AuthState {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  hasCompletedOnboarding: boolean;
 }
 
 interface AuthContextValue extends AuthState {
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -60,45 +62,71 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     user: null,
     isLoading: true,
     isAuthenticated: false,
+    hasCompletedOnboarding: false,
   });
 
-  useEffect(() => {
-    const supabase = getSupabase();
+  const checkOnboardingStatus = useCallback(async (userId: string): Promise<boolean> => {
+    try {
+      const { data, error } = await getSupabase()
+        .from('user_profiles')
+        .select('onboarding_completed_at')
+        .eq('user_id', userId)
+        .single();
+      if (error) {
+        console.warn('[Auth] Failed to check onboarding status:', error.message);
+        return false;
+      }
+      return !!data?.onboarding_completed_at;
+    } catch (err) {
+      console.warn('[Auth] checkOnboardingStatus error:', err);
+      return false;
+    }
+  }, []);
 
-    void supabase.auth.getSession().then(({ data: { session } }) => {
+  const resolveSession = useCallback(
+    async (session: Session | null) => {
+      let onboarded = false;
+      if (session?.user) {
+        onboarded = await checkOnboardingStatus(session.user.id);
+      }
       setState({
         session,
         user: session?.user ?? null,
         isLoading: false,
         isAuthenticated: !!session,
+        hasCompletedOnboarding: onboarded,
       });
 
       if (session?.refresh_token) {
         void persistRefreshToken(session.refresh_token);
+      } else if (!session) {
+        void clearPersistedRefreshToken();
       }
-    });
+    },
+    [checkOnboardingStatus],
+  );
+
+  useEffect(() => {
+    const supabase = getSupabase();
+
+    void supabase.auth
+      .getSession()
+      .then(({ data: { session } }) => resolveSession(session))
+      .catch((err: unknown) => {
+        console.error('[Auth] getSession failed:', err);
+        setState((prev) => ({ ...prev, isLoading: false }));
+      });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setState({
-        session,
-        user: session?.user ?? null,
-        isLoading: false,
-        isAuthenticated: !!session,
-      });
-
-      if (session?.refresh_token) {
-        await persistRefreshToken(session.refresh_token);
-      } else {
-        await clearPersistedRefreshToken();
-      }
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      void resolveSession(session);
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [resolveSession]);
 
   const signInWithGoogle = useCallback(async () => {
     await GoogleSignin.hasPlayServices();
@@ -127,9 +155,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await clearPersistedRefreshToken();
   }, []);
 
+  const refreshProfile = useCallback(async () => {
+    if (!state.user) return;
+    const onboarded = await checkOnboardingStatus(state.user.id);
+    setState((prev) => ({ ...prev, hasCompletedOnboarding: onboarded }));
+  }, [state.user, checkOnboardingStatus]);
+
   const value = useMemo<AuthContextValue>(
-    () => ({ ...state, signInWithGoogle, signOut }),
-    [state, signInWithGoogle, signOut],
+    () => ({ ...state, signInWithGoogle, signOut, refreshProfile }),
+    [state, signInWithGoogle, signOut, refreshProfile],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

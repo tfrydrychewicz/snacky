@@ -241,45 +241,45 @@
 
 ### 1.1 Onboarding Questionnaire (Week 5–6)
 
-- [ ] Create `OnboardingNavigator` (Stack, modal presentation)
-- [ ] Implement `OnboardingStepScreen` — dynamic multi-step wizard
-- [ ] Build animated step transitions (Reanimated 4, spring easing)
-- [ ] Create step progress indicator
-- [ ] Implement Step 1 — `BiometricsStep.tsx`:
-  - [ ] Age picker (date of birth)
-  - [ ] Biological sex selector
-  - [ ] Height input (cm)
-  - [ ] Current weight input (kg)
-  - [ ] Zod validation schema
-- [ ] Implement Step 2 — `GoalStep.tsx`:
-  - [ ] Goal selection cards (lose weight, gain muscle, maintain, improve nutrition quality)
-  - [ ] Animated card selection
-- [ ] Implement Step 3 — Target parameters:
-  - [ ] Goal weight input (kg)
-  - [ ] Timeline picker (weeks)
-- [ ] Implement Step 4 — `DietaryRestrictionsStep.tsx`:
-  - [ ] Multi-select chips (vegetarian, vegan, gluten-free, lactose-free, etc.)
-  - [ ] Allergy multi-select + free text input
-- [ ] Implement Step 5 — `LifestyleStep.tsx`:
-  - [ ] Activity level selector (sedentary → extra active)
-  - [ ] Cooking frequency
-  - [ ] Cooking skill level
-  - [ ] Cuisine preferences multi-select
-- [ ] Implement Step 6 — `PsychoBehavioralStep.tsx`:
-  - [ ] Eating triggers multi-select (stress, boredom, social, emotional)
-  - [ ] Snacking patterns (none / occasional / frequent)
-  - [ ] CFC scale items (Consideration of Future Consequences)
-- [ ] Implement Step 7 — `NotificationPrefsStep.tsx`:
-  - [ ] Enable/disable notifications toggle
-  - [ ] Meal reminders, nudges, weekly report toggles
-  - [ ] Quiet hours time picker
-- [ ] Implement `OnboardingCompleteScreen` with success animation (Lottie)
-- [ ] Backend: Implement TDEE calculation (Mifflin-St Jeor equation)
-- [ ] Backend: Compute macro targets from goal type + TDEE
-- [ ] Backend: Generate psychological profile + AI persona calibration
-- [ ] Create Supabase Edge Function or PostgREST call to save onboarding data
-- [ ] Wire navigation: after login, if `onboarding_completed_at` is null → show onboarding
-- [ ] Add all onboarding translation keys to `en/onboarding.json` and `pl/onboarding.json`
+- [x] Create `OnboardingNavigator` (Stack, modal presentation)
+- [x] Implement `OnboardingStepScreen` — dynamic multi-step wizard
+- [x] Build animated step transitions (Reanimated 4, spring easing)
+- [x] Create step progress indicator
+- [x] Implement Step 1 — `BiometricsStep.tsx`:
+  - [x] Age picker (date of birth)
+  - [x] Biological sex selector
+  - [x] Height input (cm)
+  - [x] Current weight input (kg)
+  - [x] Zod validation schema
+- [x] Implement Step 2 — `GoalStep.tsx`:
+  - [x] Goal selection cards (lose weight, gain muscle, maintain, improve nutrition quality)
+  - [x] Animated card selection
+- [x] Implement Step 3 — Target parameters:
+  - [x] Goal weight input (kg)
+  - [x] Timeline picker (weeks)
+- [x] Implement Step 4 — `DietaryRestrictionsStep.tsx`:
+  - [x] Multi-select chips (vegetarian, vegan, gluten-free, lactose-free, etc.)
+  - [x] Allergy multi-select + free text input
+- [x] Implement Step 5 — `LifestyleStep.tsx`:
+  - [x] Activity level selector (sedentary → extra active)
+  - [x] Cooking frequency
+  - [x] Cooking skill level
+  - [x] Cuisine preferences multi-select
+- [x] Implement Step 6 — `PsychoBehavioralStep.tsx`:
+  - [x] Eating triggers multi-select (stress, boredom, social, emotional)
+  - [x] Snacking patterns (none / occasional / frequent)
+  - [x] CFC scale items (Consideration of Future Consequences)
+- [x] Implement Step 7 — `NotificationPrefsStep.tsx`:
+  - [x] Enable/disable notifications toggle
+  - [x] Meal reminders, nudges, weekly report toggles
+  - [ ] Quiet hours time picker — deferred to Phase 2.7 (requires notification infrastructure)
+- [x] Implement `OnboardingCompleteScreen` with success animation (Reanimated 4)
+- [x] Backend: Implement TDEE calculation (Mifflin-St Jeor equation)
+- [x] Backend: Compute macro targets from goal type + TDEE
+- [x] Backend: Generate psychological profile + AI persona calibration
+- [x] Create Supabase Edge Function or PostgREST call to save onboarding data
+- [x] Wire navigation: after login, if `onboarding_completed_at` is null → show onboarding
+- [x] Add all onboarding translation keys to `en/onboarding.json` and `pl/onboarding.json`
 - [ ] Test: complete onboarding flow end-to-end on both platforms
 
 ### 1.2 Meal Scanning Pipeline — Mobile (Week 6–7)

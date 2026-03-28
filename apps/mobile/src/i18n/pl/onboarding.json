@@ -1,1 +1,144 @@
-{}
+{
+  "title": "Poznajmy się",
+  "step": "Krok {{current}} z {{total}}",
+  "next": "Dalej",
+  "back": "Wstecz",
+  "finish": "Zakończ konfigurację",
+  "skip": "Pomiń",
+
+  "biometrics": {
+    "title": "Twoje ciało",
+    "subtitle": "Wykorzystamy te dane do obliczenia Twoich dziennych potrzeb",
+    "dateOfBirth": "Data urodzenia",
+    "dateOfBirthPlaceholder": "RRRR-MM-DD",
+    "biologicalSex": "Płeć biologiczna",
+    "male": "Mężczyzna",
+    "female": "Kobieta",
+    "height": "Wzrost (cm)",
+    "weight": "Aktualna waga (kg)"
+  },
+
+  "goal": {
+    "title": "Twój cel",
+    "subtitle": "Co chcesz osiągnąć?",
+    "lose_weight": "Schudnąć",
+    "lose_weight_desc": "Redukcja tkanki tłuszczowej z zachowaniem mięśni",
+    "gain_muscle": "Zbudować masę",
+    "gain_muscle_desc": "Budowa masy mięśniowej z kontrolowaną nadwyżką",
+    "maintain": "Utrzymać wagę",
+    "maintain_desc": "Zachować obecną wagę i poprawić nawyki",
+    "improve_nutrition": "Poprawić odżywianie",
+    "improve_nutrition_desc": "Skupienie na jakości jedzenia i mikroskładnikach"
+  },
+
+  "target": {
+    "title": "Twój cel wagowy",
+    "subtitle": "Ustaw realistyczny cel i harmonogram",
+    "goalWeight": "Waga docelowa (kg)",
+    "timeline": "Czas realizacji (tygodnie)",
+    "timelineHint": "{{weeks}} tygodni ≈ {{months}} miesięcy"
+  },
+
+  "dietary": {
+    "title": "Preferencje żywieniowe",
+    "subtitle": "Czy masz jakieś ograniczenia lub alergie?",
+    "restrictions": "Ograniczenia dietetyczne",
+    "allergies": "Alergie",
+    "customAllergy": "Inna alergia (wpisz aby dodać)",
+    "vegetarian": "Wegetariańska",
+    "vegan": "Wegańska",
+    "gluten_free": "Bezglutenowa",
+    "lactose_free": "Bez laktozy",
+    "keto": "Keto",
+    "paleo": "Paleo",
+    "halal": "Halal",
+    "kosher": "Koszerna",
+    "nuts": "Orzechy",
+    "peanuts": "Orzeszki ziemne",
+    "shellfish": "Owoce morza",
+    "dairy": "Nabiał",
+    "eggs": "Jajka",
+    "soy": "Soja",
+    "wheat": "Pszenica",
+    "fish": "Ryby"
+  },
+
+  "lifestyle": {
+    "title": "Twój styl życia",
+    "subtitle": "Pomóż nam dopasować posiłki do Twojej rutyny",
+    "activityLevel": "Poziom aktywności",
+    "sedentary": "Siedzący",
+    "sedentary_desc": "Mało lub brak ćwiczeń",
+    "lightly_active": "Lekko aktywny",
+    "lightly_active_desc": "Lekkie ćwiczenia 1–3 dni/tydzień",
+    "moderately_active": "Umiarkowanie aktywny",
+    "moderately_active_desc": "Umiarkowane ćwiczenia 3–5 dni/tydzień",
+    "very_active": "Bardzo aktywny",
+    "very_active_desc": "Intensywne ćwiczenia 6–7 dni/tydzień",
+    "extra_active": "Ekstremalnie aktywny",
+    "extra_active_desc": "Bardzo intensywne ćwiczenia i praca fizyczna",
+    "cookingSkill": "Umiejętności kulinarne",
+    "beginner": "Początkujący",
+    "intermediate": "Średniozaawansowany",
+    "advanced": "Zaawansowany",
+    "cookingTime": "Preferowany czas gotowania",
+    "quick": "Szybko (< 20 min)",
+    "moderate": "Umiarkowanie (20–45 min)",
+    "elaborate": "Rozbudowane (45+ min)",
+    "cuisines": "Preferowane kuchnie",
+    "polish": "Polska",
+    "italian": "Włoska",
+    "mediterranean": "Śródziemnomorska",
+    "asian": "Azjatycka",
+    "mexican": "Meksykańska",
+    "indian": "Indyjska",
+    "american": "Amerykańska",
+    "french": "Francuska",
+    "middle_eastern": "Bliskowschodnia",
+    "japanese": "Japońska"
+  },
+
+  "psycho": {
+    "title": "Nawyki żywieniowe",
+    "subtitle": "Zrozumienie Twoich wzorców pomoże nam lepiej Cię wspierać",
+    "triggers": "Co wywołuje nieplanowane jedzenie?",
+    "stress": "Stres",
+    "boredom": "Nuda",
+    "social": "Sytuacje społeczne",
+    "emotional": "Emocje",
+    "habit": "Nawyk",
+    "reward": "Nagroda",
+    "snacking": "Jak często podjadasz?",
+    "none": "Rzadko / Nigdy",
+    "occasional": "Okazjonalnie",
+    "frequent": "Często",
+    "cfc": "Jak bardzo myślisz o długoterminowych konsekwencjach swoich wyborów żywieniowych?",
+    "cfc_low": "Niewiele",
+    "cfc_high": "Bardzo dużo"
+  },
+
+  "notifications": {
+    "title": "Powiadomienia",
+    "subtitle": "Bądź na bieżąco dzięki delikatnym przypomnieniom",
+    "enable": "Włącz powiadomienia",
+    "mealReminders": "Przypomnienia o posiłkach",
+    "mealRemindersDesc": "Przypomnij mi o logowaniu posiłków o zwykłych porach",
+    "nudges": "Inteligentne podpowiedzi",
+    "nudgesDesc": "Wskazówki gdy odchodzę od celów makro",
+    "weeklyReport": "Raport tygodniowy",
+    "weeklyReportDesc": "Podsumowanie mojego tygodniowego postępu"
+  },
+
+  "complete": {
+    "title": "Wszystko gotowe!",
+    "subtitle": "Twój spersonalizowany plan jest gotowy",
+    "tdee": "Twoje dzienne zapotrzebowanie energetyczne",
+    "kcal": "{{value}} kcal",
+    "protein": "Białko",
+    "carbs": "Węglowodany",
+    "fat": "Tłuszcze",
+    "grams": "{{value}}g",
+    "startButton": "Zacznij śledzić",
+    "adjustLater": "Możesz dostosować te cele w dowolnym momencie w Ustawieniach"
+  }
+}

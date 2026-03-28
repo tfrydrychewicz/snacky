@@ -9,6 +9,17 @@ export type AuthStackParamList = {
   Login: undefined;
 };
 
+export type OnboardingStackParamList = {
+  Steps: undefined;
+  Complete: {
+    tdee: number;
+    targetKcal: number;
+    proteinG: number;
+    carbsG: number;
+    fatG: number;
+  };
+};
+
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace ReactNavigation {

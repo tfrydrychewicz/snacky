@@ -1,1 +1,144 @@
-{}
+{
+  "title": "Let's get to know you",
+  "step": "Step {{current}} of {{total}}",
+  "next": "Continue",
+  "back": "Back",
+  "finish": "Complete Setup",
+  "skip": "Skip",
+
+  "biometrics": {
+    "title": "Your Body",
+    "subtitle": "We'll use this to calculate your daily needs",
+    "dateOfBirth": "Date of Birth",
+    "dateOfBirthPlaceholder": "YYYY-MM-DD",
+    "biologicalSex": "Biological Sex",
+    "male": "Male",
+    "female": "Female",
+    "height": "Height (cm)",
+    "weight": "Current Weight (kg)"
+  },
+
+  "goal": {
+    "title": "Your Goal",
+    "subtitle": "What would you like to achieve?",
+    "lose_weight": "Lose Weight",
+    "lose_weight_desc": "Reduce body fat while preserving muscle",
+    "gain_muscle": "Gain Muscle",
+    "gain_muscle_desc": "Build lean mass with a controlled surplus",
+    "maintain": "Maintain",
+    "maintain_desc": "Keep your current weight and improve habits",
+    "improve_nutrition": "Improve Nutrition",
+    "improve_nutrition_desc": "Focus on food quality and micronutrients"
+  },
+
+  "target": {
+    "title": "Your Target",
+    "subtitle": "Set a realistic goal weight and timeline",
+    "goalWeight": "Goal Weight (kg)",
+    "timeline": "Timeline (weeks)",
+    "timelineHint": "{{weeks}} weeks ≈ {{months}} months"
+  },
+
+  "dietary": {
+    "title": "Dietary Preferences",
+    "subtitle": "Any restrictions or allergies we should know about?",
+    "restrictions": "Dietary Restrictions",
+    "allergies": "Allergies",
+    "customAllergy": "Other allergy (type to add)",
+    "vegetarian": "Vegetarian",
+    "vegan": "Vegan",
+    "gluten_free": "Gluten-Free",
+    "lactose_free": "Lactose-Free",
+    "keto": "Keto",
+    "paleo": "Paleo",
+    "halal": "Halal",
+    "kosher": "Kosher",
+    "nuts": "Nuts",
+    "peanuts": "Peanuts",
+    "shellfish": "Shellfish",
+    "dairy": "Dairy",
+    "eggs": "Eggs",
+    "soy": "Soy",
+    "wheat": "Wheat",
+    "fish": "Fish"
+  },
+
+  "lifestyle": {
+    "title": "Your Lifestyle",
+    "subtitle": "Help us tailor meals to your routine",
+    "activityLevel": "Activity Level",
+    "sedentary": "Sedentary",
+    "sedentary_desc": "Little or no exercise",
+    "lightly_active": "Lightly Active",
+    "lightly_active_desc": "Light exercise 1–3 days/week",
+    "moderately_active": "Moderately Active",
+    "moderately_active_desc": "Moderate exercise 3–5 days/week",
+    "very_active": "Very Active",
+    "very_active_desc": "Hard exercise 6–7 days/week",
+    "extra_active": "Extra Active",
+    "extra_active_desc": "Very hard exercise & physical job",
+    "cookingSkill": "Cooking Skill",
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
+    "cookingTime": "Cooking Time Preference",
+    "quick": "Quick (< 20 min)",
+    "moderate": "Moderate (20–45 min)",
+    "elaborate": "Elaborate (45+ min)",
+    "cuisines": "Cuisine Preferences",
+    "polish": "Polish",
+    "italian": "Italian",
+    "mediterranean": "Mediterranean",
+    "asian": "Asian",
+    "mexican": "Mexican",
+    "indian": "Indian",
+    "american": "American",
+    "french": "French",
+    "middle_eastern": "Middle Eastern",
+    "japanese": "Japanese"
+  },
+
+  "psycho": {
+    "title": "Eating Habits",
+    "subtitle": "Understanding your patterns helps us support you better",
+    "triggers": "What triggers unplanned eating?",
+    "stress": "Stress",
+    "boredom": "Boredom",
+    "social": "Social situations",
+    "emotional": "Emotional",
+    "habit": "Habit",
+    "reward": "Reward",
+    "snacking": "How often do you snack?",
+    "none": "Rarely / Never",
+    "occasional": "Occasionally",
+    "frequent": "Frequently",
+    "cfc": "How much do you think about long-term consequences of your food choices?",
+    "cfc_low": "Not much",
+    "cfc_high": "A lot"
+  },
+
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Stay on track with gentle reminders",
+    "enable": "Enable Notifications",
+    "mealReminders": "Meal Reminders",
+    "mealRemindersDesc": "Remind me to log meals at usual times",
+    "nudges": "Smart Nudges",
+    "nudgesDesc": "Tips when I'm off track on macros",
+    "weeklyReport": "Weekly Report",
+    "weeklyReportDesc": "Summary of my weekly progress"
+  },
+
+  "complete": {
+    "title": "You're all set!",
+    "subtitle": "Your personalized plan is ready",
+    "tdee": "Your daily energy needs",
+    "kcal": "{{value}} kcal",
+    "protein": "Protein",
+    "carbs": "Carbs",
+    "fat": "Fat",
+    "grams": "{{value}}g",
+    "startButton": "Start Tracking",
+    "adjustLater": "You can adjust these targets anytime in Settings"
+  }
+}
