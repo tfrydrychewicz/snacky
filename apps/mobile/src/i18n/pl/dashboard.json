@@ -1,17 +1,28 @@
 {
   "greeting": "Dzień dobry, {{name}}",
   "subtitle_progress": "Osiągnąłeś już {{pct}}% dziennego celu!",
+  "subtitle_no_meals": "Zacznij śledzić swoje posiłki!",
+
   "tiles.calorieBudget": "Budżet kalorii",
   "tiles.kcalUnit": "kcal",
-  "tiles.remaining": "{{kcal}} kcal pozostało na kolację",
+  "tiles.remaining": "{{kcal}} kcal pozostało",
+  "tiles.over_budget": "{{kcal}} kcal ponad budżet",
+
   "tiles.dailyMacros": "Makroskładniki",
   "tiles.protein": "Białko",
   "tiles.carbs": "Węgle",
   "tiles.fat": "Tłuszcze",
+
   "tiles.recentMeals": "Ostatnie posiłki",
   "tiles.viewHistory": "Historia",
+  "tiles.noMealsToday": "Brak posiłków na dziś",
+
+  "tiles.quickScan": "Skanuj posiłek",
+  "tiles.manualEntry": "Wpis ręczny",
+
   "tiles.weightTrend": "Trend wagi",
   "tiles.weightLost": "Schudłeś {{lbs}} funtów w tym miesiącu. Tak trzymaj!",
+
   "ai_preview": "Na podstawie spożycia białka polecam jogurt grecki z migdałami na popołudnie.",
   "ai_ask": "Zapytaj o cokolwiek..."
 }

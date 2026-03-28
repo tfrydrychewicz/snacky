@@ -1,17 +1,28 @@
 {
   "greeting": "Good morning, {{name}}",
   "subtitle_progress": "You've reached {{pct}}% of your daily goal already!",
+  "subtitle_no_meals": "Start tracking your meals today!",
+
   "tiles.calorieBudget": "Calorie Budget",
   "tiles.kcalUnit": "kcal",
-  "tiles.remaining": "{{kcal}} kcal remaining for dinner",
+  "tiles.remaining": "{{kcal}} kcal remaining",
+  "tiles.over_budget": "{{kcal}} kcal over budget",
+
   "tiles.dailyMacros": "Daily Macros",
   "tiles.protein": "Protein",
   "tiles.carbs": "Carbs",
   "tiles.fat": "Fats",
+
   "tiles.recentMeals": "Recent Meals",
   "tiles.viewHistory": "View History",
+  "tiles.noMealsToday": "No meals logged today",
+
+  "tiles.quickScan": "Scan Meal",
+  "tiles.manualEntry": "Manual Entry",
+
   "tiles.weightTrend": "Weight Trend",
   "tiles.weightLost": "You've lost {{lbs}} lbs this month. Keep it up!",
+
   "ai_preview": "Based on your protein intake, I recommend a Greek yogurt snack with almonds for this afternoon.",
   "ai_ask": "Ask anything..."
 }

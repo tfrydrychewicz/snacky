@@ -370,28 +370,28 @@
 
 ### 1.5 Dashboard — Calorie & Macro Tracking (Week 9–10)
 
-- [ ] Implement `DashboardScreen` with Bento Grid layout:
-  - [ ] `CalorieBudgetTile.tsx`:
-    - [ ] Animated ring chart (Reanimated 4 SVG, 1200ms spring animation)
-    - [ ] Current / target kcal display
-    - [ ] Remaining budget
-  - [ ] `MacroSummaryTile.tsx`:
-    - [ ] `MacroProgressBars.tsx` — protein, carbs, fat progress bars
-    - [ ] Animated fill (Reanimated 4, 800ms ease-out)
-    - [ ] Percentage and gram values
-  - [ ] `RecentMealsTile.tsx`:
-    - [ ] Horizontal scrollable meal cards
-    - [ ] Tap → navigate to meal detail
-  - [ ] `QuickActionsTile.tsx`:
-    - [ ] Quick-scan FAB
-    - [ ] Quick-add weight
-  - [ ] `AIChatPreviewTile.tsx` (placeholder for Phase 2)
-- [ ] Implement daily summary data fetching (TanStack Query):
-  - [ ] Aggregate meals for current day
-  - [ ] Calculate remaining budget from profile targets
-- [ ] Implement card press feedback animation (Reanimated 4, 100ms scale 0.97)
-- [ ] Implement pull-to-refresh on dashboard
-- [ ] Add dashboard translation keys to `en/dashboard.json` and `pl/dashboard.json`
+- [x] Implement `DashboardScreen` with Bento Grid layout:
+  - [x] `CalorieBudgetTile.tsx`:
+    - [x] Animated ring chart (Reanimated 4 SVG, 1200ms spring animation)
+    - [x] Current / target kcal display
+    - [x] Remaining budget
+  - [x] `MacroSummaryTile.tsx`:
+    - [x] `MacroProgressBars.tsx` — protein, carbs, fat progress bars
+    - [x] Animated fill (Reanimated 4, 800ms ease-out)
+    - [x] Percentage and gram values
+  - [x] `RecentMealsTile.tsx`:
+    - [x] Horizontal scrollable meal cards
+    - [x] Tap → navigate to meal detail
+  - [x] `QuickActionsTile.tsx`:
+    - [x] Quick-scan FAB
+    - [x] Quick-add weight
+  - [x] `AIChatPreviewTile.tsx` (placeholder for Phase 2)
+- [x] Implement daily summary data fetching (TanStack Query):
+  - [x] Aggregate meals for current day
+  - [x] Calculate remaining budget from profile targets
+- [x] Implement card press feedback animation (Reanimated 4, 100ms scale 0.97)
+- [x] Implement pull-to-refresh on dashboard
+- [x] Add dashboard translation keys to `en/dashboard.json` and `pl/dashboard.json`
 
 ### 1.6 Meal Photo History (Week 10)
 
