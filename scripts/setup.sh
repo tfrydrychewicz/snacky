@@ -72,9 +72,40 @@ check_os() {
   fi
 }
 
-check_xcode_clt() {
+check_xcode() {
+  local xcode_path
+  xcode_path=$(xcode-select -p 2>/dev/null || true)
+
+  if [[ -d "/Applications/Xcode.app" ]]; then
+    local xcode_ver
+    xcode_ver=$(/usr/bin/xcodebuild -version 2>/dev/null | awk 'NR==1')
+
+    if [[ -z "$xcode_ver" ]]; then
+      warn "Xcode" "installed but license not accepted"
+      if $CHECK_ONLY; then
+        info "Run: sudo xcodebuild -license accept"
+        FAIL+=("Xcode license")
+      else
+        info "Accepting Xcode license (requires sudo)..."
+        sudo xcodebuild -license accept
+        xcode_ver=$(/usr/bin/xcodebuild -version 2>/dev/null | awk 'NR==1')
+        ok "Xcode" "${xcode_ver:-installed}"
+        INSTALLED+=("Xcode license accepted")
+      fi
+    else
+      ok "Xcode" "$xcode_ver"
+      OK+=("Xcode")
+    fi
+  else
+    fail "Xcode" "not installed"
+    info "Install Xcode from the Mac App Store:"
+    info "  open https://apps.apple.com/app/xcode/id497799835"
+    info "After installing, run: sudo xcode-select -s /Applications/Xcode.app"
+    FAIL+=("Xcode")
+  fi
+
   if xcode-select -p &>/dev/null; then
-    ok "Xcode CLT" "$(xcode-select -p)"
+    ok "Xcode CLT" "$xcode_path"
     OK+=("Xcode CLT")
   else
     if $CHECK_ONLY; then
@@ -388,7 +419,7 @@ main() {
   check_os
 
   step "System prerequisites"
-  check_xcode_clt
+  check_xcode
   check_homebrew
   check_git
 
