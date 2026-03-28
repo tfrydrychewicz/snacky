@@ -1,5 +1,5 @@
 ---
-name: fix-ci
+name: snacky_fix-ci
 description: >-
   Check recent GitHub Actions CI results and fix any failing jobs.
   Trigger when the user asks to check CI, fix CI errors, check pipeline,

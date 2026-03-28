@@ -5,7 +5,7 @@ alwaysApply: false
 
 # Fix CI Errors
 
-When invoked, follow the `fix-ci` skill at `.cursor/skills/fix-ci/SKILL.md`.
+When invoked, follow the `snacky_fix-ci` skill at `.cursor/skills/snacky_fix-ci/SKILL.md`.
 
 ## Quick Reference
 

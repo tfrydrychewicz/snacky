@@ -8,5 +8,6 @@ ios
 .expo
 supabase/.temp
 *.lock
+pnpm-lock.yaml
 *.mdc
 vendor

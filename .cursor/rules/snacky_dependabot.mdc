@@ -1,0 +1,17 @@
+---
+description: Review and process pending Dependabot PRs
+alwaysApply: false
+---
+
+# Dependabot PR Triage
+
+When invoked, follow the `snacky_dependabot` skill at `.cursor/skills/snacky_dependabot/SKILL.md`.
+
+## Quick Reference
+
+1. **List PRs**: `gh pr list --author "app/dependabot" --state open`
+2. **Check CI**: `gh pr checks <PR_NUMBER>`
+3. **Merge green**: `gh pr merge <PR_NUMBER> --squash --auto`
+4. **Fix red**: Checkout branch, fix, push — or `@dependabot rebase`
+5. **Close breaking**: `gh pr close <PR_NUMBER> --comment "reason"`
+6. **Report**: Summarize what was merged, fixed, or closed
