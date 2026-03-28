@@ -319,26 +319,26 @@
 
 ### 1.3 Meal Scanning Pipeline — Backend (Week 6–8)
 
-- [ ] Implement `meal-scan` Edge Function:
-  - [ ] Image validation (format, size, corruption check)
-  - [ ] Build structured vision prompt (ingredient detection, portion estimation, confidence scoring, NOVA classification)
-  - [ ] Call GPT-5.4 Vision API (primary)
-  - [ ] Parse response with Zod strict validation
-  - [ ] Implement multi-model fallback:
-    - [ ] Timeout (>10s) or error → retry with Gemini 3.1 Pro
-    - [ ] If both fail → retry with Claude Sonnet 4.6
-    - [ ] If all fail → return graceful error, offer manual entry
-  - [ ] Cross-reference ingredients with USDA FoodData Central:
-    - [ ] Fuzzy match ingredient names to USDA entries
-    - [ ] Validate caloric estimates within ±30% of USDA values
-    - [ ] Flag deviations for review
-  - [ ] Handle clarification flow (accept clarification answers, re-run analysis)
-  - [ ] Return structured `MealScanResult` response
-  - [ ] Log model used, processing time, confidence scores
-- [ ] Create USDA food data seed script (`scripts/seed-usda.ts`):
-  - [ ] Download SR Legacy + Foundation datasets (~300K entries)
-  - [ ] Store in PostgreSQL `usda_foods` table with full-text search index
-- [ ] Create Supabase DB trigger: on `meals` INSERT → call `embed` Edge Function (async)
+- [x] Implement `meal-scan` Edge Function:
+  - [x] Image validation (format, size, corruption check)
+  - [x] Build structured vision prompt (ingredient detection, portion estimation, confidence scoring, NOVA classification)
+  - [x] Call GPT-5.4 Vision API (primary)
+  - [x] Parse response with Zod strict validation
+  - [x] Implement multi-model fallback:
+    - [x] Timeout (>10s) or error → retry with Gemini 3.1 Pro
+    - [x] If both fail → retry with Claude Sonnet 4.6
+    - [x] If all fail → return graceful error, offer manual entry
+  - [x] Cross-reference ingredients with USDA FoodData Central:
+    - [x] Fuzzy match ingredient names to USDA entries
+    - [x] Validate caloric estimates within ±30% of USDA values
+    - [x] Flag deviations for review
+  - [x] Handle clarification flow (accept clarification answers, re-run analysis)
+  - [x] Return structured `MealScanResult` response
+  - [x] Log model used, processing time, confidence scores
+- [x] Create USDA food data seed script (`scripts/seed-usda.ts`):
+  - [x] Download SR Legacy + Foundation datasets (~300K entries)
+  - [x] Store in PostgreSQL `usda_foods` table with full-text search index
+- [x] Create Supabase DB trigger: on `meals` INSERT → call `embed` Edge Function (async)
 
 ### 1.4 Meal CRUD & Comments (Week 8–9)
 

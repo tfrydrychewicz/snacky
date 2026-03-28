@@ -24,11 +24,13 @@
     "supabase:push": "supabase db push",
     "supabase:functions:serve": "supabase functions serve --no-verify-jwt",
     "i18n:check": "npx tsx scripts/check-i18n-parity.ts",
+    "seed:usda": "npx tsx scripts/seed-usda.ts",
     "ios": "pnpm --filter @snacky/mobile ios",
     "android": "pnpm --filter @snacky/mobile android",
     "start": "pnpm --filter @snacky/mobile start"
   },
   "devDependencies": {
+    "@supabase/supabase-js": "^2.49.0",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "tsx": "^4.19.0",

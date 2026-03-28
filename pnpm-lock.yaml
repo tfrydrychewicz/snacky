@@ -13,6 +13,9 @@ importers:
 
   .:
     devDependencies:
+      '@supabase/supabase-js':
+        specifier: ^2.49.0
+        version: 2.100.1
       prettier:
         specifier: ^3.8.1
         version: 3.8.1
