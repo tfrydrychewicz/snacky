@@ -347,10 +347,16 @@ setup_env_files() {
 setup_ios() {
   step "iOS dependencies (CocoaPods)"
   local ios_dir="$REPO_ROOT/apps/mobile/ios"
+  local native_dir="$REPO_ROOT/apps/mobile/src/native"
 
   if [[ ! -d "$ios_dir" ]]; then
     warn "iOS directory" "not found — skipping"
     return
+  fi
+
+  if [[ ! -d "$native_dir" ]]; then
+    mkdir -p "$native_dir"
+    ok "src/native" "created (required by RN codegen)"
   fi
 
   cd "$REPO_ROOT/apps/mobile"
