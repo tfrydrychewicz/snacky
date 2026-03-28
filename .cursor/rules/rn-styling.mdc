@@ -1,0 +1,52 @@
+---
+description: React Native styling rules — NativeWind vs inline styles vs Gluestack interop
+globs: apps/mobile/src/**/*.tsx
+alwaysApply: false
+---
+
+# React Native Styling
+
+## NativeWind `className` Does NOT Work on Gluestack Components
+
+Gluestack UI components (`Text`, `Box`, `Button`, etc. from `@gluestack-ui/themed`) have their own styling system. NativeWind's `className` prop is **silently ignored** on them — styles won't apply with no error.
+
+```tsx
+// ❌ BAD — className is silently ignored on Gluestack Text
+import { Text } from '@gluestack-ui/themed';
+<Text className="text-headline-md text-primary">Hello</Text>  // renders unstyled
+
+// ✅ GOOD — use RN Text + inline style
+import { Text } from 'react-native';
+<Text style={{ fontSize: 20, fontWeight: '600', color: '#4CAF50' }}>Hello</Text>
+
+// ✅ GOOD — use RN Text + NativeWind className
+import { Text } from 'react-native';
+<Text className="text-headline-md text-primary">Hello</Text>
+
+// ✅ GOOD — use Gluestack props (no className)
+import { Text } from '@gluestack-ui/themed';
+<Text size="lg" bold>Hello</Text>
+```
+
+## Decision Matrix
+
+| Component Source | className works? | Use for |
+|---|---|---|
+| `react-native` (`View`, `Text`, `Pressable`) | ✅ Yes | Layout, text, simple UIs |
+| `react-native-reanimated` (`Animated.View`) | ✅ Yes | Animated containers |
+| `@gluestack-ui/themed` (`Text`, `Box`, etc.) | ❌ No | Only when using Gluestack semantic props |
+
+## Recommendation
+
+For screens and feature components, prefer **React Native primitives + inline `style` objects** using design tokens from `~/shared/theme/tokens.ts`. This avoids all NativeWind/Gluestack interop issues and is guaranteed to render correctly.
+
+```tsx
+import { View, Text } from 'react-native';
+import { colors, spacing } from '~/shared/theme/tokens';
+
+<View style={{ padding: spacing.md, backgroundColor: colors.surface.card }}>
+  <Text style={{ fontSize: 20, fontWeight: '600', color: colors.text.primary }}>
+    Title
+  </Text>
+</View>
+```

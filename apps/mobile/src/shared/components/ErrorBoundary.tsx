@@ -1,5 +1,7 @@
 import React, { Component, type ErrorInfo, type ReactNode } from 'react';
-import { Text, View } from 'react-native';
+import { View, Pressable } from 'react-native';
+import { Text } from '@gluestack-ui/themed';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   children: ReactNode;
@@ -10,6 +12,36 @@ interface State {
   hasError: boolean;
   error: Error | null;
 }
+
+const ErrorFallback = ({
+  error,
+  onRetry,
+}: {
+  error: Error | null;
+  onRetry: () => void;
+}) => {
+  const { t } = useTranslation('common');
+
+  return (
+    <View className="flex-1 items-center justify-center bg-surface-background px-lg">
+      <Text className="text-4xl">⚠️</Text>
+      <Text className="mt-md text-headline-md text-text-primary">
+        {t('common.error.generic')}
+      </Text>
+      {error?.message && (
+        <Text className="mt-sm text-center text-body-md text-text-secondary">
+          {error.message}
+        </Text>
+      )}
+      <Pressable
+        onPress={onRetry}
+        className="mt-lg rounded-md bg-primary px-xl py-sm active:opacity-80"
+      >
+        <Text className="text-label-lg text-text-inverse">{t('common.retry')}</Text>
+      </Pressable>
+    </View>
+  );
+};
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
@@ -25,22 +57,17 @@ export class ErrorBoundary extends Component<Props, State> {
     console.error('ErrorBoundary caught:', error, errorInfo);
   }
 
+  handleRetry = () => {
+    this.setState({ hasError: false, error: null });
+  };
+
   render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
         return this.props.fallback;
       }
-
-      return (
-        <View className="flex-1 items-center justify-center bg-surface-background p-lg">
-          <Text className="text-heading-3 text-red-600">Something went wrong</Text>
-          <Text className="mt-sm text-body-md text-gray-500">
-            {this.state.error?.message}
-          </Text>
-        </View>
-      );
+      return <ErrorFallback error={this.state.error} onRetry={this.handleRetry} />;
     }
-
     return this.props.children;
   }
 }

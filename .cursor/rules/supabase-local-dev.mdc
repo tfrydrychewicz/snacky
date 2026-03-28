@@ -1,0 +1,84 @@
+---
+description: Supabase local development gotchas — config format, extensions, Hermes, and seed data
+globs: supabase/**/*
+alwaysApply: false
+---
+
+# Supabase Local Development
+
+## config.toml Format (CLI v2.75+)
+
+Top-level `project_id`, NOT `[project]` section:
+
+```toml
+# ✅ GOOD (v2.75+)
+project_id = "snacky-local"
+
+# ❌ BAD (old format — causes "invalid keys: project" error)
+[project]
+id = "snacky-local"
+```
+
+## Google OAuth + React Native
+
+`skip_nonce_check = true` is REQUIRED for `signInWithIdToken()` to work locally:
+
+```toml
+[auth.external.google]
+enabled = true
+client_id = "env(GOOGLE_OAUTH_CLIENT_ID)"
+secret = "env(GOOGLE_OAUTH_CLIENT_SECRET)"
+skip_nonce_check = true   # Required for native mobile sign-in
+```
+
+Without this, you get: "Passed nonce and nonce in id_token should either both exist or not."
+
+## Extension Names
+
+The pgvector extension is named `vector`, not `pgvector`:
+
+```sql
+-- ✅ GOOD
+CREATE EXTENSION IF NOT EXISTS "vector" WITH SCHEMA extensions;
+
+-- ❌ BAD — "pgvector" is not available
+CREATE EXTENSION IF NOT EXISTS "pgvector" WITH SCHEMA extensions;
+```
+
+## pgvector Index Dimension Limits
+
+pgvector 0.8.x limits HNSW and IVFFlat indexes to **2000 dimensions**. If your vectors exceed this (e.g., voyage-4-large = 2048), you cannot create a vector index. Use exact (sequential) scan instead and document the limitation.
+
+## Seed Data + DB Triggers
+
+If a trigger on `auth.users` INSERT auto-creates `public.users` rows, the seed file must NOT manually INSERT into `public.users` — it will hit a duplicate key error. Instead:
+
+```sql
+-- ✅ GOOD — let trigger create users, then UPDATE profiles
+INSERT INTO auth.users (...) VALUES (...);  -- trigger fires → creates public.users + user_profiles
+UPDATE user_profiles SET goal_type = 'maintain' WHERE user_id = '...';
+
+-- ❌ BAD — conflicts with trigger
+INSERT INTO auth.users (...) VALUES (...);   -- trigger creates public.users
+INSERT INTO users (...) VALUES (...);         -- duplicate key error!
+```
+
+## Hermes + Supabase Realtime (React Native)
+
+Hermes makes `URL.protocol` read-only. Supabase Realtime client crashes on construction trying to set `wsUrl.protocol`. Fix: import the URL polyfill as the FIRST import in `index.js`:
+
+```js
+// apps/mobile/index.js — MUST be first import
+import 'react-native-url-polyfill/auto';
+import './src/i18n';
+// ...
+```
+
+## Colima Docker Compatibility
+
+If using Colima instead of Docker Desktop, disable analytics to avoid Docker socket mount errors:
+
+```toml
+[analytics]
+enabled = false
+```

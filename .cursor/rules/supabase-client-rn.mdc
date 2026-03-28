@@ -1,0 +1,70 @@
+---
+description: Supabase JS client configuration for React Native — avoid common crashes and type errors
+globs: packages/api-client/**/*,apps/mobile/**/*
+alwaysApply: false
+---
+
+# Supabase Client in React Native
+
+## createClient Options
+
+Only pass options that exist in the `SupabaseClientOptions` type. Verify against the installed `@supabase/supabase-js` version before adding any option.
+
+```ts
+// ✅ GOOD — verified options
+createClient(url, key, {
+  auth: {
+    storage: mmkvStorage,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,  // no browser URL in RN
+  },
+});
+
+// ❌ BAD — autoConnect doesn't exist on RealtimeClientOptions
+createClient(url, key, {
+  realtime: { autoConnect: false },  // TypeScript error
+});
+```
+
+## Lazy Initialization
+
+Create the client lazily to ensure polyfills (`react-native-url-polyfill/auto`) are loaded first:
+
+```ts
+let client: SupabaseClient | null = null;
+
+export function getSupabaseClient(): SupabaseClient {
+  if (!client) {
+    client = createClient(url, key, options);
+  }
+  return client;
+}
+```
+
+## Storage Adapter
+
+Use `react-native-mmkv` for session persistence, NOT AsyncStorage (it's deprecated and slow):
+
+```ts
+import { MMKV } from 'react-native-mmkv';
+const mmkv = new MMKV({ id: 'supabase-auth' });
+
+const mmkvStorage = {
+  getItem: (key: string) => mmkv.getString(key) ?? null,
+  setItem: (key: string, value: string) => mmkv.set(key, value),
+  removeItem: (key: string) => mmkv.delete(key),
+};
+```
+
+## Auth with Google Sign-In (Native)
+
+Always use `signInWithIdToken`, never `signInWithOAuth` (requires browser redirect):
+
+```ts
+const { idToken } = await GoogleSignin.signIn();
+const { data, error } = await supabase.auth.signInWithIdToken({
+  provider: 'google',
+  token: idToken,
+});
+```

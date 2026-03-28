@@ -23,14 +23,28 @@ export default function MealCard(props) { ... }
 
 ## Styling
 
-Use NativeWind classNames. Design tokens live in `shared/theme/tokens.ts`. Never use inline `style` objects for static styles.
+Use design tokens from `~/shared/theme/tokens.ts`. Two valid approaches:
+
+1. **NativeWind className** — works on RN primitives (`View`, `Text`, `Pressable`), NOT on Gluestack components
+2. **Inline styles with tokens** — works everywhere, preferred for complex layouts
 
 ```tsx
-// ✅ GOOD
+// ✅ GOOD — RN primitive + NativeWind
+import { View, Text } from 'react-native';
 <View className="bg-surface-card rounded-lg p-md shadow-low">
+  <Text className="text-headline-md">Title</Text>
+</View>
 
-// ❌ BAD
-<View style={{ backgroundColor: '#fff', borderRadius: 12, padding: 16 }}>
+// ✅ GOOD — RN primitive + inline style with tokens
+import { View, Text } from 'react-native';
+import { colors, spacing, radii } from '~/shared/theme/tokens';
+<View style={{ backgroundColor: colors.surface.card, borderRadius: radii.lg, padding: spacing.md }}>
+  <Text style={{ fontSize: 20, fontWeight: '600' }}>Title</Text>
+</View>
+
+// ❌ BAD — className on Gluestack components (silently ignored)
+import { Text } from '@gluestack-ui/themed';
+<Text className="text-headline-md text-primary">Title</Text>
 ```
 
 ## State Management

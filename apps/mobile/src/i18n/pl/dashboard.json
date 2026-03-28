@@ -1,1 +1,13 @@
-{}
+{
+  "dashboard.greeting": "Cześć, {{name}}!",
+  "dashboard.subtitle": "Oto Twoje podsumowanie żywienia",
+  "dashboard.tiles.calorieBudget": "Budżet kalorii",
+  "dashboard.tiles.protein": "Białko",
+  "dashboard.tiles.carbs": "Węglowodany",
+  "dashboard.tiles.fat": "Tłuszcz",
+  "dashboard.tiles.streak": "Seria logowania",
+  "dashboard.tiles.days": "dni",
+  "dashboard.tiles.todaysMeals": "Dzisiejsze posiłki",
+  "dashboard.tiles.weeklyTrend": "Trend tygodniowy",
+  "dashboard.tiles.noDataYet": "Zacznij logować posiłki, aby zobaczyć trendy"
+}

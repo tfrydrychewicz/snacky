@@ -3,8 +3,9 @@ import { View, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from '~/app/providers/AuthProvider';
+import { useTheme } from '~/app/providers/ThemeProvider';
 import { AuthNavigator } from './AuthNavigator';
-import { PlaceholderScreen } from '~/shared/components/PlaceholderScreen';
+import { MainTabNavigator } from './MainTabNavigator';
 import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -17,16 +18,17 @@ const LoadingScreen = () => (
 
 export const RootNavigator = () => {
   const { isAuthenticated, isLoading } = useAuth();
+  const { theme } = useTheme();
 
   if (isLoading) {
     return <LoadingScreen />;
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={theme}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {isAuthenticated ? (
-          <Stack.Screen name="Main" component={PlaceholderScreen} />
+          <Stack.Screen name="Main" component={MainTabNavigator} />
         ) : (
           <Stack.Screen
             name="Auth"

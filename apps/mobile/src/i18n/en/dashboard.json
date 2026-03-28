@@ -1,1 +1,13 @@
-{}
+{
+  "dashboard.greeting": "Hi, {{name}}!",
+  "dashboard.subtitle": "Here's your nutrition overview",
+  "dashboard.tiles.calorieBudget": "Calorie Budget",
+  "dashboard.tiles.protein": "Protein",
+  "dashboard.tiles.carbs": "Carbs",
+  "dashboard.tiles.fat": "Fat",
+  "dashboard.tiles.streak": "Logging Streak",
+  "dashboard.tiles.days": "days",
+  "dashboard.tiles.todaysMeals": "Today's Meals",
+  "dashboard.tiles.weeklyTrend": "Weekly Trend",
+  "dashboard.tiles.noDataYet": "Start logging meals to see trends"
+}

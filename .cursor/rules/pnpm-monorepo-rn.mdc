@@ -1,0 +1,79 @@
+---
+description: pnpm monorepo + React Native resolution rules — prevents module-not-found errors
+globs: apps/mobile/**/*
+alwaysApply: false
+---
+
+# pnpm Monorepo + React Native
+
+This repo uses `node-linker=hoisted` (`.npmrc`). All packages hoist to the repo root `node_modules/`.
+
+## Path Rules
+
+All config files inside `apps/mobile/` must reference the **root** `node_modules/`, not the local one.
+
+```
+Repo root:          /snacky/
+Mobile app:         /snacky/apps/mobile/
+Root node_modules:  /snacky/node_modules/       ← packages live HERE
+```
+
+### Android Gradle (`apps/mobile/android/`)
+
+- `settings.gradle`: `includeBuild("../../../node_modules/@react-native/gradle-plugin")`
+- `app/build.gradle` react block: paths must use `../../../../node_modules/` (relative from `android/app/`)
+
+```groovy
+// ✅ GOOD — 4 levels up from android/app/ to repo root
+react {
+    root = file("../../../..")
+    reactNativeDir = file("../../../../node_modules/react-native")
+    codegenDir = file("../../../../node_modules/@react-native/codegen")
+    cliFile = file("../../../../node_modules/react-native/cli.js")
+}
+
+// ❌ BAD — default paths assume node_modules at apps/mobile/
+react {
+    // root = file("../../")  ← WRONG for monorepo
+}
+```
+
+### Metro Config (`metro.config.js`)
+
+Must include root `node_modules` in `nodeModulesPaths` and `watchFolders`:
+
+```js
+const monorepoRoot = path.resolve(__dirname, '../..');
+{
+  watchFolders: [monorepoRoot],
+  resolver: {
+    nodeModulesPaths: [
+      path.resolve(__dirname, 'node_modules'),
+      path.resolve(monorepoRoot, 'node_modules'),  // ← root
+    ],
+    disableHierarchicalLookup: true,
+  },
+}
+```
+
+### Path Alias
+
+Use `~/` prefix, NEVER `@/`. The `@` prefix conflicts with npm scoped packages (`@react-native/`, `@supabase/`, etc.) in Metro resolution.
+
+```
+✅  ~/shared/components/Foo   → babel module-resolver + tsconfig paths
+❌  @/shared/components/Foo   → Metro confuses with npm scope
+```
+
+## Shared Packages (`packages/*`)
+
+Shared workspace packages consumed by Metro must point `"main"` to source TypeScript, not `dist/`:
+
+```json
+{
+  "main": "src/index.ts",
+  "types": "src/index.ts"
+}
+```
+
+Metro transpiles TypeScript directly. There is no build step for `@snacky/api-client` or `@snacky/shared-types` in the mobile dev workflow.

@@ -68,10 +68,27 @@ import {
 
 ## Styling
 
-Gluestack components accept NativeWind `className` plus Gluestack props (`size`, `variant`, `action`). Prefer Gluestack semantic props for variants, NativeWind for layout:
+**WARNING**: NativeWind `className` is silently ignored on Gluestack components. Use Gluestack semantic props only:
 
 ```tsx
-<Button size="lg" variant="solid" action="primary" className="mt-md">
+// ✅ GOOD — Gluestack props only, no className
+<Button size="lg" variant="solid" action="primary">
   <ButtonText>{t('common.continue')}</ButtonText>
 </Button>
+
+// ❌ BAD — className is SILENTLY IGNORED, styles won't apply
+<Button className="mt-md bg-primary">
+  <ButtonText className="text-white font-bold">Save</ButtonText>
+</Button>
+```
+
+For layout spacing around Gluestack components, wrap them in an RN `View` with style or className:
+
+```tsx
+// ✅ GOOD — RN View wrapper for layout
+<View style={{ marginTop: 16 }}>
+  <Button size="lg" variant="solid" action="primary">
+    <ButtonText>Continue</ButtonText>
+  </Button>
+</View>
 ```

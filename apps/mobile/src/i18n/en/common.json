@@ -24,5 +24,10 @@
   "common.units.mg": "mg",
   "common.units.kg": "kg",
   "common.units.cm": "cm",
-  "common.units.ml": "ml"
+  "common.units.ml": "ml",
+  "common.tabs.dashboard": "Dashboard",
+  "common.tabs.scanner": "Scanner",
+  "common.tabs.dietPlan": "Diet Plan",
+  "common.tabs.chat": "Chat",
+  "common.tabs.progress": "Progress"
 }

@@ -139,31 +139,31 @@
 
 ### 0.6 Design System — Tokens & Base Components (Week 2–3)
 
-- [ ] Create `src/shared/theme/tokens.ts` with full design token system:
-  - [ ] Color palette (primary green, semantic colors, surface colors, dark mode surfaces, text colors)
-  - [ ] Spacing scale (xs through xxl)
-  - [ ] Border radius scale
-  - [ ] Typography scale (displayLarge through labelMedium)
-  - [ ] Elevation/shadow definitions
-  - [ ] Macro-specific colors (protein: indigo, carbs: amber, fat: red, fiber: green)
-- [ ] Configure Tailwind / NativeWind `tailwind.config.js` with design tokens
-- [ ] Create `lightTheme.ts` and `darkTheme.ts`
-- [ ] Create `ThemeProvider.tsx` with theme context
-- [ ] Build base shared components:
-  - [ ] `SkeletonLoader.tsx` — Reanimated 4 shimmer animation
-  - [ ] `AnimatedTransition.tsx` — reusable enter/exit wrapper
-  - [ ] `ErrorBoundary.tsx` — error UI with retry
-  - [ ] `EmptyState.tsx` — empty data placeholder
-- [ ] Build Bento Grid container component (`BentoGrid.tsx`)
-- [ ] Create placeholder `DashboardScreen` with empty Bento Grid
-- [ ] Set up bottom tab navigation (`MainTabNavigator`) with 5 tabs:
-  - [ ] Dashboard
-  - [ ] Scanner (placeholder)
-  - [ ] Diet Plan (placeholder)
-  - [ ] Chat (placeholder)
-  - [ ] Progress (placeholder)
-- [ ] Add tab icons and labels (translated via `t()`)
-- [ ] Implement tab switch animation (Reanimated 4, 200ms ease-out)
+- [x] Create `src/shared/theme/tokens.ts` with full design token system:
+  - [x] Color palette (primary green, semantic colors, surface colors, dark mode surfaces, text colors)
+  - [x] Spacing scale (xs through xxl)
+  - [x] Border radius scale
+  - [x] Typography scale (displayLarge through labelMedium)
+  - [x] Elevation/shadow definitions
+  - [x] Macro-specific colors (protein: indigo, carbs: amber, fat: red, fiber: green)
+- [x] Configure Tailwind / NativeWind `tailwind.config.js` with design tokens
+- [x] Create `lightTheme.ts` and `darkTheme.ts`
+- [x] Create `ThemeProvider.tsx` with theme context
+- [x] Build base shared components:
+  - [x] `SkeletonLoader.tsx` — Reanimated 4 shimmer animation
+  - [x] `AnimatedTransition.tsx` — reusable enter/exit wrapper
+  - [x] `ErrorBoundary.tsx` — error UI with retry
+  - [x] `EmptyState.tsx` — empty data placeholder
+- [x] Build Bento Grid container component (`BentoGrid.tsx`)
+- [x] Create placeholder `DashboardScreen` with empty Bento Grid
+- [x] Set up bottom tab navigation (`MainTabNavigator`) with 5 tabs:
+  - [x] Dashboard
+  - [x] Scanner (placeholder)
+  - [x] Diet Plan (placeholder)
+  - [x] Chat (placeholder)
+  - [x] Progress (placeholder)
+- [x] Add tab icons and labels (translated via `t()`)
+- [x] Implement tab switch animation (Reanimated 4, 200ms ease-out)
 
 ### 0.7 CI/CD Pipeline Setup (Week 2–3)
 

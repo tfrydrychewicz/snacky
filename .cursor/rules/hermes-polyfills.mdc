@@ -1,0 +1,45 @@
+---
+description: Hermes engine compatibility — required polyfills and known limitations
+globs: apps/mobile/**/*
+alwaysApply: false
+---
+
+# Hermes Engine Compatibility
+
+React Native 0.84+ uses Hermes by default. Hermes is missing or diverges from several Web APIs.
+
+## Required Polyfills
+
+### URL API (`react-native-url-polyfill`)
+
+Hermes has a partial `URL` implementation where `protocol`, `hostname`, etc. are **getters only** — assigning to them throws:
+
+```
+Cannot assign to property 'protocol' which has only a getter
+```
+
+Import the polyfill as the **absolute first import** in `index.js`:
+
+```js
+// apps/mobile/index.js
+import 'react-native-url-polyfill/auto';  // MUST be line 1
+import './src/i18n';
+import { AppRegistry } from 'react-native';
+```
+
+Libraries that break without this: `@supabase/supabase-js` (Realtime client), any lib that mutates `URL` objects.
+
+### Intl APIs (`intl-pluralrules`)
+
+Hermes lacks `Intl.PluralRules`. Required by i18next pluralization:
+
+```js
+import 'intl-pluralrules';  // in i18n init file
+```
+
+## General Rules
+
+- Always check if a Web API you're using is supported by Hermes before using it
+- Polyfill imports MUST come before any library that depends on them
+- After adding a polyfill, restart Metro with `--reset-cache`
+- Test on both iOS and Android — some polyfill behavior differs

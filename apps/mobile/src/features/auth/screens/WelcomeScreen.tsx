@@ -1,23 +1,20 @@
 import React, { useEffect } from 'react';
-import { View } from 'react-native';
-import { Text } from '@gluestack-ui/themed';
+import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   withDelay,
-  withSequence,
   Easing,
-  runOnJS,
 } from 'react-native-reanimated';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { AuthStackParamList } from '~/app/navigation/types';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Welcome'>;
 
-const ANIMATION_DURATION = 800;
-const STAGGER_DELAY = 200;
+const ANIM_MS = 800;
+const STAGGER = 250;
 
 export const WelcomeScreen = ({ navigation }: Props) => {
   const { t } = useTranslation('auth');
@@ -25,45 +22,23 @@ export const WelcomeScreen = ({ navigation }: Props) => {
   const logoScale = useSharedValue(0.3);
   const logoOpacity = useSharedValue(0);
   const titleOpacity = useSharedValue(0);
-  const titleTranslateY = useSharedValue(20);
+  const titleY = useSharedValue(24);
   const subtitleOpacity = useSharedValue(0);
-  const subtitleTranslateY = useSharedValue(20);
-
-  const navigateToLogin = () => {
-    navigation.replace('Login');
-  };
+  const subtitleY = useSharedValue(24);
 
   useEffect(() => {
-    const easing = Easing.out(Easing.cubic);
+    const ease = Easing.out(Easing.cubic);
 
-    logoScale.value = withTiming(1, { duration: ANIMATION_DURATION, easing });
-    logoOpacity.value = withTiming(1, { duration: ANIMATION_DURATION, easing });
+    logoScale.value = withTiming(1, { duration: ANIM_MS, easing: ease });
+    logoOpacity.value = withTiming(1, { duration: ANIM_MS, easing: ease });
 
-    titleOpacity.value = withDelay(
-      STAGGER_DELAY,
-      withTiming(1, { duration: ANIMATION_DURATION, easing }),
-    );
-    titleTranslateY.value = withDelay(
-      STAGGER_DELAY,
-      withTiming(0, { duration: ANIMATION_DURATION, easing }),
-    );
+    titleOpacity.value = withDelay(STAGGER, withTiming(1, { duration: ANIM_MS, easing: ease }));
+    titleY.value = withDelay(STAGGER, withTiming(0, { duration: ANIM_MS, easing: ease }));
 
-    subtitleOpacity.value = withDelay(
-      STAGGER_DELAY * 2,
-      withTiming(1, { duration: ANIMATION_DURATION, easing }),
-    );
-    subtitleTranslateY.value = withDelay(
-      STAGGER_DELAY * 2,
-      withSequence(
-        withTiming(0, { duration: ANIMATION_DURATION, easing }),
-        withDelay(1000, withTiming(0, { duration: 1 })),
-      ),
-    );
+    subtitleOpacity.value = withDelay(STAGGER * 2, withTiming(1, { duration: ANIM_MS, easing: ease }));
+    subtitleY.value = withDelay(STAGGER * 2, withTiming(0, { duration: ANIM_MS, easing: ease }));
 
-    const timer = setTimeout(() => {
-      runOnJS(navigateToLogin)();
-    }, ANIMATION_DURATION + STAGGER_DELAY * 2 + 1500);
-
+    const timer = setTimeout(() => navigation.replace('Login'), 2800);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -75,28 +50,65 @@ export const WelcomeScreen = ({ navigation }: Props) => {
 
   const titleStyle = useAnimatedStyle(() => ({
     opacity: titleOpacity.value,
-    transform: [{ translateY: titleTranslateY.value }],
+    transform: [{ translateY: titleY.value }],
   }));
 
   const subtitleStyle = useAnimatedStyle(() => ({
     opacity: subtitleOpacity.value,
-    transform: [{ translateY: subtitleTranslateY.value }],
+    transform: [{ translateY: subtitleY.value }],
   }));
 
   return (
-    <View className="flex-1 items-center justify-center bg-primary">
-      <Animated.View style={logoStyle} className="mb-lg">
-        <View className="h-24 w-24 items-center justify-center rounded-3xl bg-white/20">
-          <Text className="text-5xl">🥗</Text>
-        </View>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: '#4CAF50',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Animated.View
+        style={[
+          logoStyle,
+          {
+            width: 100,
+            height: 100,
+            borderRadius: 28,
+            backgroundColor: 'rgba(255,255,255,0.2)',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: 24,
+          },
+        ]}
+      >
+        <Text style={{ fontSize: 52 }}>🥗</Text>
       </Animated.View>
 
       <Animated.View style={titleStyle}>
-        <Text className="text-heading-1 text-white">{t('auth.welcome.title')}</Text>
+        <Text
+          style={{
+            fontSize: 34,
+            fontWeight: '700',
+            color: '#FFFFFF',
+            textAlign: 'center',
+          }}
+        >
+          {t('auth.welcome.title')}
+        </Text>
       </Animated.View>
 
       <Animated.View style={subtitleStyle}>
-        <Text className="mt-sm text-body-lg text-white/80">{t('auth.welcome.subtitle')}</Text>
+        <Text
+          style={{
+            fontSize: 16,
+            color: 'rgba(255,255,255,0.85)',
+            textAlign: 'center',
+            marginTop: 8,
+            paddingHorizontal: 32,
+          }}
+        >
+          {t('auth.welcome.subtitle')}
+        </Text>
       </Animated.View>
     </View>
   );

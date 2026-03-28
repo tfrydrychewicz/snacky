@@ -1,0 +1,40 @@
+---
+description: Dependency version verification — prevent incompatible or nonexistent versions
+alwaysApply: true
+---
+
+# Dependency Version Rules
+
+## Never Guess Versions
+
+Before adding a dependency to `package.json`:
+
+1. **Verify the package exists** on npm and the version exists
+2. **Check compatibility** with the current React Native version (0.84.x)
+3. **Check peer dependencies** — many RN packages require specific RN, Reanimated, or React versions
+
+## Known Version Traps
+
+| Package | Trap | Correct |
+|---|---|---|
+| `react-native-reanimated` | v3.x auto-resolves if `^4` isn't explicit | Pin `"^4.3.0"` |
+| `react-native-worklets` | Required peer of Reanimated 4, often forgotten | Add `"^0.8.0"` |
+| `eslint-plugin-i18next` | v6.4.0 doesn't exist | Use `"^6.1.0"` |
+| `@typescript-eslint/*` | Latest 8.x may not exist; verify | Pin to verified version like `8.57.0` |
+
+## Monorepo-Specific
+
+When adding dependencies:
+- Add to the correct workspace (`apps/mobile/package.json`, not root)
+- Run `pnpm install` from repo root
+- After adding RN native modules: `cd apps/mobile/ios && bundle exec pod install`
+- After adding packages that Metro should resolve: restart Metro with `--reset-cache`
+
+## Post-Install Checklist
+
+After any dependency change:
+1. `pnpm install` (from root) succeeds
+2. `pnpm tsc` (TypeScript check) passes
+3. Metro starts without resolution errors
+4. iOS `pod install` succeeds (if native module added)
+5. Android Gradle sync succeeds (if native module added)

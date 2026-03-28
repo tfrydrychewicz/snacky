@@ -52,8 +52,20 @@ Create indexes for frequent query patterns. Always index:
 
 ## Vector Columns
 
+The extension is called `vector`, NOT `pgvector`:
+
 ```sql
--- HNSW index for cosine similarity on embedding column
+-- ✅ GOOD
+CREATE EXTENSION IF NOT EXISTS "vector" WITH SCHEMA extensions;
+
+-- ❌ BAD — will error "extension pgvector is not available"
+CREATE EXTENSION IF NOT EXISTS "pgvector";
+```
+
+pgvector 0.8.x limits HNSW/IVFFlat indexes to **2000 dimensions**. For vectors > 2000 dims, use sequential scan and document the reason:
+
+```sql
+-- Only if embedding dimensions ≤ 2000
 CREATE INDEX idx_embeddings_vector
   ON embeddings USING hnsw (embedding vector_cosine_ops)
   WITH (m = 16, ef_construction = 64);
