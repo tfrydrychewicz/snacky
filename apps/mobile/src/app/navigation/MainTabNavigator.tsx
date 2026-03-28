@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { LayoutGrid, Camera, MessageCircle, TrendingUp } from 'lucide-react-native';
@@ -26,7 +27,7 @@ const SCREEN_MAP: Record<string, React.ComponentType> = {
   Trends: TrendsScreen,
 };
 
-const GlassTabBar = ({ state, descriptors, navigation }: any) => {
+const GlassTabBar = ({ state, navigation }: BottomTabBarProps) => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation('common');
 
@@ -61,7 +62,7 @@ const GlassTabBar = ({ state, descriptors, navigation }: any) => {
           paddingHorizontal: spacing.sm,
         }}
       >
-        {state.routes.map((route: any, index: number) => {
+        {state.routes.map((route, index) => {
           const tab = TABS[index];
           if (!tab) return null;
           const isFocused = state.index === index;

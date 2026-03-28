@@ -152,6 +152,9 @@ importers:
       '@react-native/typescript-config':
         specifier: 0.84.1
         version: 0.84.1
+      '@snacky/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
       '@types/invariant':
         specifier: ^2.2.37
         version: 2.2.37
@@ -186,6 +189,9 @@ importers:
         specifier: ^2.49.0
         version: 2.100.1
     devDependencies:
+      '@snacky/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
       typescript:
         specifier: ^5.8.0
         version: 5.9.3
@@ -226,6 +232,9 @@ importers:
         specifier: ^3.24.0
         version: 3.25.76
     devDependencies:
+      '@snacky/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
       typescript:
         specifier: ^5.8.0
         version: 5.9.3

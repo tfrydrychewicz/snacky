@@ -46,17 +46,6 @@ async function persistRefreshToken(token: string): Promise<void> {
   }
 }
 
-async function getPersistedRefreshToken(): Promise<string | null> {
-  try {
-    const credentials = await Keychain.getGenericPassword({
-      service: KEYCHAIN_SERVICE,
-    });
-    return credentials ? credentials.password : null;
-  } catch {
-    return null;
-  }
-}
-
 async function clearPersistedRefreshToken(): Promise<void> {
   try {
     await Keychain.resetGenericPassword({ service: KEYCHAIN_SERVICE });
@@ -76,7 +65,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const supabase = getSupabase();
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    void supabase.auth.getSession().then(({ data: { session } }) => {
       setState({
         session,
         user: session?.user ?? null,
@@ -85,7 +74,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
 
       if (session?.refresh_token) {
-        persistRefreshToken(session.refresh_token);
+        void persistRefreshToken(session.refresh_token);
       }
     });
 
@@ -106,7 +95,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signInWithGoogle = useCallback(async () => {

@@ -15,6 +15,7 @@
     "zod": "^3.24.0"
   },
   "devDependencies": {
+    "@snacky/eslint-config": "workspace:*",
     "typescript": "^5.8.0"
   }
 }

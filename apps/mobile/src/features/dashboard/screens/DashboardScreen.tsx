@@ -2,21 +2,22 @@ import React from 'react';
 import { ScrollView, View, Text, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { Zap, Send, UtensilsCrossed, TrendingDown } from 'lucide-react-native';
 import { useAuth } from '~/app/providers/AuthProvider';
 import { AppHeader } from '~/shared/components/AppHeader';
 import { CircularProgress } from '~/shared/components/CircularProgress';
 import { MacroBar } from '~/shared/components/MacroBar';
 import { BentoTile } from '~/shared/components/BentoTile';
-import { colors, spacing, typography, radii, elevation } from '~/shared/theme/tokens';
+import { colors, spacing, typography, radii } from '~/shared/theme/tokens';
 
 export const DashboardScreen = () => {
   const { t } = useTranslation('dashboard');
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
 
-  const displayName = user?.user_metadata?.full_name?.split(' ')[0] ?? 'User';
+  const fullName = String(user?.user_metadata?.full_name ?? '');
+  const displayName = fullName.split(' ')[0] || 'User';
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface }}>

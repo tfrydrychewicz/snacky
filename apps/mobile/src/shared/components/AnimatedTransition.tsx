@@ -1,11 +1,5 @@
 import React, { type ReactNode } from 'react';
-import Animated, {
-  FadeIn,
-  FadeOut,
-  type AnimatedProps,
-  type EntryAnimationsValues,
-  type ExitAnimationsValues,
-} from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, type AnimatedProps } from 'react-native-reanimated';
 import type { ViewProps } from 'react-native';
 
 type EnteringAnimation = AnimatedProps<ViewProps>['entering'];

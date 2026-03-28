@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import Svg, { Path, Defs, LinearGradient, Stop } from 'react-native-svg';
-import { TrendingUp, Brain, Droplets, UtensilsCrossed } from 'lucide-react-native';
+import { TrendingUp, Brain, UtensilsCrossed } from 'lucide-react-native';
 import { AppHeader } from '~/shared/components/AppHeader';
 import { BentoTile } from '~/shared/components/BentoTile';
 import { colors, spacing, typography, radii } from '~/shared/theme/tokens';

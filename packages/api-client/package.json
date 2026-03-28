@@ -15,6 +15,7 @@
     "@supabase/supabase-js": "^2.49.0"
   },
   "devDependencies": {
+    "@snacky/eslint-config": "workspace:*",
     "typescript": "^5.8.0"
   }
 }

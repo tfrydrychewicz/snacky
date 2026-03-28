@@ -14,17 +14,17 @@ export const LoginScreen = () => {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = () => {
     setError(null);
     setIsSigningIn(true);
-    try {
-      await signInWithGoogle();
-    } catch (err) {
-      const message = err instanceof Error ? err.message : t('auth.login.error.generic');
-      setError(message);
-    } finally {
-      setIsSigningIn(false);
-    }
+    void signInWithGoogle()
+      .catch((err: unknown) => {
+        const message = err instanceof Error ? err.message : t('auth.login.error.generic');
+        setError(message);
+      })
+      .finally(() => {
+        setIsSigningIn(false);
+      });
   };
 
   return (

@@ -53,6 +53,7 @@
     "zustand": "^5.x"
   },
   "devDependencies": {
+    "@snacky/eslint-config": "workspace:*",
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.3",
     "@babel/runtime": "^7.25.0",

@@ -1,5 +1,6 @@
-import React, { type ReactNode } from 'react';
-import { type ViewStyle } from 'react-native';
+import React from 'react';
+import type { ReactNode } from 'react';
+import type { ViewStyle } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { colors, radii, spacing, elevation } from '~/shared/theme/tokens';
 
