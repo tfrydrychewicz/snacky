@@ -4,12 +4,12 @@ import { colors } from './tokens';
 export const darkTheme: Theme = {
   dark: true,
   colors: {
-    primary: colors.primary.light,
-    background: colors.surfaceDark.background,
-    card: colors.surfaceDark.card,
-    text: colors.textDark.primary,
-    border: '#333333',
-    notification: colors.accent.light,
+    primary: colors.primaryContainer,
+    background: colors.inverseSurface,
+    card: '#1E1E1E',
+    text: colors.inverseOnSurface,
+    border: '#444444',
+    notification: colors.tertiaryFixedDim,
   },
   fonts: {
     regular: { fontFamily: 'System', fontWeight: '400' },

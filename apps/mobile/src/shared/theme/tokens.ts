@@ -1,57 +1,64 @@
+/**
+ * Snacky Design Tokens — "Living Laboratory" system from Stitch
+ *
+ * Material 3-inspired tonal palette with editorial typography.
+ * Colors use kebab-case keys matching the Stitch Tailwind config.
+ */
+
 export const colors = {
-  primary: {
-    50: '#E8F5E9',
-    100: '#C8E6C9',
-    200: '#A5D6A7',
-    300: '#81C784',
-    400: '#66BB6A',
-    500: '#4CAF50',
-    600: '#43A047',
-    700: '#388E3C',
-    800: '#2E7D32',
-    900: '#1B5E20',
-    DEFAULT: '#4CAF50',
-    light: '#81C784',
-    dark: '#388E3C',
-  },
-  accent: {
-    DEFAULT: '#FF9800',
-    light: '#FFB74D',
-    dark: '#F57C00',
-  },
-  semantic: {
-    success: '#4CAF50',
-    warning: '#FF9800',
-    error: '#F44336',
-    info: '#2196F3',
-    protein: '#5C6BC0',
-    carbs: '#FFA726',
-    fat: '#EF5350',
-    fiber: '#66BB6A',
-  },
-  surface: {
-    background: '#FAFAFA',
-    card: '#FFFFFF',
-    elevated: '#FFFFFF',
-    overlay: 'rgba(0,0,0,0.5)',
-  },
-  surfaceDark: {
-    background: '#121212',
-    card: '#1E1E1E',
-    elevated: '#2C2C2C',
-    overlay: 'rgba(0,0,0,0.7)',
-  },
-  text: {
-    primary: '#212121',
-    secondary: '#757575',
-    disabled: '#BDBDBD',
-    inverse: '#FFFFFF',
-  },
-  textDark: {
-    primary: '#FAFAFA',
-    secondary: '#B0B0B0',
-    disabled: '#616161',
-    inverse: '#212121',
+  primary: '#006E1C',
+  onPrimary: '#FFFFFF',
+  primaryContainer: '#4CAF50',
+  onPrimaryContainer: '#003C0B',
+  primaryFixed: '#94F990',
+  primaryFixedDim: '#78DC77',
+
+  secondary: '#4355B9',
+  onSecondary: '#FFFFFF',
+  secondaryContainer: '#8596FF',
+  onSecondaryContainer: '#11278E',
+  secondaryFixed: '#DEE0FF',
+  secondaryFixedDim: '#BAC3FF',
+
+  tertiary: '#785900',
+  onTertiary: '#FFFFFF',
+  tertiaryContainer: '#C49400',
+  onTertiaryContainer: '#433000',
+  tertiaryFixed: '#FFDF9E',
+  tertiaryFixedDim: '#FABD00',
+
+  error: '#BA1A1A',
+  onError: '#FFFFFF',
+  errorContainer: '#FFDAD6',
+  onErrorContainer: '#93000A',
+
+  surface: '#F9F9F9',
+  surfaceDim: '#DADADA',
+  surfaceBright: '#F9F9F9',
+  surfaceContainerLowest: '#FFFFFF',
+  surfaceContainerLow: '#F3F3F3',
+  surfaceContainer: '#EEEEEE',
+  surfaceContainerHigh: '#E8E8E8',
+  surfaceContainerHighest: '#E2E2E2',
+  surfaceVariant: '#E2E2E2',
+
+  onSurface: '#1A1C1C',
+  onSurfaceVariant: '#3F4A3C',
+  outline: '#6F7A6B',
+  outlineVariant: '#BECAB9',
+
+  inverseSurface: '#2F3131',
+  inverseOnSurface: '#F0F1F1',
+  inversePrimary: '#78DC77',
+
+  surfaceTint: '#006E1C',
+  background: '#F9F9F9',
+  onBackground: '#1A1C1C',
+
+  macro: {
+    protein: '#4355B9',
+    carbs: '#785900',
+    fat: '#BA1A1A',
   },
 } as const;
 
@@ -62,32 +69,51 @@ export const spacing = {
   lg: 24,
   xl: 32,
   '2xl': 48,
+  '3xl': 64,
 } as const;
 
 export const radii = {
   sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 24,
+  DEFAULT: 16,
+  lg: 32,
+  xl: 48,
   full: 9999,
 } as const;
 
 export const typography = {
-  displayLarge: { fontSize: 34, lineHeight: 40, fontWeight: '700' as const, letterSpacing: 0 },
-  displayMedium: { fontSize: 28, lineHeight: 34, fontWeight: '700' as const, letterSpacing: 0 },
-  headlineLarge: { fontSize: 24, lineHeight: 30, fontWeight: '600' as const, letterSpacing: 0 },
-  headlineMedium: { fontSize: 20, lineHeight: 26, fontWeight: '600' as const, letterSpacing: 0.15 },
-  titleLarge: { fontSize: 18, lineHeight: 24, fontWeight: '500' as const, letterSpacing: 0 },
-  titleMedium: { fontSize: 16, lineHeight: 22, fontWeight: '500' as const, letterSpacing: 0.15 },
-  bodyLarge: { fontSize: 16, lineHeight: 24, fontWeight: '400' as const, letterSpacing: 0.5 },
-  bodyMedium: { fontSize: 14, lineHeight: 20, fontWeight: '400' as const, letterSpacing: 0.25 },
-  labelLarge: { fontSize: 14, lineHeight: 20, fontWeight: '500' as const, letterSpacing: 0.1 },
-  labelMedium: { fontSize: 12, lineHeight: 16, fontWeight: '500' as const, letterSpacing: 0.5 },
+  displayLg: { fontSize: 40, lineHeight: 48, fontWeight: '800' as const, letterSpacing: -0.5 },
+  displaySm: { fontSize: 34, lineHeight: 40, fontWeight: '800' as const, letterSpacing: -0.3 },
+  headlineLg: { fontSize: 28, lineHeight: 34, fontWeight: '700' as const, letterSpacing: -0.2 },
+  headlineMd: { fontSize: 24, lineHeight: 30, fontWeight: '700' as const, letterSpacing: 0 },
+  titleLg: { fontSize: 20, lineHeight: 26, fontWeight: '700' as const, letterSpacing: 0 },
+  titleMd: { fontSize: 16, lineHeight: 22, fontWeight: '600' as const, letterSpacing: 0.15 },
+  bodyLg: { fontSize: 16, lineHeight: 24, fontWeight: '400' as const, letterSpacing: 0.3 },
+  bodyMd: { fontSize: 14, lineHeight: 20, fontWeight: '400' as const, letterSpacing: 0.25 },
+  bodySm: { fontSize: 13, lineHeight: 18, fontWeight: '400' as const, letterSpacing: 0.2 },
+  labelLg: { fontSize: 14, lineHeight: 20, fontWeight: '600' as const, letterSpacing: 0.5 },
+  labelMd: { fontSize: 12, lineHeight: 16, fontWeight: '600' as const, letterSpacing: 0.5 },
+  labelSm: { fontSize: 10, lineHeight: 14, fontWeight: '700' as const, letterSpacing: 0.8 },
 } as const;
 
 export const elevation = {
-  none: { shadowOpacity: 0, shadowOffset: { width: 0, height: 0 }, shadowRadius: 0, elevation: 0 },
-  low: { shadowOffset: { width: 0, height: 1 }, shadowRadius: 3, shadowOpacity: 0.12, elevation: 2 },
-  medium: { shadowOffset: { width: 0, height: 2 }, shadowRadius: 6, shadowOpacity: 0.16, elevation: 4 },
-  high: { shadowOffset: { width: 0, height: 4 }, shadowRadius: 12, shadowOpacity: 0.2, elevation: 8 },
+  none: {
+    shadowOpacity: 0,
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 0,
+    elevation: 0,
+  },
+  ambient: {
+    shadowColor: '#1A1C1C',
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 32,
+    shadowOpacity: 0.06,
+    elevation: 3,
+  },
+  float: {
+    shadowColor: '#1A1C1C',
+    shadowOffset: { width: 0, height: 12 },
+    shadowRadius: 40,
+    shadowOpacity: 0.1,
+    elevation: 6,
+  },
 } as const;

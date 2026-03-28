@@ -1,13 +1,17 @@
 {
-  "dashboard.greeting": "Cześć, {{name}}!",
-  "dashboard.subtitle": "Oto Twoje podsumowanie żywienia",
-  "dashboard.tiles.calorieBudget": "Budżet kalorii",
-  "dashboard.tiles.protein": "Białko",
-  "dashboard.tiles.carbs": "Węglowodany",
-  "dashboard.tiles.fat": "Tłuszcz",
-  "dashboard.tiles.streak": "Seria logowania",
-  "dashboard.tiles.days": "dni",
-  "dashboard.tiles.todaysMeals": "Dzisiejsze posiłki",
-  "dashboard.tiles.weeklyTrend": "Trend tygodniowy",
-  "dashboard.tiles.noDataYet": "Zacznij logować posiłki, aby zobaczyć trendy"
+  "greeting": "Dzień dobry, {{name}}",
+  "subtitle_progress": "Osiągnąłeś już {{pct}}% dziennego celu!",
+  "tiles.calorieBudget": "Budżet kalorii",
+  "tiles.kcalUnit": "kcal",
+  "tiles.remaining": "{{kcal}} kcal pozostało na kolację",
+  "tiles.dailyMacros": "Makroskładniki",
+  "tiles.protein": "Białko",
+  "tiles.carbs": "Węgle",
+  "tiles.fat": "Tłuszcze",
+  "tiles.recentMeals": "Ostatnie posiłki",
+  "tiles.viewHistory": "Historia",
+  "tiles.weightTrend": "Trend wagi",
+  "tiles.weightLost": "Schudłeś {{lbs}} funtów w tym miesiącu. Tak trzymaj!",
+  "ai_preview": "Na podstawie spożycia białka polecam jogurt grecki z migdałami na popołudnie.",
+  "ai_ask": "Zapytaj o cokolwiek..."
 }

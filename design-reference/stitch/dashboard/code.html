@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Snacky Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Plus_Jakarta_Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary-fixed": "#261a00",
+              "secondary": "#4355b9",
+              "surface-container-low": "#f3f3f3",
+              "on-secondary-fixed": "#00105c",
+              "on-error": "#ffffff",
+              "on-secondary-fixed-variant": "#293ca0",
+              "inverse-on-surface": "#f0f1f1",
+              "secondary-container": "#8596ff",
+              "on-surface": "#1a1c1c",
+              "on-surface-variant": "#3f4a3c",
+              "on-primary-fixed": "#002204",
+              "surface-tint": "#006e1c",
+              "inverse-surface": "#2f3131",
+              "on-tertiary-fixed-variant": "#5b4300",
+              "primary-fixed": "#94f990",
+              "surface-container-lowest": "#ffffff",
+              "secondary-fixed-dim": "#bac3ff",
+              "secondary-fixed": "#dee0ff",
+              "outline": "#6f7a6b",
+              "outline-variant": "#becab9",
+              "surface-dim": "#dadada",
+              "on-primary-container": "#003c0b",
+              "on-tertiary": "#ffffff",
+              "on-primary-fixed-variant": "#005313",
+              "surface-container-highest": "#e2e2e2",
+              "tertiary": "#785900",
+              "tertiary-fixed": "#ffdf9e",
+              "primary-container": "#4caf50",
+              "tertiary-container": "#c49400",
+              "on-primary": "#ffffff",
+              "primary": "#006e1c",
+              "error": "#ba1a1a",
+              "surface-container": "#eeeeee",
+              "surface": "#f9f9f9",
+              "on-secondary": "#ffffff",
+              "inverse-primary": "#78dc77",
+              "on-background": "#1a1c1c",
+              "on-secondary-container": "#11278e",
+              "error-container": "#ffdad6",
+              "tertiary-fixed-dim": "#fabd00",
+              "surface-bright": "#f9f9f9",
+              "on-tertiary-container": "#433000",
+              "on-error-container": "#93000a",
+              "surface-container-high": "#e8e8e8",
+              "primary-fixed-dim": "#78dc77",
+              "background": "#f9f9f9",
+              "surface-variant": "#e2e2e2"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Manrope"],
+              "label": ["Plus Jakarta Sans"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background font-body text-on-surface min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="bg-[#F9F9F9] dark:bg-gray-950 w-full top-0 px-6 py-4 z-40 sticky">
+<div class="flex justify-between items-center w-full max-w-screen-xl mx-auto">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-high ring-2 ring-primary/10">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="close-up portrait of a smiling young woman with natural light, professional studio photography with soft blurred background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwCKurNTH9PEQN7JMvjHyFpioItKfdAExPpr4Bnw1YTLVFYcmPhMcDmJ0bX50XdWcjtz7EKdlP4G1V1z_zTU3o8QxstegMvC7SiGav9Jz0gLey-BGqvJwZqb0BO0vFzh6-qqts0I44rBzJdDpZ4tydR-g1MW_GJsKQE3jfGT-IGZ7iuSS9xLI529vrh9ZGbd_B1o85z9hutM_4JaA2Q-XPyJ1WnWBbEAPhaHL8Dt_pJ6GbZD5jn8diicQxdDfnLXJrs0LVaTRQ8ryu"/>
+</div>
+<span class="text-[#006E1C] dark:text-[#4CAF50] font-['Manrope'] font-bold text-2xl tracking-tight">Snacky</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-gray-500 dark:text-gray-400 hover:opacity-80 transition-opacity active:scale-95 duration-200">
+<span class="material-symbols-outlined text-2xl" data-icon="settings">settings</span>
+</button>
+</div>
+</div>
+</header>
+<main class="max-w-screen-xl mx-auto px-6 py-8">
+<!-- Welcome Section -->
+<div class="mb-8">
+<h1 class="font-headline font-extrabold text-4xl tracking-tight text-on-surface mb-2">Good morning, Anna</h1>
+<p class="text-on-surface-variant font-medium">You've reached 65% of your daily goal already!</p>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-6">
+<!-- Hero Calorie Budget Tile -->
+<div class="md:col-span-4 lg:col-span-3 bg-surface-container-low rounded-lg p-8 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4">
+<span class="material-symbols-outlined text-primary/20 text-6xl rotate-12" data-icon="restaurant">restaurant</span>
+</div>
+<div class="z-10 text-center md:text-left">
+<h3 class="font-headline font-bold text-xl text-on-surface-variant mb-6">Calorie Budget</h3>
+<div class="space-y-1">
+<span class="font-headline font-extrabold text-5xl text-primary">1,450</span>
+<span class="text-on-surface-variant font-label font-semibold text-lg">/ 2,100 kcal</span>
+</div>
+<p class="mt-4 text-sm font-medium text-on-surface-variant opacity-70">650 kcal remaining for dinner</p>
+</div>
+<div class="relative w-48 h-48 flex items-center justify-center z-10">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-container-high" cx="96" cy="96" fill="transparent" r="80" stroke="currentColor" stroke-width="16"></circle>
+<circle class="text-primary" cx="96" cy="96" fill="transparent" r="80" stroke="currentColor" stroke-dasharray="502.4" stroke-dashoffset="175.8" stroke-linecap="round" stroke-width="16"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-headline font-bold text-2xl">65%</span>
+</div>
+</div>
+</div>
+<!-- AI Chat Preview -->
+<div class="md:col-span-2 lg:col-span-3 bg-surface-container-low rounded-lg p-6 flex flex-col justify-between border-none transition-all hover:bg-surface-container">
+<div>
+<div class="flex items-center gap-3 mb-4">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="bolt">bolt</span>
+</div>
+<h3 class="font-headline font-bold text-xl">Snacky AI</h3>
+</div>
+<div class="bg-surface-container-lowest rounded-DEFAULT p-4 mb-4">
+<p class="text-sm text-on-surface leading-relaxed">"Based on your protein intake, I recommend a Greek yogurt snack with almonds for this afternoon."</p>
+</div>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-highest rounded-full px-4 py-3">
+<span class="text-sm text-on-surface-variant flex-1">Ask anything...</span>
+<span class="material-symbols-outlined text-primary" data-icon="send">send</span>
+</div>
+</div>
+<!-- Macro Summary Tiles -->
+<div class="md:col-span-2 lg:col-span-2 bg-surface-container-low rounded-lg p-6 space-y-6">
+<h3 class="font-headline font-bold text-lg">Daily Macros</h3>
+<!-- Protein -->
+<div class="space-y-2">
+<div class="flex justify-between items-end">
+<span class="font-label font-semibold text-sm text-on-surface-variant uppercase tracking-wider">Protein</span>
+<span class="font-label font-bold text-sm text-secondary">84g / 120g</span>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[70%] rounded-full shadow-[0_0_8px_rgba(67,85,185,0.4)]"></div>
+</div>
+</div>
+<!-- Carbs -->
+<div class="space-y-2">
+<div class="flex justify-between items-end">
+<span class="font-label font-semibold text-sm text-on-surface-variant uppercase tracking-wider">Carbs</span>
+<span class="font-label font-bold text-sm text-tertiary">142g / 210g</span>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-[67%] rounded-full shadow-[0_0_8px_rgba(120,89,0,0.4)]"></div>
+</div>
+</div>
+<!-- Fat -->
+<div class="space-y-2">
+<div class="flex justify-between items-end">
+<span class="font-label font-semibold text-sm text-on-surface-variant uppercase tracking-wider">Fats</span>
+<span class="font-label font-bold text-sm text-error">38g / 70g</span>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-error w-[54%] rounded-full shadow-[0_0_8px_rgba(186,26,26,0.4)]"></div>
+</div>
+</div>
+</div>
+<!-- Recent Meals -->
+<div class="md:col-span-4 lg:col-span-4 bg-surface-container-low rounded-lg p-6">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline font-bold text-xl">Recent Meals</h3>
+<button class="text-primary font-label font-bold text-sm uppercase tracking-wide">View History</button>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+<!-- Meal Card 1 -->
+<div class="bg-surface-container-lowest rounded-DEFAULT p-3 group cursor-pointer transition-transform active:scale-95">
+<div class="aspect-square rounded-DEFAULT overflow-hidden mb-3">
+<img alt="Salad" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="fresh mediterranean salad with chickpeas, tomatoes, cucumbers and feta cheese in a ceramic bowl on white marble" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC65uEC1PrldNIDk866-_HWjzYPkfk-33NUqVZoPGdUgDGSB3CiwBmurCSU4wjlqI__l0WpUjuD5zWidsrUQTpLbsXUZvN79RhlBtyfJbzCp2gHRFu1KXb9cWiU4osrvJC8zoyILmOqW5Xq5gJLH10Lj2HAWI--cT3rFL1vmxpbtC4cVL5uvhARX5rZoELbW2JKCWu73jsA1wivrY06jUlJHp3OkxLwQ2lU4Z4ylrsdNhxlaodAgryHng8xpS0GHmm-Lg0sDPGgBM1k"/>
+</div>
+<h4 class="font-headline font-bold text-sm mb-1">Kale &amp; Chickpea</h4>
+<p class="font-label text-[10px] text-on-surface-variant font-semibold">420 kcal • BREAKFAST</p>
+</div>
+<!-- Meal Card 2 -->
+<div class="bg-surface-container-lowest rounded-DEFAULT p-3 group cursor-pointer transition-transform active:scale-95">
+<div class="aspect-square rounded-DEFAULT overflow-hidden mb-3">
+<img alt="Pasta" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="gourmet pesto pasta with pine nuts and parmesan cheese in a minimalist black bowl with artistic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBT5YLa_GaA0MnAZ0faN4oM2MGRDqQyM0QHBxXarYTQsz_JGkHtK5gHLn8x-AgVykE0EtfGdRTvYQo85KPC9CBQ77e8hwlgTNsbAsD-V1NCbhA2HlJjThgb69k7C4Hnf3Ddi57L76UomMzB9f-cXPng7IaNQdpJHpJelHgcKAYlfdo1ngBJeqJYeQGAL05PpIk4eEIjCGITIqHP5G62t2spLSpcCHoSYkasdkPiJUKh2uhvGyZ0XvNyXtVfM145xkB4uegNVeZGYR8q"/>
+</div>
+<h4 class="font-headline font-bold text-sm mb-1">Pesto Linguine</h4>
+<p class="font-label text-[10px] text-on-surface-variant font-semibold">580 kcal • LUNCH</p>
+</div>
+<!-- Meal Card 3 -->
+<div class="hidden md:block bg-surface-container-lowest rounded-DEFAULT p-3 group cursor-pointer transition-transform active:scale-95">
+<div class="aspect-square rounded-DEFAULT overflow-hidden mb-3">
+<img alt="Sandwich" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="toasted artisanal sourdough sandwich with sliced avocado and poached egg, side lighting on rustic table" src="https://lh3.googleusercontent.com/aida-public/AB6AXuApF1MXBoCeyusH1F9uNzgw0ylDep6AngewYDIamqlomNO-7RBmfYIfeMx_H0CJGz2Ts5X44bc4bAI6GSHMiVXm88lYeP5tjn837EefeMNseuIVpcilA0BC33zZjKywKoCDp4fOFU6cbUblQ2JRE0LM6iAv6OJ8lo4ROu69avXVJkBMXcRN166YWCBiNwcxaVLpFE0mSeou8CNc15wQbSH3GgP1nOBFfILiIhkyV1ALwm84C_B7HXvg8bVjNhAWtLV9wEAoWrrph-K6"/>
+</div>
+<h4 class="font-headline font-bold text-sm mb-1">Avocado Toast</h4>
+<p class="font-label text-[10px] text-on-surface-variant font-semibold">310 kcal • SNACK</p>
+</div>
+</div>
+</div>
+<!-- Weight Trend Sparkline Tile -->
+<div class="md:col-span-6 lg:col-span-6 bg-surface-container-low rounded-lg p-6">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+<div>
+<h3 class="font-headline font-bold text-xl mb-1">Weight Trend</h3>
+<p class="text-on-surface-variant font-medium text-sm">You've lost 2.4 lbs this month. Keep it up!</p>
+</div>
+<div class="flex items-end gap-2">
+<span class="font-headline font-extrabold text-3xl">138.6</span>
+<span class="font-label font-bold text-on-surface-variant pb-1">lbs</span>
+<div class="flex items-center text-primary bg-primary-fixed/20 px-2 py-1 rounded-full text-xs font-bold mb-1 ml-2">
+<span class="material-symbols-outlined text-sm mr-1" data-icon="trending_down">trending_down</span>
+                            0.8%
+                        </div>
+</div>
+</div>
+<!-- Mock Sparkline -->
+<div class="h-32 w-full flex items-end gap-1 px-2">
+<div class="flex-1 bg-primary/10 rounded-t-sm h-[60%] hover:bg-primary transition-colors cursor-help group relative">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-surface text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap">Mon: 140.2</div>
+</div>
+<div class="flex-1 bg-primary/10 rounded-t-sm h-[58%] hover:bg-primary transition-colors group relative"></div>
+<div class="flex-1 bg-primary/10 rounded-t-sm h-[62%] hover:bg-primary transition-colors group relative"></div>
+<div class="flex-1 bg-primary/10 rounded-t-sm h-[55%] hover:bg-primary transition-colors group relative"></div>
+<div class="flex-1 bg-primary/10 rounded-t-sm h-[52%] hover:bg-primary transition-colors group relative"></div>
+<div class="flex-1 bg-primary/10 rounded-t-sm h-[48%] hover:bg-primary transition-colors group relative"></div>
+<div class="flex-1 bg-primary/10 rounded-t-sm h-[50%] hover:bg-primary transition-colors group relative"></div>
+<div class="flex-1 bg-primary/10 rounded-t-sm h-[45%] hover:bg-primary transition-colors group relative"></div>
+<div class="flex-1 bg-primary/10 rounded-t-sm h-[42%] hover:bg-primary transition-colors group relative"></div>
+<div class="flex-1 bg-primary/10 rounded-t-sm h-[44%] hover:bg-primary transition-colors group relative"></div>
+<div class="flex-1 bg-primary/20 rounded-t-sm h-[38%] hover:bg-primary transition-colors group relative"></div>
+<div class="flex-1 bg-primary rounded-t-sm h-[35%] group relative">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-surface text-[10px] px-2 py-1 rounded whitespace-nowrap">Now: 138.6</div>
+</div>
+</div>
+<div class="flex justify-between mt-4 text-[10px] font-label font-bold text-on-surface-variant uppercase tracking-widest px-1">
+<span>Oct 01</span>
+<span>Oct 15</span>
+<span>Today</span>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-6 left-0 right-0 z-50 flex justify-around items-center px-4 py-2">
+<div class="bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] rounded-[2rem] border border-[#BECAB9]/15 shadow-[0_32px_64px_-15px_rgba(26,28,28,0.06)] flex justify-around items-center px-4 py-2">
+<!-- Dashboard Active -->
+<a class="flex flex-col items-center justify-center bg-[#006E1C] dark:bg-[#4CAF50] text-white rounded-full w-12 h-12 transition-all duration-300 tap-highlight-none active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 p-2 hover:text-[#006E1C] dark:hover:text-[#4CAF50] transition-colors tap-highlight-none active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="photo_camera">photo_camera</span>
+<span class="font-['Plus_Jakarta_Sans'] font-medium text-[10px] uppercase tracking-wider mt-0.5">Scan</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 p-2 hover:text-[#006E1C] dark:hover:text-[#4CAF50] transition-colors tap-highlight-none active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+<span class="font-['Plus_Jakarta_Sans'] font-medium text-[10px] uppercase tracking-wider mt-0.5">Assistant</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 p-2 hover:text-[#006E1C] dark:hover:text-[#4CAF50] transition-colors tap-highlight-none active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+<span class="font-['Plus_Jakarta_Sans'] font-medium text-[10px] uppercase tracking-wider mt-0.5">Trends</span>
+</a>
+</div>
+</nav>
+<!-- Contextual FAB (Only on Dashboard) -->
+<button class="fixed bottom-24 right-8 bg-primary text-on-primary w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:bg-primary-container transition-all active:scale-90 z-40">
+<span class="material-symbols-outlined text-3xl" data-icon="add">add</span>
+</button>
+</body></html>

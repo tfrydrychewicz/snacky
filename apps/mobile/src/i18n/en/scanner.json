@@ -1,1 +1,12 @@
-{}
+{
+  "confidence": "{{pct}}% Confidence",
+  "results_title": "Scan Results",
+  "identified_count": "Identified {{count}} primary components",
+  "total": "Total",
+  "macro_breakdown": "Macro Breakdown",
+  "protein": "Protein",
+  "carbs": "Carbs",
+  "fats": "Fats",
+  "confirm_log": "Confirm & Log",
+  "edit": "Edit"
+}

@@ -10,6 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { AuthStackParamList } from '~/app/navigation/types';
+import { colors, typography } from '~/shared/theme/tokens';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Welcome'>;
 
@@ -62,7 +63,7 @@ export const WelcomeScreen = ({ navigation }: Props) => {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#4CAF50',
+        backgroundColor: colors.primary,
         alignItems: 'center',
         justifyContent: 'center',
       }}
@@ -74,7 +75,7 @@ export const WelcomeScreen = ({ navigation }: Props) => {
             width: 100,
             height: 100,
             borderRadius: 28,
-            backgroundColor: 'rgba(255,255,255,0.2)',
+            backgroundColor: 'rgba(255,255,255,0.15)',
             alignItems: 'center',
             justifyContent: 'center',
             marginBottom: 24,
@@ -87,9 +88,9 @@ export const WelcomeScreen = ({ navigation }: Props) => {
       <Animated.View style={titleStyle}>
         <Text
           style={{
-            fontSize: 34,
-            fontWeight: '700',
-            color: '#FFFFFF',
+            ...typography.displaySm,
+            fontStyle: 'italic',
+            color: colors.onPrimary,
             textAlign: 'center',
           }}
         >
@@ -100,7 +101,7 @@ export const WelcomeScreen = ({ navigation }: Props) => {
       <Animated.View style={subtitleStyle}>
         <Text
           style={{
-            fontSize: 16,
+            ...typography.bodyLg,
             color: 'rgba(255,255,255,0.85)',
             textAlign: 'center',
             marginTop: 8,

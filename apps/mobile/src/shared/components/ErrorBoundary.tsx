@@ -1,7 +1,7 @@
 import React, { Component, type ErrorInfo, type ReactNode } from 'react';
-import { View, Pressable } from 'react-native';
-import { Text } from '@gluestack-ui/themed';
+import { View, Text, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { colors, spacing, typography, radii } from '~/shared/theme/tokens';
 
 interface Props {
   children: ReactNode;
@@ -23,21 +23,43 @@ const ErrorFallback = ({
   const { t } = useTranslation('common');
 
   return (
-    <View className="flex-1 items-center justify-center bg-surface-background px-lg">
-      <Text className="text-4xl">⚠️</Text>
-      <Text className="mt-md text-headline-md text-text-primary">
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.surface,
+        paddingHorizontal: spacing.lg,
+      }}
+    >
+      <Text style={{ fontSize: 40 }}>⚠️</Text>
+      <Text style={{ ...typography.titleLg, color: colors.onSurface, marginTop: spacing.md }}>
         {t('common.error.generic')}
       </Text>
       {error?.message && (
-        <Text className="mt-sm text-center text-body-md text-text-secondary">
+        <Text
+          style={{
+            ...typography.bodyMd,
+            color: colors.onSurfaceVariant,
+            textAlign: 'center',
+            marginTop: spacing.sm,
+          }}
+        >
           {error.message}
         </Text>
       )}
       <Pressable
         onPress={onRetry}
-        className="mt-lg rounded-md bg-primary px-xl py-sm active:opacity-80"
+        style={({ pressed }) => ({
+          marginTop: spacing.lg,
+          backgroundColor: colors.primary,
+          paddingHorizontal: spacing.xl,
+          paddingVertical: spacing.sm,
+          borderRadius: radii.full,
+          opacity: pressed ? 0.8 : 1,
+        })}
       >
-        <Text className="text-label-lg text-text-inverse">{t('common.retry')}</Text>
+        <Text style={{ ...typography.labelLg, color: colors.onPrimary }}>{t('common.retry')}</Text>
       </Pressable>
     </View>
   );

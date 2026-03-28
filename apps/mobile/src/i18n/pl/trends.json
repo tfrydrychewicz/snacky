@@ -1,0 +1,19 @@
+{
+  "dqi_label": "Indeks jakości diety",
+  "dqi_change": "{{val}} wzrost",
+  "dqi_insight": "Twoja różnorodność poprawiła się w tym tygodniu dzięki zielonym warzywom. Tak trzymaj!",
+  "weight_trend": "Trend wagi",
+  "last_30_days": "Ostatnie 30 dni",
+  "goal": "Cel",
+  "week_1": "Tydz. 1",
+  "week_2": "Tydz. 2",
+  "week_3": "Tydz. 3",
+  "week_4": "Tydz. 4",
+  "meal_gallery": "Galeria posiłków",
+  "view_all": "Pokaż wszystko",
+  "mindful_eating": "Świadome jedzenie",
+  "consistency": "{{pct}}% regularności",
+  "consistency_detail": "Zapisywałeś posiłki w ciągu 30 minut od jedzenia.",
+  "hydration_title": "Mistrz nawodnienia",
+  "hydration_detail": "Osiągnąłeś cel nawodnienia 8 razy w tym miesiącu."
+}

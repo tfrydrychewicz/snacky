@@ -1,13 +1,17 @@
 {
-  "dashboard.greeting": "Hi, {{name}}!",
-  "dashboard.subtitle": "Here's your nutrition overview",
-  "dashboard.tiles.calorieBudget": "Calorie Budget",
-  "dashboard.tiles.protein": "Protein",
-  "dashboard.tiles.carbs": "Carbs",
-  "dashboard.tiles.fat": "Fat",
-  "dashboard.tiles.streak": "Logging Streak",
-  "dashboard.tiles.days": "days",
-  "dashboard.tiles.todaysMeals": "Today's Meals",
-  "dashboard.tiles.weeklyTrend": "Weekly Trend",
-  "dashboard.tiles.noDataYet": "Start logging meals to see trends"
+  "greeting": "Good morning, {{name}}",
+  "subtitle_progress": "You've reached {{pct}}% of your daily goal already!",
+  "tiles.calorieBudget": "Calorie Budget",
+  "tiles.kcalUnit": "kcal",
+  "tiles.remaining": "{{kcal}} kcal remaining for dinner",
+  "tiles.dailyMacros": "Daily Macros",
+  "tiles.protein": "Protein",
+  "tiles.carbs": "Carbs",
+  "tiles.fat": "Fats",
+  "tiles.recentMeals": "Recent Meals",
+  "tiles.viewHistory": "View History",
+  "tiles.weightTrend": "Weight Trend",
+  "tiles.weightLost": "You've lost {{lbs}} lbs this month. Keep it up!",
+  "ai_preview": "Based on your protein intake, I recommend a Greek yogurt snack with almonds for this afternoon.",
+  "ai_ask": "Ask anything..."
 }

@@ -1,0 +1,19 @@
+{
+  "dqi_label": "Diet Quality Index",
+  "dqi_change": "{{val}} increase",
+  "dqi_insight": "Your variety score improved this week due to a diverse range of leafy greens. Keep it up!",
+  "weight_trend": "Weight Trend",
+  "last_30_days": "Last 30 Days",
+  "goal": "Goal",
+  "week_1": "Week 1",
+  "week_2": "Week 2",
+  "week_3": "Week 3",
+  "week_4": "Week 4",
+  "meal_gallery": "Meal History Gallery",
+  "view_all": "View All",
+  "mindful_eating": "Mindful Eating",
+  "consistency": "{{pct}}% consistency",
+  "consistency_detail": "You logged your meals within 30 minutes of eating. Accuracy is peak!",
+  "hydration_title": "Hydration Master",
+  "hydration_detail": "You've hit your water intake goal 8 times this month."
+}

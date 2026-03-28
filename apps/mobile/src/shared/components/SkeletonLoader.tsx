@@ -42,7 +42,7 @@ export const SkeletonLoader = ({
         style={[
           {
             flex: 1,
-            backgroundColor: '#E0E0E0',
+            backgroundColor: '#E8E8E8',
             borderRadius,
           },
           animatedStyle,

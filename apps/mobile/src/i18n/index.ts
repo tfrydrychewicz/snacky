@@ -12,6 +12,7 @@ import enDietPlan from './en/dietPlan.json';
 import enChat from './en/chat.json';
 import enProgress from './en/progress.json';
 import enDashboard from './en/dashboard.json';
+import enTrends from './en/trends.json';
 import enNotifications from './en/notifications.json';
 import enSettings from './en/settings.json';
 
@@ -24,6 +25,7 @@ import plDietPlan from './pl/dietPlan.json';
 import plChat from './pl/chat.json';
 import plProgress from './pl/progress.json';
 import plDashboard from './pl/dashboard.json';
+import plTrends from './pl/trends.json';
 import plNotifications from './pl/notifications.json';
 import plSettings from './pl/settings.json';
 
@@ -40,6 +42,7 @@ const NAMESPACES = [
   'chat',
   'progress',
   'dashboard',
+  'trends',
   'notifications',
   'settings',
 ] as const;
@@ -57,6 +60,7 @@ const resources = {
     chat: enChat,
     progress: enProgress,
     dashboard: enDashboard,
+    trends: enTrends,
     notifications: enNotifications,
     settings: enSettings,
   },
@@ -70,6 +74,7 @@ const resources = {
     chat: plChat,
     progress: plProgress,
     dashboard: plDashboard,
+    trends: plTrends,
     notifications: plNotifications,
     settings: plSettings,
   },

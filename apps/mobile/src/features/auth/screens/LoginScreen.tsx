@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '~/app/providers/AuthProvider';
+import { colors, spacing, typography, radii, elevation } from '~/shared/theme/tokens';
 
 export const LoginScreen = () => {
   const { t } = useTranslation('auth');
@@ -27,55 +28,52 @@ export const LoginScreen = () => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FAFAFA' }}>
+    <View style={{ flex: 1, backgroundColor: colors.surface }}>
       <View
         style={{
           flex: 1,
           alignItems: 'center',
           justifyContent: 'center',
-          paddingHorizontal: 32,
+          paddingHorizontal: spacing.xl,
         }}
       >
         <Animated.View
           entering={FadeIn.duration(600)}
-          style={{ alignItems: 'center', marginBottom: 48 }}
+          style={{ alignItems: 'center', marginBottom: spacing['2xl'] }}
         >
           <View
             style={{
               width: 88,
               height: 88,
               borderRadius: 24,
-              backgroundColor: '#4CAF50',
+              backgroundColor: colors.primary,
               alignItems: 'center',
               justifyContent: 'center',
-              marginBottom: 24,
-              shadowColor: '#4CAF50',
-              shadowOffset: { width: 0, height: 8 },
-              shadowOpacity: 0.3,
-              shadowRadius: 16,
-              elevation: 8,
+              marginBottom: spacing.lg,
+              ...elevation.ambient,
             }}
           >
             <Text style={{ fontSize: 44 }}>🥗</Text>
           </View>
           <Text
             style={{
-              fontSize: 28,
-              fontWeight: '700',
-              color: '#212121',
+              ...typography.headlineLg,
+              fontWeight: '800',
+              fontStyle: 'italic',
+              color: colors.primary,
               textAlign: 'center',
+              marginBottom: spacing.sm,
             }}
           >
-            {t('auth.login.title')}
+            Snacky
           </Text>
           <Text
             style={{
-              fontSize: 16,
-              color: '#757575',
+              ...typography.bodyLg,
+              color: colors.onSurfaceVariant,
               textAlign: 'center',
-              marginTop: 8,
               lineHeight: 24,
-              paddingHorizontal: 16,
+              paddingHorizontal: spacing.md,
             }}
           >
             {t('auth.login.subtitle')}
@@ -94,22 +92,17 @@ export const LoginScreen = () => {
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: '#FFFFFF',
+              backgroundColor: colors.surfaceContainerLowest,
               paddingVertical: 16,
-              paddingHorizontal: 24,
-              borderRadius: 12,
-              borderWidth: 1,
-              borderColor: '#E0E0E0',
-              opacity: pressed ? 0.8 : 1,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.06,
-              shadowRadius: 8,
-              elevation: 2,
+              paddingHorizontal: spacing.lg,
+              borderRadius: radii.full,
+              opacity: pressed ? 0.9 : 1,
+              transform: [{ scale: pressed ? 0.98 : 1 }],
+              ...elevation.ambient,
             })}
           >
             {isSigningIn ? (
-              <ActivityIndicator size="small" color="#4CAF50" />
+              <ActivityIndicator size="small" color={colors.primary} />
             ) : (
               <>
                 <Text
@@ -124,9 +117,9 @@ export const LoginScreen = () => {
                 </Text>
                 <Text
                   style={{
-                    fontSize: 16,
-                    fontWeight: '600',
-                    color: '#212121',
+                    ...typography.titleMd,
+                    fontWeight: '700',
+                    color: colors.onSurface,
                   }}
                 >
                   {t('auth.login.continueWithGoogle')}
@@ -136,12 +129,12 @@ export const LoginScreen = () => {
           </Pressable>
 
           {error && (
-            <Animated.View entering={FadeIn.duration(300)} style={{ marginTop: 16 }}>
+            <Animated.View entering={FadeIn.duration(300)} style={{ marginTop: spacing.md }}>
               <Text
                 style={{
                   textAlign: 'center',
-                  fontSize: 14,
-                  color: '#F44336',
+                  ...typography.bodyMd,
+                  color: colors.error,
                 }}
               >
                 {error}
@@ -155,15 +148,15 @@ export const LoginScreen = () => {
         entering={FadeIn.delay(600).duration(600)}
         style={{
           alignItems: 'center',
-          paddingHorizontal: 32,
-          paddingBottom: insets.bottom + 24,
+          paddingHorizontal: spacing.xl,
+          paddingBottom: insets.bottom + spacing.lg,
         }}
       >
         <Text
           style={{
             textAlign: 'center',
-            fontSize: 12,
-            color: '#9E9E9E',
+            ...typography.bodySm,
+            color: colors.outline,
             lineHeight: 18,
           }}
         >

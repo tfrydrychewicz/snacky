@@ -1,1 +1,12 @@
-{}
+{
+  "confidence": "{{pct}}% pewności",
+  "results_title": "Wyniki skanu",
+  "identified_count": "Zidentyfikowano {{count}} składniki",
+  "total": "Razem",
+  "macro_breakdown": "Rozkład makroskładników",
+  "protein": "Białko",
+  "carbs": "Węgle",
+  "fats": "Tłuszcze",
+  "confirm_log": "Potwierdź i zapisz",
+  "edit": "Edytuj"
+}

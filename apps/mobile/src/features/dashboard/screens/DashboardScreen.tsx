@@ -1,132 +1,227 @@
 import React from 'react';
-import { ScrollView, View, Text } from 'react-native';
+import { ScrollView, View, Text, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeIn } from 'react-native-reanimated';
-import { BentoGrid, BentoRow, BentoTile } from '../components/BentoGrid';
-import { colors } from '~/shared/theme/tokens';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import { useAuth } from '~/app/providers/AuthProvider';
+import { AppHeader } from '~/shared/components/AppHeader';
+import { CircularProgress } from '~/shared/components/CircularProgress';
+import { MacroBar } from '~/shared/components/MacroBar';
+import { BentoTile } from '~/shared/components/BentoTile';
+import { colors, spacing, typography, radii, elevation } from '~/shared/theme/tokens';
 
 export const DashboardScreen = () => {
   const { t } = useTranslation('dashboard');
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
+
+  const displayName = user?.user_metadata?.full_name?.split(' ')[0] ?? 'User';
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: '#F5F5F5' }}
-      contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
-      showsVerticalScrollIndicator={false}
-    >
-      <Animated.View
-        entering={FadeIn.duration(400)}
-        style={{ paddingHorizontal: 16, paddingTop: insets.top + 12, paddingBottom: 16 }}
+    <View style={{ flex: 1, backgroundColor: colors.surface }}>
+      <AppHeader />
+      <ScrollView
+        contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingBottom: insets.bottom + 100 }}
+        showsVerticalScrollIndicator={false}
       >
-        <Text style={{ fontSize: 28, fontWeight: '700', color: '#212121' }}>
-          {t('dashboard.greeting', { name: 'User' })}
-        </Text>
-        <Text style={{ fontSize: 15, color: '#757575', marginTop: 4 }}>
-          {t('dashboard.subtitle')}
-        </Text>
-      </Animated.View>
+        {/* Welcome Section */}
+        <Animated.View entering={FadeIn.duration(400)} style={{ marginBottom: spacing.xl }}>
+          <Text style={{ ...typography.displaySm, color: colors.onSurface }}>
+            {t('greeting', { name: displayName })}
+          </Text>
+          <Text style={{ ...typography.bodyLg, color: colors.onSurfaceVariant, marginTop: 4, fontWeight: '500' }}>
+            {t('subtitle_progress', { pct: 65 })}
+          </Text>
+        </Animated.View>
 
-      <BentoGrid>
-        {/* Calorie Budget — full width */}
-        <BentoRow>
-          <BentoTile span={2} index={0}>
-            <Text style={{ fontSize: 12, fontWeight: '500', color: '#757575', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-              {t('dashboard.tiles.calorieBudget')}
-            </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'baseline', marginTop: 12 }}>
-              <Text style={{ fontSize: 40, fontWeight: '700', color: colors.primary.DEFAULT }}>
-                0
+        {/* Hero Calorie Budget Tile */}
+        <BentoTile index={0} style={{ marginBottom: spacing.lg, paddingVertical: spacing.xl }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ ...typography.titleLg, color: colors.onSurfaceVariant, marginBottom: spacing.lg }}>
+                {t('tiles.calorieBudget')}
               </Text>
-              <Text style={{ fontSize: 18, color: '#BDBDBD', marginLeft: 4 }}>
-                / 2,100
+              <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+                <Text style={{ ...typography.displayLg, color: colors.primary }}>1,450</Text>
+                <Text style={{ ...typography.titleMd, color: colors.onSurfaceVariant, marginLeft: 4 }}>
+                  / 2,100 {t('tiles.kcalUnit')}
+                </Text>
+              </View>
+              <Text style={{ ...typography.bodySm, color: colors.onSurfaceVariant, opacity: 0.7, marginTop: spacing.sm }}>
+                {t('tiles.remaining', { kcal: 650 })}
               </Text>
             </View>
-            <Text style={{ fontSize: 13, color: '#9E9E9E', marginTop: 4 }}>kcal</Text>
+            <CircularProgress percentage={65} size={140} />
+          </View>
+        </BentoTile>
 
-            {/* Progress bar */}
-            <View style={{ height: 6, backgroundColor: '#E8F5E9', borderRadius: 3, marginTop: 12 }}>
-              <View style={{ height: 6, backgroundColor: colors.primary.DEFAULT, borderRadius: 3, width: '0%' }} />
+        {/* Snacky AI Preview */}
+        <BentoTile index={1} style={{ marginBottom: spacing.lg }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: spacing.md }}>
+            <View
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 18,
+                backgroundColor: `${colors.primary}15`,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Text style={{ fontSize: 18 }}>⚡</Text>
             </View>
-          </BentoTile>
-        </BentoRow>
+            <Text style={{ ...typography.titleLg }}>Snacky AI</Text>
+          </View>
+          <View
+            style={{
+              backgroundColor: colors.surfaceContainerLowest,
+              borderRadius: radii.DEFAULT,
+              padding: spacing.md,
+              marginBottom: spacing.md,
+            }}
+          >
+            <Text style={{ ...typography.bodySm, color: colors.onSurface, lineHeight: 20 }}>
+              {t('ai_preview')}
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: colors.surfaceContainerHighest,
+              borderRadius: radii.full,
+              paddingHorizontal: spacing.md,
+              paddingVertical: 10,
+            }}
+          >
+            <Text style={{ flex: 1, ...typography.bodySm, color: colors.onSurfaceVariant }}>
+              {t('ai_ask')}
+            </Text>
+            <Text style={{ fontSize: 18, color: colors.primary }}>➤</Text>
+          </View>
+        </BentoTile>
 
-        {/* Macro row — 3 tiles */}
-        <BentoRow>
-          <BentoTile index={1}>
-            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.semantic.protein, marginBottom: 8 }} />
-            <Text style={{ fontSize: 11, fontWeight: '600', color: colors.semantic.protein, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-              {t('dashboard.tiles.protein')}
-            </Text>
-            <Text style={{ fontSize: 24, fontWeight: '700', color: '#212121', marginTop: 8 }}>
-              0<Text style={{ fontSize: 14, fontWeight: '400', color: '#9E9E9E' }}>g</Text>
-            </Text>
-          </BentoTile>
-          <BentoTile index={2}>
-            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.semantic.carbs, marginBottom: 8 }} />
-            <Text style={{ fontSize: 11, fontWeight: '600', color: colors.semantic.carbs, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-              {t('dashboard.tiles.carbs')}
-            </Text>
-            <Text style={{ fontSize: 24, fontWeight: '700', color: '#212121', marginTop: 8 }}>
-              0<Text style={{ fontSize: 14, fontWeight: '400', color: '#9E9E9E' }}>g</Text>
-            </Text>
-          </BentoTile>
-          <BentoTile index={3}>
-            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.semantic.fat, marginBottom: 8 }} />
-            <Text style={{ fontSize: 11, fontWeight: '600', color: colors.semantic.fat, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-              {t('dashboard.tiles.fat')}
-            </Text>
-            <Text style={{ fontSize: 24, fontWeight: '700', color: '#212121', marginTop: 8 }}>
-              0<Text style={{ fontSize: 14, fontWeight: '400', color: '#9E9E9E' }}>g</Text>
-            </Text>
-          </BentoTile>
-        </BentoRow>
+        {/* Daily Macros */}
+        <BentoTile index={2} style={{ marginBottom: spacing.lg, gap: spacing.lg }}>
+          <Text style={{ ...typography.titleLg }}>{t('tiles.dailyMacros')}</Text>
+          <MacroBar label={t('tiles.protein')} current={84} target={120} color={colors.macro.protein} />
+          <MacroBar label={t('tiles.carbs')} current={142} target={210} color={colors.macro.carbs} />
+          <MacroBar label={t('tiles.fat')} current={38} target={70} color={colors.macro.fat} />
+        </BentoTile>
 
-        {/* Streak + Today's Meals row */}
-        <BentoRow>
-          <BentoTile index={4}>
-            <Text style={{ fontSize: 11, fontWeight: '600', color: '#757575', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-              {t('dashboard.tiles.streak')}
-            </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'baseline', marginTop: 12 }}>
-              <Text style={{ fontSize: 32, fontWeight: '700', color: colors.primary.DEFAULT }}>
-                0
+        {/* Recent Meals */}
+        <BentoTile index={3} style={{ marginBottom: spacing.lg }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: spacing.md,
+            }}
+          >
+            <Text style={{ ...typography.titleLg }}>{t('tiles.recentMeals')}</Text>
+            <Pressable hitSlop={8}>
+              <Text
+                style={{
+                  ...typography.labelMd,
+                  color: colors.primary,
+                  textTransform: 'uppercase',
+                  letterSpacing: 1,
+                }}
+              >
+                {t('tiles.viewHistory')}
               </Text>
-              <Text style={{ fontSize: 14, color: '#9E9E9E', marginLeft: 4 }}>
-                {t('dashboard.tiles.days')}
+            </Pressable>
+          </View>
+          <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+            {[
+              { emoji: '🥗', name: 'Kale & Chickpea', cal: 420, type: 'BREAKFAST' },
+              { emoji: '🍝', name: 'Pesto Linguine', cal: 580, type: 'LUNCH' },
+            ].map((meal, i) => (
+              <Pressable
+                key={i}
+                style={({ pressed }) => ({
+                  flex: 1,
+                  backgroundColor: colors.surfaceContainerLowest,
+                  borderRadius: radii.DEFAULT,
+                  padding: spacing.sm,
+                  transform: [{ scale: pressed ? 0.97 : 1 }],
+                })}
+              >
+                <View
+                  style={{
+                    aspectRatio: 1,
+                    borderRadius: radii.DEFAULT,
+                    backgroundColor: colors.surfaceContainerHigh,
+                    marginBottom: spacing.sm,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Text style={{ fontSize: 40 }}>{meal.emoji}</Text>
+                </View>
+                <Text style={{ ...typography.labelLg, marginBottom: 2 }}>{meal.name}</Text>
+                <Text style={{ ...typography.labelSm, color: colors.onSurfaceVariant }}>
+                  {meal.cal} kcal • {meal.type}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </BentoTile>
+
+        {/* Weight Trend */}
+        <BentoTile index={4} style={{ marginBottom: spacing.lg }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing.lg }}>
+            <View>
+              <Text style={{ ...typography.titleLg, marginBottom: 2 }}>{t('tiles.weightTrend')}</Text>
+              <Text style={{ ...typography.bodySm, color: colors.onSurfaceVariant, fontWeight: '500' }}>
+                {t('tiles.weightLost', { lbs: '2.4' })}
               </Text>
             </View>
-            <Text style={{ fontSize: 20, marginTop: 4 }}>🔥</Text>
-          </BentoTile>
-          <BentoTile index={5}>
-            <Text style={{ fontSize: 11, fontWeight: '600', color: '#757575', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-              {t('dashboard.tiles.todaysMeals')}
-            </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'baseline', marginTop: 12 }}>
-              <Text style={{ fontSize: 32, fontWeight: '700', color: '#212121' }}>
-                0
-              </Text>
-              <Text style={{ fontSize: 14, color: '#9E9E9E', marginLeft: 4 }}>
-                / 3
-              </Text>
+            <View style={{ alignItems: 'flex-end' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+                <Text style={{ ...typography.headlineLg }}>138.6</Text>
+                <Text style={{ ...typography.labelMd, color: colors.onSurfaceVariant, marginLeft: 4 }}>lbs</Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  backgroundColor: `${colors.primaryFixed}30`,
+                  paddingHorizontal: 8,
+                  paddingVertical: 3,
+                  borderRadius: radii.full,
+                  marginTop: 4,
+                }}
+              >
+                <Text style={{ ...typography.labelSm, color: colors.primary }}>↓ 0.8%</Text>
+              </View>
             </View>
-            <Text style={{ fontSize: 20, marginTop: 4 }}>🍽️</Text>
-          </BentoTile>
-        </BentoRow>
-
-        {/* Weekly Trend — full width */}
-        <BentoRow>
-          <BentoTile span={2} index={6} style={{ alignItems: 'center', justifyContent: 'center', minHeight: 120 }}>
-            <Text style={{ fontSize: 11, fontWeight: '600', color: '#757575', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-              {t('dashboard.tiles.weeklyTrend')}
-            </Text>
-            <Text style={{ fontSize: 14, color: '#BDBDBD', marginTop: 16, textAlign: 'center' }}>
-              {t('dashboard.tiles.noDataYet')}
-            </Text>
-          </BentoTile>
-        </BentoRow>
-      </BentoGrid>
-    </ScrollView>
+          </View>
+          {/* Sparkline bars */}
+          <View style={{ height: 100, flexDirection: 'row', alignItems: 'flex-end', gap: 3 }}>
+            {[60, 58, 62, 55, 52, 48, 50, 45, 42, 44, 38, 35].map((h, i) => (
+              <View
+                key={i}
+                style={{
+                  flex: 1,
+                  height: `${h}%`,
+                  backgroundColor: i === 11 ? colors.primary : `${colors.primary}18`,
+                  borderTopLeftRadius: 3,
+                  borderTopRightRadius: 3,
+                }}
+              />
+            ))}
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: spacing.sm }}>
+            {['Oct 01', 'Oct 15', 'Today'].map((label) => (
+              <Text key={label} style={{ ...typography.labelSm, color: colors.onSurfaceVariant, textTransform: 'uppercase', letterSpacing: 1.5 }}>
+                {label}
+              </Text>
+            ))}
+          </View>
+        </BentoTile>
+      </ScrollView>
+    </View>
   );
 };
