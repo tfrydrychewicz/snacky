@@ -22,6 +22,8 @@
   "confidence": "{{pct}}% Confidence",
   "results_title": "Scan Results",
   "identified_count_one": "Identified {{count}} ingredient",
+  "identified_count_few": "Identified {{count}} ingredients",
+  "identified_count_many": "Identified {{count}} ingredients",
   "identified_count_other": "Identified {{count}} ingredients",
   "total": "Total",
   "macro_breakdown": "Macro Breakdown",
