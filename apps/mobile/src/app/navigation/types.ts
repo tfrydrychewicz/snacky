@@ -9,6 +9,8 @@ export type RootStackParamList = {
   MealDetail: { mealId: string };
   MealEdit: { mealId: string };
   ManualMealEntry: undefined;
+  MealPhotoGallery: undefined;
+  MealPhotoDetail: { mealId: string; imageKey: string };
 };
 
 export type AuthStackParamList = {

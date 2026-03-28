@@ -71,5 +71,9 @@
   "comments_delete_confirm": "Delete this comment?",
   "comments_just_now": "Just now",
   "comments_minutes_ago": "{{count}}m ago",
-  "comments_hours_ago": "{{count}}h ago"
+  "comments_hours_ago": "{{count}}h ago",
+
+  "gallery_title": "Photo History",
+  "gallery_empty_title": "No photos yet",
+  "gallery_empty_subtitle": "Scan meals with your camera to build a visual diary"
 }

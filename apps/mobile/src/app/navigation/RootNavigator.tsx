@@ -12,6 +12,8 @@ import { MealTimelineScreen } from '~/features/meals/screens/MealTimelineScreen'
 import { MealDetailScreen } from '~/features/meals/screens/MealDetailScreen';
 import { MealEditScreen } from '~/features/meals/screens/MealEditScreen';
 import { ManualMealEntryScreen } from '~/features/meals/screens/ManualMealEntryScreen';
+import { MealPhotoGalleryScreen } from '~/features/meals/screens/MealPhotoGalleryScreen';
+import { MealPhotoDetailScreen } from '~/features/meals/screens/MealPhotoDetailScreen';
 import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -74,6 +76,19 @@ export const RootNavigator = () => {
               name="ManualMealEntry"
               component={ManualMealEntryScreen}
               options={{ animation: 'slide_from_bottom' }}
+            />
+            <Stack.Screen
+              name="MealPhotoGallery"
+              component={MealPhotoGalleryScreen}
+              options={{ animation: 'slide_from_right' }}
+            />
+            <Stack.Screen
+              name="MealPhotoDetail"
+              component={MealPhotoDetailScreen}
+              options={{
+                animation: 'fade',
+                presentation: 'transparentModal',
+              }}
             />
           </>
         )}

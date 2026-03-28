@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { UtensilsCrossed, Plus } from 'lucide-react-native';
+import { UtensilsCrossed, Plus, ImageIcon } from 'lucide-react-native';
 import { EmptyState } from '~/shared/components/EmptyState';
 import { SkeletonLoader } from '~/shared/components/SkeletonLoader';
 import { colors, spacing, typography, radii } from '~/shared/theme/tokens';
@@ -95,12 +95,20 @@ export const MealTimelineScreen = () => {
     <View style={styles.root}>
       <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <Text style={styles.headerTitle}>{t('timeline_title')}</Text>
-        <Pressable
-          onPress={() => navigation.navigate('ManualMealEntry')}
-          style={({ pressed }) => [styles.addButton, pressed && { opacity: 0.7 }]}
-        >
-          <Plus size={20} color={colors.onPrimary} strokeWidth={2.5} />
-        </Pressable>
+        <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+          <Pressable
+            onPress={() => navigation.navigate('MealPhotoGallery')}
+            style={({ pressed }) => [styles.secondaryButton, pressed && { opacity: 0.7 }]}
+          >
+            <ImageIcon size={18} color={colors.primary} strokeWidth={2.5} />
+          </Pressable>
+          <Pressable
+            onPress={() => navigation.navigate('ManualMealEntry')}
+            style={({ pressed }) => [styles.addButton, pressed && { opacity: 0.7 }]}
+          >
+            <Plus size={20} color={colors.onPrimary} strokeWidth={2.5} />
+          </Pressable>
+        </View>
       </View>
 
       {sections.length === 0 ? (
@@ -182,6 +190,14 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  secondaryButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.surfaceContainerHigh,
     alignItems: 'center',
     justifyContent: 'center',
   },

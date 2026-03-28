@@ -395,12 +395,12 @@
 
 ### 1.6 Meal Photo History (Week 10)
 
-- [ ] Implement `MealPhotoGallery.tsx`:
-  - [ ] Scrollable grid of meal photos with dates
-  - [ ] Lazy image loading from Supabase Storage
-- [ ] Implement shared element transition (meal photo → detail):
-  - [ ] React Navigation Shared Element (350ms, ease-in-out)
-- [ ] Implement `MealPhotoDetailScreen` with full-resolution photo view
+- [x] Implement `MealPhotoGallery.tsx`:
+  - [x] Scrollable grid of meal photos with dates
+  - [x] Lazy image loading from Supabase Storage
+- [x] Implement shared element transition (meal photo → detail):
+  - [x] React Navigation Shared Element (350ms, ease-in-out)
+- [x] Implement `MealPhotoDetailScreen` with full-resolution photo view
 
 ### 1.7 Phase 1 Validation
 

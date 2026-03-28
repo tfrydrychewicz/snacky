@@ -71,5 +71,9 @@
   "comments_delete_confirm": "Usunąć ten komentarz?",
   "comments_just_now": "Przed chwilą",
   "comments_minutes_ago": "{{count}} min temu",
-  "comments_hours_ago": "{{count}} godz. temu"
+  "comments_hours_ago": "{{count}} godz. temu",
+
+  "gallery_title": "Historia zdjęć",
+  "gallery_empty_title": "Brak zdjęć",
+  "gallery_empty_subtitle": "Skanuj posiłki aparatem, aby budować wizualny dziennik"
 }
