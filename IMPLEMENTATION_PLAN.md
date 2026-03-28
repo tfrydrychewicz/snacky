@@ -118,24 +118,24 @@
 
 ### 0.5 Authentication — Google OAuth (Week 2–3)
 
-- [ ] Configure Google Cloud Console: OAuth 2.0 client IDs (iOS + Android + web)
-- [ ] Configure Supabase Auth with Google provider credentials
-- [ ] Implement mobile auth flow:
-  - [ ] Install `@react-native-google-signin/google-signin`
-  - [ ] Create `AuthProvider.tsx` wrapping Supabase session listener (`onAuthStateChange`)
-  - [ ] Create `WelcomeScreen` with Snacky branding + splash animation
-  - [ ] Create `LoginScreen` with "Continue with Google" button
-  - [ ] Implement `signInWithIdToken()` flow (Google ID token → Supabase session)
-  - [ ] Store session via Supabase JS auto-persistence (AsyncStorage)
-  - [ ] Implement token refresh (auto-handled by `@supabase/supabase-js`)
-  - [ ] Implement logout flow (`supabase.auth.signOut()`)
-- [ ] Create `AuthNavigator` (Stack: Welcome → Login)
-- [ ] Create `RootNavigator` with auth state conditional routing
-- [ ] Add biometric-protected token storage via `react-native-keychain`
-- [ ] Implement Supabase DB trigger: on new `auth.users` insert → create `users` + `user_profiles` row
+- [x] Configure Google Cloud Console: OAuth 2.0 client IDs (iOS + Android + web)
+- [x] Configure Supabase Auth with Google provider credentials
+- [x] Implement mobile auth flow:
+  - [x] Install `@react-native-google-signin/google-signin`
+  - [x] Create `AuthProvider.tsx` wrapping Supabase session listener (`onAuthStateChange`)
+  - [x] Create `WelcomeScreen` with Snacky branding + splash animation
+  - [x] Create `LoginScreen` with "Continue with Google" button
+  - [x] Implement `signInWithIdToken()` flow (Google ID token → Supabase session)
+  - [x] Store session via Supabase JS auto-persistence (AsyncStorage)
+  - [x] Implement token refresh (auto-handled by `@supabase/supabase-js`)
+  - [x] Implement logout flow (`supabase.auth.signOut()`)
+- [x] Create `AuthNavigator` (Stack: Welcome → Login)
+- [x] Create `RootNavigator` with auth state conditional routing
+- [x] Add biometric-protected token storage via `react-native-keychain`
+- [x] Implement Supabase DB trigger: on new `auth.users` insert → create `users` + `user_profiles` row
 - [ ] Test: Google sign-in on Android emulator
 - [ ] Test: Google sign-in on iOS simulator
-- [ ] Add auth translation keys to `en/auth.json` and `pl/auth.json`
+- [x] Add auth translation keys to `en/auth.json` and `pl/auth.json`
 
 ### 0.6 Design System — Tokens & Base Components (Week 2–3)
 

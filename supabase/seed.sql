@@ -1,14 +1,16 @@
 -- ==========================================================
 -- Snacky — Development Seed Data
 -- Run via: supabase db reset (automatically applies seed)
+--
+-- The handle_new_auth_user trigger auto-creates public.users
+-- and user_profiles rows when auth.users rows are inserted.
 -- ==========================================================
 
--- Create test auth users in Supabase Auth
--- supabase db reset auto-creates these in auth.users
+-- Create test auth users (trigger creates public.users + user_profiles)
 INSERT INTO auth.users (id, instance_id, email, encrypted_password, email_confirmed_at, created_at, updated_at, raw_app_meta_data, raw_user_meta_data, aud, role)
 VALUES
-    ('a1b2c3d4-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000000', 'jan@example.com', crypt('password123', gen_salt('bf')), NOW(), NOW(), NOW(), '{"provider":"google","providers":["google"]}', '{"full_name":"Jan Kowalski","avatar_url":"https://i.pravatar.cc/150?u=jan"}', 'authenticated', 'authenticated'),
-    ('a1b2c3d4-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000000', 'anna@example.com', crypt('password123', gen_salt('bf')), NOW(), NOW(), NOW(), '{"provider":"google","providers":["google"]}', '{"full_name":"Anna Nowak","avatar_url":"https://i.pravatar.cc/150?u=anna"}', 'authenticated', 'authenticated')
+    ('a1b2c3d4-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000000', 'jan@example.com', crypt('password123', gen_salt('bf')), NOW(), NOW(), NOW(), '{"provider":"google","providers":["google"]}', '{"full_name":"Jan Kowalski","avatar_url":"https://i.pravatar.cc/150?u=jan","sub":"google-uid-jan-001"}', 'authenticated', 'authenticated'),
+    ('a1b2c3d4-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000000', 'anna@example.com', crypt('password123', gen_salt('bf')), NOW(), NOW(), NOW(), '{"provider":"google","providers":["google"]}', '{"full_name":"Anna Nowak","avatar_url":"https://i.pravatar.cc/150?u=anna","sub":"google-uid-anna-002"}', 'authenticated', 'authenticated')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO auth.identities (id, user_id, provider_id, provider, identity_data, last_sign_in_at, created_at, updated_at)
@@ -17,40 +19,51 @@ VALUES
     (gen_random_uuid(), 'a1b2c3d4-0000-0000-0000-000000000002', 'a1b2c3d4-0000-0000-0000-000000000002', 'email', '{"sub":"a1b2c3d4-0000-0000-0000-000000000002","email":"anna@example.com"}', NOW(), NOW(), NOW())
 ON CONFLICT DO NOTHING;
 
--- Public users
-INSERT INTO users (id, google_id, email, display_name, avatar_url, last_login_at) VALUES
-    ('a1b2c3d4-0000-0000-0000-000000000001', 'google-uid-jan-001', 'jan@example.com', 'Jan Kowalski', 'https://i.pravatar.cc/150?u=jan', NOW()),
-    ('a1b2c3d4-0000-0000-0000-000000000002', 'google-uid-anna-002', 'anna@example.com', 'Anna Nowak', 'https://i.pravatar.cc/150?u=anna', NOW());
+-- Enrich user profiles (trigger created bare-bones rows; now add onboarding data)
+UPDATE user_profiles SET
+    date_of_birth = '1990-05-15',
+    biological_sex = 'male',
+    height_cm = 180.0,
+    activity_level = 'moderately_active',
+    goal_type = 'maintain',
+    goal_weight_kg = 82.0,
+    dietary_restrictions = '{}',
+    allergies = '{}',
+    cooking_skill = 'intermediate',
+    cooking_time_pref = 'moderate',
+    cuisine_preferences = '{"polish","italian","asian"}',
+    locale = 'pl',
+    tdee_kcal = 2650,
+    target_kcal = 2650,
+    target_protein_g = 160,
+    target_carbs_g = 290,
+    target_fat_g = 88,
+    notification_prefs = '{"enabled": true, "meal_reminders": true, "weekly_report": true, "streak_alerts": true}',
+    onboarding_completed_at = NOW()
+WHERE user_id = 'a1b2c3d4-0000-0000-0000-000000000001';
 
--- User profiles
-INSERT INTO user_profiles (
-    user_id, date_of_birth, biological_sex, height_cm, activity_level,
-    goal_type, goal_weight_kg, goal_timeline_weeks,
-    dietary_restrictions, allergies,
-    cooking_skill, cooking_time_pref, cuisine_preferences, locale,
-    tdee_kcal, target_kcal, target_protein_g, target_carbs_g, target_fat_g,
-    notification_prefs, onboarding_completed_at
-) VALUES
-    (
-        'a1b2c3d4-0000-0000-0000-000000000001',
-        '1990-05-15', 'male', 180.0, 'moderately_active',
-        'maintain', 82.0, NULL,
-        '{}', '{}',
-        'intermediate', 'moderate', '{"polish","italian","asian"}', 'pl',
-        2650, 2650, 160, 290, 88,
-        '{"enabled": true, "meal_reminders": true, "weekly_report": true, "streak_alerts": true}',
-        NOW()
-    ),
-    (
-        'a1b2c3d4-0000-0000-0000-000000000002',
-        '1995-08-22', 'female', 165.0, 'lightly_active',
-        'lose_weight', 58.0, 12,
-        '{"vegetarian"}', '{"nuts"}',
-        'beginner', 'quick', '{"mediterranean","polish"}', 'pl',
-        1850, 1550, 105, 170, 52,
-        '{"enabled": true, "meal_reminders": true, "weekly_report": true, "streak_alerts": false}',
-        NOW()
-    );
+UPDATE user_profiles SET
+    date_of_birth = '1995-08-22',
+    biological_sex = 'female',
+    height_cm = 165.0,
+    activity_level = 'lightly_active',
+    goal_type = 'lose_weight',
+    goal_weight_kg = 58.0,
+    goal_timeline_weeks = 12,
+    dietary_restrictions = '{"vegetarian"}',
+    allergies = '{"nuts"}',
+    cooking_skill = 'beginner',
+    cooking_time_pref = 'quick',
+    cuisine_preferences = '{"mediterranean","polish"}',
+    locale = 'pl',
+    tdee_kcal = 1850,
+    target_kcal = 1550,
+    target_protein_g = 105,
+    target_carbs_g = 170,
+    target_fat_g = 52,
+    notification_prefs = '{"enabled": true, "meal_reminders": true, "weekly_report": true, "streak_alerts": false}',
+    onboarding_completed_at = NOW()
+WHERE user_id = 'a1b2c3d4-0000-0000-0000-000000000002';
 
 -- Diet plan for Jan
 INSERT INTO diet_plans (id, user_id, name, status, start_date, end_date, meals_per_day, config, target_kcal, target_macros) VALUES
@@ -67,7 +80,7 @@ INSERT INTO diet_plans (id, user_id, name, status, start_date, end_date, meals_p
         '{"protein_g": 160, "carbs_g": 290, "fat_g": 88}'
     );
 
--- Some diet plan meals
+-- Diet plan meals
 INSERT INTO diet_plan_meals (diet_plan_id, day_number, meal_slot, recipe_name, prep_time_min, ingredients, calories, protein_g, carbs_g, fat_g, sort_order) VALUES
     ('b1000000-0000-0000-0000-000000000001', 1, 'breakfast', 'Owsianka z bananem i masłem orzechowym', 10,
      '[{"name":"oats","amount_g":80},{"name":"banana","amount_g":120},{"name":"peanut butter","amount_g":30},{"name":"milk","amount_g":200}]',

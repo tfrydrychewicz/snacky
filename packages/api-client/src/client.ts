@@ -23,6 +23,9 @@ export const createSupabaseClient = (options: SupabaseClientOptions): SupabaseCl
       autoRefreshToken: true,
       detectSessionInUrl: false,
     },
+    realtime: {
+      autoConnect: false,
+    },
   });
 
   return instance;

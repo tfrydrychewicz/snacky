@@ -3,6 +3,7 @@ import { StatusBar, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GluestackUIProvider } from '@gluestack-ui/themed';
 import { config } from '@gluestack-ui/config';
+import { AuthProvider } from './providers/AuthProvider';
 import { QueryProvider } from './providers/QueryProvider';
 import { RootNavigator } from './navigation/RootNavigator';
 
@@ -12,10 +13,12 @@ export const App = () => {
   return (
     <SafeAreaProvider>
       <GluestackUIProvider config={config} colorMode={isDarkMode ? 'dark' : 'light'}>
-        <QueryProvider>
-          <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-          <RootNavigator />
-        </QueryProvider>
+        <AuthProvider>
+          <QueryProvider>
+            <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+            <RootNavigator />
+          </QueryProvider>
+        </AuthProvider>
       </GluestackUIProvider>
     </SafeAreaProvider>
   );
