@@ -39,46 +39,50 @@ export const useIngredientLookup = (name: string, enabled: boolean): UseIngredie
     setIsSearching(true);
     setNoMatch(false);
 
-    const timer = setTimeout(async () => {
+    const lookup = () => {
       abortRef.current?.abort();
       const controller = new AbortController();
       abortRef.current = controller;
 
-      try {
-        const supabase = getSupabase();
-        const { data, error } = await supabase.functions.invoke<LookupResult | null>(
-          'ingredient-lookup',
-          { body: { name: name.trim(), locale: i18n.language } },
-        );
+      const supabase = getSupabase();
+      supabase.functions
+        .invoke<LookupResult | null>('ingredient-lookup', {
+          body: { name: name.trim(), locale: i18n.language },
+        })
+        .then((result) => {
+          if (controller.signal.aborted) return;
 
-        if (controller.signal.aborted) return;
+          if (result.error) {
+            console.warn('[IngredientLookup] Edge function error:', result.error);
+            setIsSearching(false);
+            setNoMatch(true);
+            return;
+          }
 
-        if (error) {
-          console.warn('[IngredientLookup] Edge function error:', error);
-          setIsSearching(false);
+          const lookupData: LookupResult | null = result.data ?? null;
+          if (lookupData) {
+            setBaseMacros(lookupData.macros_per_100g);
+            setFdcId(lookupData.fdc_id);
+            setNoMatch(false);
+          } else {
+            setBaseMacros(null);
+            setFdcId(null);
+            setNoMatch(true);
+          }
+        })
+        .catch((err: unknown) => {
+          if (controller.signal.aborted) return;
+          console.warn('[IngredientLookup] Lookup failed:', err);
           setNoMatch(true);
-          return;
-        }
+        })
+        .finally(() => {
+          if (!controller.signal.aborted) {
+            setIsSearching(false);
+          }
+        });
+    };
 
-        if (data) {
-          setBaseMacros(data.macros_per_100g);
-          setFdcId(data.fdc_id);
-          setNoMatch(false);
-        } else {
-          setBaseMacros(null);
-          setFdcId(null);
-          setNoMatch(true);
-        }
-      } catch (err) {
-        if (controller.signal.aborted) return;
-        console.warn('[IngredientLookup] Lookup failed:', err);
-        setNoMatch(true);
-      } finally {
-        if (!controller.signal.aborted) {
-          setIsSearching(false);
-        }
-      }
-    }, DEBOUNCE_MS);
+    const timer = setTimeout(lookup, DEBOUNCE_MS);
 
     return () => {
       clearTimeout(timer);

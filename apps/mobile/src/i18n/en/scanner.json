@@ -81,5 +81,6 @@
 
   "reanalyzing": "Updating analysis with your answers...",
   "lookup_searching": "Looking up nutrition...",
-  "lookup_no_match": "No match found — enter values manually"
+  "lookup_no_match": "No match found — enter values manually",
+  "portion_value_g": "{{value}}g"
 }

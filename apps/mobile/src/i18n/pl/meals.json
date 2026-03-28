@@ -73,6 +73,10 @@
   "comments_minutes_ago": "{{count}} min temu",
   "comments_hours_ago": "{{count}} godz. temu",
 
+  "unit_kcal": "kcal",
+  "unit_value_kcal": "{{value}} kcal",
+  "unit_value_g": "{{value}}g",
+
   "gallery_title": "Historia zdjęć",
   "gallery_empty_title": "Brak zdjęć",
   "gallery_empty_subtitle": "Skanuj posiłki aparatem, aby budować wizualny dziennik"

@@ -77,7 +77,13 @@ interface AnimatedMacroBarProps {
   delay: number;
 }
 
-const AnimatedMacroBar = ({ label, current, target, color, delay }: AnimatedMacroBarProps) => {
+const AnimatedMacroBar = ({
+  label,
+  current,
+  target,
+  color,
+  delay: _delay,
+}: AnimatedMacroBarProps) => {
   const pct = target > 0 ? Math.min(current / target, 1) : 0;
   const width = useSharedValue(0);
 

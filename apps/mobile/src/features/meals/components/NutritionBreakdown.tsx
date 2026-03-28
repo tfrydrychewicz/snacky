@@ -33,7 +33,7 @@ export const NutritionBreakdown = ({
     <View style={styles.container}>
       <View style={styles.calorieHeader}>
         <Text style={styles.calorieValue}>{Math.round(calories)}</Text>
-        <Text style={styles.calorieUnit}>kcal</Text>
+        <Text style={styles.calorieUnit}>{t('unit_kcal')}</Text>
       </View>
 
       <View style={styles.bar}>
@@ -74,15 +74,20 @@ export const NutritionBreakdown = ({
   );
 };
 
-const MacroItem = ({ label, value, color }: { label: string; value: number; color: string }) => (
-  <View style={styles.macroItem}>
-    <View style={[styles.macroDot, { backgroundColor: color }]} />
-    <View>
-      <Text style={styles.macroLabel}>{label}</Text>
-      <Text style={[styles.macroValue, { color }]}>{Math.round(value)}g</Text>
+const MacroItem = ({ label, value, color }: { label: string; value: number; color: string }) => {
+  const { t } = useTranslation('meals');
+  return (
+    <View style={styles.macroItem}>
+      <View style={[styles.macroDot, { backgroundColor: color }]} />
+      <View>
+        <Text style={styles.macroLabel}>{label}</Text>
+        <Text style={[styles.macroValue, { color }]}>
+          {t('unit_value_g', { value: Math.round(value) })}
+        </Text>
+      </View>
     </View>
-  </View>
-);
+  );
+};
 
 const MicroItem = ({ label, value }: { label: string; value: string }) => (
   <View style={styles.microItem}>

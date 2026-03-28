@@ -93,10 +93,10 @@ export const MealDetailScreen = () => {
     hour: '2-digit',
     minute: '2-digit',
   });
-  const aiAnalysis = meal.ai_analysis as Record<string, unknown> | null;
+  const aiAnalysis = meal.ai_analysis;
   const overallConfidence =
     typeof aiAnalysis?.overall_confidence === 'number'
-      ? Math.round((aiAnalysis.overall_confidence as number) * 100)
+      ? Math.round(aiAnalysis.overall_confidence * 100)
       : null;
   const isManual = meal.source === 'manual';
 
@@ -218,7 +218,9 @@ export const MealDetailScreen = () => {
                       </Text>
                     </View>
                     <View style={styles.ingredientMacros}>
-                      <Text style={styles.ingredientCal}>{Math.round(ing.calories)} kcal</Text>
+                      <Text style={styles.ingredientCal}>
+                        {t('unit_value_kcal', { value: Math.round(ing.calories) })}
+                      </Text>
                       <View style={[styles.confidenceDot, { backgroundColor: confidenceColor }]} />
                     </View>
                   </Animated.View>
@@ -234,12 +236,12 @@ export const MealDetailScreen = () => {
               <View style={styles.diffContainer}>
                 <DiffColumn
                   label={t('detail_original')}
-                  data={meal.modification_diff as Record<string, unknown>}
+                  data={meal.modification_diff}
                   field="original_ingredients"
                 />
                 <DiffColumn
                   label={t('detail_modified')}
-                  data={meal.modification_diff as Record<string, unknown>}
+                  data={meal.modification_diff}
                   field="modified_ingredients"
                 />
               </View>

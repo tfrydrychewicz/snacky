@@ -24,5 +24,6 @@
   "tiles.weightLost": "You've lost {{lbs}} lbs this month. Keep it up!",
 
   "ai_preview": "Based on your protein intake, I recommend a Greek yogurt snack with almonds for this afternoon.",
-  "ai_ask": "Ask anything..."
+  "ai_ask": "Ask anything...",
+  "ai_name": "Snacky AI"
 }

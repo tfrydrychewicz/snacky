@@ -19,7 +19,7 @@ export const PortionSlider = ({ value, onChange, minValue = 10, maxValue = 500 }
       <View style={styles.labelRow}>
         <Text style={styles.label}>{t('portion_adjust')}</Text>
         <View style={styles.valueBadge}>
-          <Text style={styles.valueText}>{Math.round(value)}g</Text>
+          <Text style={styles.valueText}>{t('portion_value_g', { value: Math.round(value) })}</Text>
         </View>
       </View>
       <Slider
@@ -34,8 +34,8 @@ export const PortionSlider = ({ value, onChange, minValue = 10, maxValue = 500 }
         style={styles.slider}
       />
       <View style={styles.rangeRow}>
-        <Text style={styles.rangeText}>{minValue}g</Text>
-        <Text style={styles.rangeText}>{maxValue}g</Text>
+        <Text style={styles.rangeText}>{t('portion_value_g', { value: minValue })}</Text>
+        <Text style={styles.rangeText}>{t('portion_value_g', { value: maxValue })}</Text>
       </View>
     </View>
   );

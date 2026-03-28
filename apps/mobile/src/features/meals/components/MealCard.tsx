@@ -72,7 +72,7 @@ export const MealCard = ({ meal, index, imageUrl, onPress }: MealCardProps) => {
             <View style={styles.calorieBadge}>
               <Flame size={14} color={colors.primary} strokeWidth={2.5} />
               <Text style={styles.calorieText}>{Math.round(meal.total_calories)}</Text>
-              <Text style={styles.calorieUnit}>kcal</Text>
+              <Text style={styles.calorieUnit}>{t('unit_kcal')}</Text>
             </View>
             <View style={styles.macroChips}>
               <MacroChip
@@ -98,12 +98,23 @@ export const MealCard = ({ meal, index, imageUrl, onPress }: MealCardProps) => {
   );
 };
 
-const MacroChip = ({ label, value, color }: { label: string; value: number; color: string }) => (
-  <View style={[styles.chip, { borderColor: `${color}40` }]}>
-    <View style={[styles.chipDot, { backgroundColor: color }]} />
-    <Text style={styles.chipText}>{Math.round(value)}g</Text>
-  </View>
-);
+const MacroChip = ({
+  label: _label,
+  value,
+  color,
+}: {
+  label: string;
+  value: number;
+  color: string;
+}) => {
+  const { t } = useTranslation('meals');
+  return (
+    <View style={[styles.chip, { borderColor: `${color}40` }]}>
+      <View style={[styles.chipDot, { backgroundColor: color }]} />
+      <Text style={styles.chipText}>{t('unit_value_g', { value: Math.round(value) })}</Text>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   card: {

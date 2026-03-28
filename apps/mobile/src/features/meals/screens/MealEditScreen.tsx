@@ -18,8 +18,6 @@ import { colors, spacing, typography, radii, elevation } from '~/shared/theme/to
 import type { RootStackParamList } from '~/app/navigation/types';
 import { useMealDetail } from '../hooks/useMealDetail';
 import { useUpdateMeal } from '../hooks/useMealMutations';
-import type { MealIngredientRow } from '../types';
-
 type EditRoute = RouteProp<RootStackParamList, 'MealEdit'>;
 
 interface EditableIngredient {

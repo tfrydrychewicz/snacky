@@ -38,7 +38,7 @@ export const AIChatPreviewTile = ({ index = 1 }: AIChatPreviewTileProps) => {
         >
           <Zap size={20} color={colors.primary} strokeWidth={2.5} />
         </View>
-        <Text style={{ ...typography.titleLg }}>Snacky AI</Text>
+        <Text style={{ ...typography.titleLg }}>{t('ai_name')}</Text>
       </View>
 
       <View

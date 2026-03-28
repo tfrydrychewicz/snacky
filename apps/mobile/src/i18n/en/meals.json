@@ -73,6 +73,10 @@
   "comments_minutes_ago": "{{count}}m ago",
   "comments_hours_ago": "{{count}}h ago",
 
+  "unit_kcal": "kcal",
+  "unit_value_kcal": "{{value}} kcal",
+  "unit_value_g": "{{value}}g",
+
   "gallery_title": "Photo History",
   "gallery_empty_title": "No photos yet",
   "gallery_empty_subtitle": "Scan meals with your camera to build a visual diary"

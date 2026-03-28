@@ -5,16 +5,16 @@ import type { MealWithIngredients } from '../types';
 const fetchMealDetail = async (mealId: string): Promise<MealWithIngredients> => {
   const supabase = getSupabase();
 
-  const { data, error } = await supabase
+  const result = await supabase
     .from('meals')
     .select('*, meal_ingredients(*)')
     .eq('id', mealId)
     .order('sort_order', { referencedTable: 'meal_ingredients', ascending: true })
     .single();
 
-  if (error) throw new Error(error.message);
+  if (result.error) throw new Error(result.error.message);
 
-  return data as MealWithIngredients;
+  return result.data as MealWithIngredients;
 };
 
 export const useMealDetail = (mealId: string) => {

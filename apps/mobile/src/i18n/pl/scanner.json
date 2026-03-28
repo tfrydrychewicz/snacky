@@ -81,5 +81,6 @@
 
   "reanalyzing": "Aktualizuję analizę na podstawie Twoich odpowiedzi...",
   "lookup_searching": "Szukam wartości odżywczych...",
-  "lookup_no_match": "Nie znaleziono — wprowadź wartości ręcznie"
+  "lookup_no_match": "Nie znaleziono — wprowadź wartości ręcznie",
+  "portion_value_g": "{{value}}g"
 }

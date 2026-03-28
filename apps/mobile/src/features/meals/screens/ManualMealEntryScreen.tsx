@@ -34,7 +34,6 @@ interface ManualIngredient {
 
 export const ManualMealEntryScreen = () => {
   const { t } = useTranslation('meals');
-  const { t: ts } = useTranslation('scanner');
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const logMeal = useLogManualMeal();

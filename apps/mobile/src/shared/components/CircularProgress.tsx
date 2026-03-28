@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import { colors, typography } from '~/shared/theme/tokens';
+import { colors } from '~/shared/theme/tokens';
 
 interface CircularProgressProps {
   percentage: number;

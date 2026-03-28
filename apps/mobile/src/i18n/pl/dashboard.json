@@ -24,5 +24,6 @@
   "tiles.weightLost": "Schudłeś {{lbs}} funtów w tym miesiącu. Tak trzymaj!",
 
   "ai_preview": "Na podstawie spożycia białka polecam jogurt grecki z migdałami na popołudnie.",
-  "ai_ask": "Zapytaj o cokolwiek..."
+  "ai_ask": "Zapytaj o cokolwiek...",
+  "ai_name": "Snacky AI"
 }
