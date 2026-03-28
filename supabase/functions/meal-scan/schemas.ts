@@ -49,6 +49,7 @@ export const ClarificationAnswerSchema = z.object({
 export const MealScanRequestSchema = z.object({
   image: z.string().min(1),
   meal_type: z.enum(['breakfast', 'lunch', 'dinner', 'snack', 'unknown']).default('unknown'),
+  locale: z.string().default('en'),
   clarifications: z.array(ClarificationAnswerSchema).optional(),
 });
 

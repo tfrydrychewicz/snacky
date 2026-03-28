@@ -28,6 +28,29 @@ Rules:
  * JSON Schema passed to models that support structured output.
  * Mirrors VisionResponseSchema from ./schemas.ts.
  */
+const MACROS_SCHEMA = {
+  type: 'object',
+  required: [
+    'calories_kcal',
+    'protein_g',
+    'carbohydrates_g',
+    'fat_g',
+    'fiber_g',
+    'sugar_g',
+    'sodium_mg',
+  ],
+  additionalProperties: false,
+  properties: {
+    calories_kcal: { type: 'number' },
+    protein_g: { type: 'number' },
+    carbohydrates_g: { type: 'number' },
+    fat_g: { type: 'number' },
+    fiber_g: { type: 'number' },
+    sugar_g: { type: 'number' },
+    sodium_mg: { type: 'number' },
+  },
+} as const;
+
 const RESPONSE_JSON_SCHEMA = {
   type: 'object',
   required: [
@@ -38,47 +61,25 @@ const RESPONSE_JSON_SCHEMA = {
     'clarification_needed',
     'clarification_questions',
   ],
+  additionalProperties: false,
   properties: {
     ingredients: {
       type: 'array',
       items: {
         type: 'object',
         required: ['name', 'quantity_g', 'confidence', 'macros', 'usda_fdc_id'],
+        additionalProperties: false,
         properties: {
           name: { type: 'string' },
-          quantity_g: { type: 'number', minimum: 0 },
-          confidence: { type: 'number', minimum: 0, maximum: 1 },
-          macros: {
-            type: 'object',
-            required: ['calories_kcal', 'protein_g', 'carbohydrates_g', 'fat_g'],
-            properties: {
-              calories_kcal: { type: 'number', minimum: 0 },
-              protein_g: { type: 'number', minimum: 0 },
-              carbohydrates_g: { type: 'number', minimum: 0 },
-              fat_g: { type: 'number', minimum: 0 },
-              fiber_g: { type: 'number', minimum: 0 },
-              sugar_g: { type: 'number', minimum: 0 },
-              sodium_mg: { type: 'number', minimum: 0 },
-            },
-          },
-          usda_fdc_id: { type: ['integer', 'null'] },
+          quantity_g: { type: 'number' },
+          confidence: { type: 'number' },
+          macros: MACROS_SCHEMA,
+          usda_fdc_id: { anyOf: [{ type: 'integer' }, { type: 'null' }] },
         },
       },
     },
-    total: {
-      type: 'object',
-      required: ['calories_kcal', 'protein_g', 'carbohydrates_g', 'fat_g'],
-      properties: {
-        calories_kcal: { type: 'number', minimum: 0 },
-        protein_g: { type: 'number', minimum: 0 },
-        carbohydrates_g: { type: 'number', minimum: 0 },
-        fat_g: { type: 'number', minimum: 0 },
-        fiber_g: { type: 'number', minimum: 0 },
-        sugar_g: { type: 'number', minimum: 0 },
-        sodium_mg: { type: 'number', minimum: 0 },
-      },
-    },
-    overall_confidence: { type: 'number', minimum: 0, maximum: 1 },
+    total: MACROS_SCHEMA,
+    overall_confidence: { type: 'number' },
     nova_classification: { type: 'integer', enum: [1, 2, 3, 4] },
     clarification_needed: { type: 'boolean' },
     clarification_questions: {
@@ -86,12 +87,12 @@ const RESPONSE_JSON_SCHEMA = {
       items: {
         type: 'object',
         required: ['question', 'options', 'field'],
+        additionalProperties: false,
         properties: {
           question: { type: 'string' },
           options: {
             type: 'array',
             items: { type: 'string' },
-            minItems: 2,
           },
           field: { type: 'string' },
         },
@@ -100,7 +101,13 @@ const RESPONSE_JSON_SCHEMA = {
   },
 } as const;
 
-export function buildSystemPrompt(): string {
+export function buildSystemPrompt(locale: string): string {
+  if (locale !== 'en') {
+    return (
+      SYSTEM_PROMPT +
+      `\n\nIMPORTANT: The user's language is "${locale}". ALL text fields in your response — ingredient names, clarification questions, and clarification options — MUST be in "${locale}". Numeric values and JSON keys remain in English.`
+    );
+  }
   return SYSTEM_PROMPT;
 }
 

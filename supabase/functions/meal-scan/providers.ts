@@ -8,7 +8,7 @@ export interface VisionProviderResult {
   usage?: { prompt_tokens: number; completion_tokens: number };
 }
 
-const PROVIDER_TIMEOUT_MS = 10_000;
+const PROVIDER_TIMEOUT_MS = 30_000;
 
 // ---------------------------------------------------------------------------
 // Individual provider implementations
@@ -62,7 +62,7 @@ async function callOpenAI(
             schema: responseSchema,
           },
         },
-        max_tokens: 4096,
+        max_completion_tokens: 4096,
         temperature: 0.1,
       }),
     });

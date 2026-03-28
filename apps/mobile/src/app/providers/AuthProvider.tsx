@@ -85,6 +85,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const resolveSession = useCallback(
     async (session: Session | null) => {
+      if (session) {
+        // Verify the user actually exists in auth (guards against stale
+        // sessions after a local database reset)
+        const { error: userError } = await getSupabase().auth.getUser(
+          session.access_token,
+        );
+        if (userError) {
+          console.warn('[Auth] Stale session detected, signing out:', userError.message);
+          await getSupabase().auth.signOut();
+          await clearPersistedRefreshToken();
+          setState({
+            session: null,
+            user: null,
+            isLoading: false,
+            isAuthenticated: false,
+            hasCompletedOnboarding: false,
+          });
+          return;
+        }
+      }
+
       let onboarded = false;
       if (session?.user) {
         onboarded = await checkOnboardingStatus(session.user.id);

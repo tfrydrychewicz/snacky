@@ -22,7 +22,7 @@
     "supabase:db:reset-with-seed": "supabase db reset --seed supabase/seed.sql",
     "supabase:migrate": "supabase migration new",
     "supabase:push": "supabase db push",
-    "supabase:functions:serve": "supabase functions serve --no-verify-jwt",
+    "supabase:functions:serve": "supabase functions serve --no-verify-jwt --env-file supabase/.env",
     "i18n:check": "npx tsx scripts/check-i18n-parity.ts",
     "seed:usda": "npx tsx scripts/seed-usda.ts",
     "ios": "pnpm --filter @snacky/mobile ios",

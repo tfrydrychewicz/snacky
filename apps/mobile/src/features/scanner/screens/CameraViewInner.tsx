@@ -1,5 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, Pressable, StyleSheet, ActivityIndicator, Platform } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
 import {
   Camera,
   useCameraDevice,
@@ -13,10 +21,13 @@ import { CameraOverlay } from '../components/CameraOverlay';
 import { useImageCompression } from '../hooks/useImageCompression';
 import { colors, typography, spacing, radii } from '~/shared/theme/tokens';
 
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
 type Props = {
   mealType: MealType;
   onMealTypeChange: (type: MealType) => void;
   onAnalyze: (base64: string, mealType: MealType) => void;
+  onPhotoCaptured: (uri: string) => void;
   onGallery: () => void;
   showLoader: boolean;
   error: string | null;
@@ -27,6 +38,7 @@ export const CameraViewInner = ({
   mealType,
   onMealTypeChange,
   onAnalyze,
+  onPhotoCaptured,
   onGallery,
   showLoader,
   error,
@@ -58,6 +70,7 @@ export const CameraViewInner = ({
       const compressed = await compress(uri);
       if (!compressed) return;
 
+      onPhotoCaptured(compressed.uri);
       onAnalyze(compressed.base64, mealType);
     } catch (err) {
       console.error('Capture failed:', err);
@@ -65,6 +78,27 @@ export const CameraViewInner = ({
       setIsCapturing(false);
     }
   }, [flashEnabled, compress, onAnalyze, mealType]);
+
+  const pulseOpacity = useSharedValue(1);
+
+  useEffect(() => {
+    if (showLoader) {
+      pulseOpacity.value = withRepeat(
+        withSequence(
+          withTiming(0.55, { duration: 800, easing: Easing.inOut(Easing.ease) }),
+          withTiming(1, { duration: 800, easing: Easing.inOut(Easing.ease) }),
+        ),
+        -1,
+        false,
+      );
+    } else {
+      pulseOpacity.value = withTiming(1, { duration: 200 });
+    }
+  }, [showLoader, pulseOpacity]);
+
+  const pulseStyle = useAnimatedStyle(() => ({
+    opacity: pulseOpacity.value,
+  }));
 
   if (!hasPermission || !device) {
     return (
@@ -75,16 +109,20 @@ export const CameraViewInner = ({
           {!hasPermission ? t('camera_permission_message') : t('camera_no_device')}
         </Text>
 
-        <Pressable
+        <AnimatedPressable
           onPress={onGallery}
           disabled={showLoader}
-          style={[styles.galleryFallbackButton, showLoader && { opacity: 0.6 }]}
+          style={[styles.galleryFallbackButton, pulseStyle]}
         >
-          <ImageIcon size={22} color={colors.onPrimary} strokeWidth={2} />
+          {showLoader ? (
+            <ActivityIndicator size="small" color={colors.onPrimary} />
+          ) : (
+            <ImageIcon size={22} color={colors.onPrimary} strokeWidth={2} />
+          )}
           <Text style={styles.galleryFallbackText}>
             {showLoader ? t('analyzing') : t('gallery_pick')}
           </Text>
-        </Pressable>
+        </AnimatedPressable>
 
         {error && <Text style={styles.errorFallback}>{t('scan_error')}</Text>}
       </View>

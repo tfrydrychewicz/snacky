@@ -61,13 +61,13 @@ export const ScanResultCard = ({ ingredient, index, onEdit, onRemove }: Props) =
 
         <View style={styles.macroRow}>
           <Text style={[styles.macroValue, { color: colors.macro.protein }]}>
-            P {Math.round(ingredient.macros.protein_g)}g
+            {t('macro_protein_short')} {Math.round(ingredient.macros.protein_g)}g
           </Text>
           <Text style={[styles.macroValue, { color: colors.macro.carbs }]}>
-            C {Math.round(ingredient.macros.carbohydrates_g)}g
+            {t('macro_carbs_short')} {Math.round(ingredient.macros.carbohydrates_g)}g
           </Text>
           <Text style={[styles.macroValue, { color: colors.macro.fat }]}>
-            F {Math.round(ingredient.macros.fat_g)}g
+            {t('macro_fat_short')} {Math.round(ingredient.macros.fat_g)}g
           </Text>
         </View>
 

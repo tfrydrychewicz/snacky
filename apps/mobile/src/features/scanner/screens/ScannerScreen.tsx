@@ -23,6 +23,7 @@ export const ScannerScreen = () => {
   const { t } = useTranslation('scanner');
   const navigation = useNavigation<Nav>();
   const [mealType, setMealType] = useState<MealType>('lunch');
+  const [capturedPhotoUri, setCapturedPhotoUri] = useState('');
 
   const { pickFromGallery } = useImageCapture();
   const { compress, isCompressing } = useImageCompression();
@@ -32,12 +33,13 @@ export const ScannerScreen = () => {
     if (result) {
       navigation.navigate('Results', {
         scanResult: result,
-        photoUri: '',
+        photoUri: capturedPhotoUri,
         mealType,
       });
       reset();
+      setCapturedPhotoUri('');
     }
-  }, [result, navigation, mealType, reset]);
+  }, [result, navigation, mealType, capturedPhotoUri, reset]);
 
   const handleGallery = useCallback(async () => {
     const photo = await pickFromGallery();
@@ -46,6 +48,7 @@ export const ScannerScreen = () => {
     const compressed = await compress(photo.uri);
     if (!compressed) return;
 
+    setCapturedPhotoUri(compressed.uri);
     analyze(compressed.base64, mealType);
   }, [pickFromGallery, compress, analyze, mealType]);
 
@@ -90,6 +93,7 @@ export const ScannerScreen = () => {
         mealType={mealType}
         onMealTypeChange={setMealType}
         onAnalyze={analyze}
+        onPhotoCaptured={setCapturedPhotoUri}
         onGallery={() => void handleGallery()}
         showLoader={showLoader}
         error={error}

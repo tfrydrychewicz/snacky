@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const { image, meal_type, clarifications } = parseResult.data;
+    const { image, meal_type, locale, clarifications } = parseResult.data;
 
     // 2. Validate image format, size, encoding
     const imgCheck = validateImage(image);
@@ -51,7 +51,7 @@ Deno.serve(async (req) => {
     });
 
     // 3. Build vision prompts
-    const systemPrompt = buildSystemPrompt();
+    const systemPrompt = buildSystemPrompt(locale);
     const userPrompt = buildUserPrompt(meal_type, clarifications);
     const responseSchema = getResponseSchema();
     const rawBase64 = stripDataUri(image);

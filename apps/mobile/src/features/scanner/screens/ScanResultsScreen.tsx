@@ -1,11 +1,13 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { ScrollView, View, Text, Pressable, Alert, StyleSheet } from 'react-native';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { Image, ScrollView, View, Text, Pressable, Alert, StyleSheet, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { ShieldCheck, Check, Plus, ImageIcon } from 'lucide-react-native';
-import type { IngredientAnalysis, MacroBreakdown } from '@snacky/shared-types';
+import RNFS from 'react-native-fs';
+import type { IngredientAnalysis, MacroBreakdown, MealScanResult } from '@snacky/shared-types';
+import { MealScanResultSchema } from '@snacky/shared-types';
 import { AppHeader } from '~/shared/components/AppHeader';
 import { colors, spacing, typography, radii, elevation } from '~/shared/theme/tokens';
 import { getSupabase } from '~/shared/api/client';
@@ -19,7 +21,7 @@ import { CommentInput } from '../components/CommentInput';
 type ResultsRoute = RouteProp<ScannerStackParamList, 'Results'>;
 
 export const ScanResultsScreen = () => {
-  const { t } = useTranslation('scanner');
+  const { t, i18n } = useTranslation('scanner');
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const route = useRoute<ResultsRoute>();
@@ -30,9 +32,14 @@ export const ScanResultsScreen = () => {
   const [ingredients, setIngredients] = useState<IngredientAnalysis[]>(scanResult.ingredients);
   const [comment, setComment] = useState('');
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [showClarification, setShowClarification] = useState(
-    scanResult.clarification_needed && scanResult.clarification_questions.length > 0,
-  );
+  const [isNewIngredient, setIsNewIngredient] = useState(false);
+  const [clarificationIndex, setClarificationIndex] = useState(0);
+  const clarificationAnswers = useRef<Array<{ question: string; answer: string }>>([]);
+  const [isReanalyzing, setIsReanalyzing] = useState(false);
+  const [currentScanResult, setCurrentScanResult] = useState<MealScanResult>(scanResult);
+  const showClarification =
+    currentScanResult.clarification_needed &&
+    clarificationIndex < currentScanResult.clarification_questions.length;
   const [isLogging, setIsLogging] = useState(false);
 
   const totals: MacroBreakdown = useMemo(() => {
@@ -96,8 +103,66 @@ export const ScanResultsScreen = () => {
       usda_fdc_id: null,
     };
     setIngredients((prev) => [...prev, newIngredient]);
+    setIsNewIngredient(true);
     setEditingIndex(ingredients.length);
   }, [ingredients.length, t]);
+
+  const triggerReanalysis = useCallback(async () => {
+    if (!photoUri) return;
+    setIsReanalyzing(true);
+    try {
+      const base64 = await RNFS.readFile(photoUri, 'base64');
+      const supabase = getSupabase();
+      const response = await supabase.functions.invoke<unknown>('meal-scan', {
+        body: {
+          image: base64,
+          meal_type: mealType,
+          locale: i18n.language,
+          clarifications: clarificationAnswers.current,
+        },
+      });
+
+      if (response.error) {
+        console.error('[Reanalysis] Edge function error:', response.error);
+        return;
+      }
+
+      const parsed = MealScanResultSchema.safeParse(response.data);
+      if (!parsed.success) {
+        console.error('[Reanalysis] Invalid response:', parsed.error.format());
+        return;
+      }
+
+      setCurrentScanResult(parsed.data);
+      setIngredients(parsed.data.ingredients);
+    } catch (err) {
+      console.error('[Reanalysis] Failed:', err);
+    } finally {
+      setIsReanalyzing(false);
+    }
+  }, [photoUri, mealType, i18n.language]);
+
+  const handleClarificationSubmit = useCallback(
+    (question: string, answer: string) => {
+      clarificationAnswers.current.push({ question, answer });
+      const nextIndex = clarificationIndex + 1;
+      setClarificationIndex(nextIndex);
+
+      if (nextIndex >= currentScanResult.clarification_questions.length) {
+        void triggerReanalysis();
+      }
+    },
+    [clarificationIndex, currentScanResult.clarification_questions.length, triggerReanalysis],
+  );
+
+  const handleClarificationSkip = useCallback(() => {
+    const nextIndex = clarificationIndex + 1;
+    setClarificationIndex(nextIndex);
+
+    if (nextIndex >= currentScanResult.clarification_questions.length && clarificationAnswers.current.length > 0) {
+      void triggerReanalysis();
+    }
+  }, [clarificationIndex, currentScanResult.clarification_questions.length, triggerReanalysis]);
 
   const hasModifications = JSON.stringify(ingredients) !== JSON.stringify(scanResult.ingredients);
 
@@ -197,7 +262,7 @@ export const ScanResultsScreen = () => {
     }
   }, [user, photoUri, mealType, ingredients, totals, scanResult, hasModifications, navigation, t]);
 
-  const overallConfidence = Math.round(scanResult.overall_confidence * 100);
+  const overallConfidence = Math.round(currentScanResult.overall_confidence * 100);
   const totalCalories = Math.round(totals.calories_kcal);
 
   const macroTotalG = totals.protein_g + totals.carbohydrates_g + totals.fat_g;
@@ -214,7 +279,11 @@ export const ScanResultsScreen = () => {
       >
         {/* Photo Banner */}
         <View style={styles.photoBanner}>
-          <ImageIcon size={64} color={colors.outline} strokeWidth={1.2} />
+          {photoUri ? (
+            <Image source={{ uri: photoUri }} style={styles.photoImage} resizeMode="cover" />
+          ) : (
+            <ImageIcon size={64} color={colors.outline} strokeWidth={1.2} />
+          )}
           <Animated.View entering={FadeIn.delay(200).duration(400)} style={styles.confidenceBadge}>
             <ShieldCheck size={16} color={colors.primary} strokeWidth={2.5} />
             <Text style={styles.confidenceText}>{t('confidence', { pct: overallConfidence })}</Text>
@@ -245,7 +314,7 @@ export const ScanResultsScreen = () => {
                 key={`${ing.name}-${i}`}
                 ingredient={ing}
                 index={i}
-                onEdit={() => setEditingIndex(i)}
+                onEdit={() => { setIsNewIngredient(false); setEditingIndex(i); }}
                 onRemove={() => handleRemoveIngredient(i)}
               />
             ))}
@@ -321,22 +390,32 @@ export const ScanResultsScreen = () => {
         <IngredientEditor
           ingredient={ingredients[editingIndex]}
           visible={true}
+          isNew={isNewIngredient}
           onClose={() => setEditingIndex(null)}
           onSave={(updated) => handleUpdateIngredient(editingIndex, updated)}
         />
       )}
 
+      {/* Re-analysis overlay */}
+      {isReanalyzing && (
+        <View style={styles.reanalysisOverlay}>
+          <View style={styles.reanalysisCard}>
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text style={styles.reanalysisText}>{t('reanalyzing')}</Text>
+          </View>
+        </View>
+      )}
+
       {/* Clarification Dialog */}
       {showClarification &&
-        scanResult.clarification_questions.length > 0 &&
-        scanResult.clarification_questions[0] != null && (
+        currentScanResult.clarification_questions[clarificationIndex] != null && (
           <ClarificationDialog
-            question={scanResult.clarification_questions[0]}
+            question={currentScanResult.clarification_questions[clarificationIndex]}
             visible={showClarification}
-            currentRound={1}
-            maxRounds={3}
-            onSubmit={() => setShowClarification(false)}
-            onSkip={() => setShowClarification(false)}
+            currentRound={clarificationIndex + 1}
+            maxRounds={currentScanResult.clarification_questions.length}
+            onSubmit={handleClarificationSubmit}
+            onSkip={handleClarificationSkip}
           />
         )}
     </View>
@@ -360,6 +439,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceContainerHigh,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  photoImage: {
+    width: '100%',
+    height: '100%',
   },
   confidenceBadge: {
     position: 'absolute',
@@ -496,5 +579,25 @@ const styles = StyleSheet.create({
     ...typography.titleMd,
     color: colors.onPrimary,
     fontWeight: '700',
+  },
+  reanalysisOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 100,
+  },
+  reanalysisCard: {
+    backgroundColor: colors.surfaceContainerLowest,
+    borderRadius: radii.DEFAULT,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.lg,
+    alignItems: 'center',
+    gap: spacing.md,
+    ...elevation.float,
+  },
+  reanalysisText: {
+    ...typography.titleMd,
+    color: colors.onSurface,
   },
 });

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -8,43 +8,73 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { X } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import type { IngredientAnalysis } from '@snacky/shared-types';
+import type { IngredientAnalysis, MacroBreakdown } from '@snacky/shared-types';
 import { colors, spacing, typography, radii, elevation } from '~/shared/theme/tokens';
 import { PortionSlider } from './PortionSlider';
+import { useIngredientLookup } from '../hooks/useIngredientLookup';
 
 type Props = {
   ingredient: IngredientAnalysis;
   visible: boolean;
+  isNew?: boolean;
   onClose: () => void;
   onSave: (updated: IngredientAnalysis) => void;
 };
 
-export const IngredientEditor = ({ ingredient, visible, onClose, onSave }: Props) => {
+export const IngredientEditor = ({ ingredient, visible, isNew = false, onClose, onSave }: Props) => {
   const { t } = useTranslation('scanner');
   const [name, setName] = useState(ingredient.name);
   const [portionG, setPortionG] = useState(ingredient.quantity_g);
+  const [lookupBaseMacros, setLookupBaseMacros] = useState<MacroBreakdown | null>(null);
+  const [lookupFdcId, setLookupFdcId] = useState<number | null>(null);
 
-  const scaleFactor = portionG / ingredient.quantity_g;
+  const { baseMacros, fdcId, isSearching, noMatch } = useIngredientLookup(name, isNew);
 
-  const scaledMacros = {
-    ...ingredient.macros,
-    calories_kcal: ingredient.macros.calories_kcal * scaleFactor,
-    protein_g: ingredient.macros.protein_g * scaleFactor,
-    carbohydrates_g: ingredient.macros.carbohydrates_g * scaleFactor,
-    fat_g: ingredient.macros.fat_g * scaleFactor,
-    ...(ingredient.macros.fiber_g != null && {
-      fiber_g: ingredient.macros.fiber_g * scaleFactor,
-    }),
-    ...(ingredient.macros.sugar_g != null && {
-      sugar_g: ingredient.macros.sugar_g * scaleFactor,
-    }),
-    ...(ingredient.macros.sodium_mg != null && {
-      sodium_mg: ingredient.macros.sodium_mg * scaleFactor,
-    }),
-  };
+  useEffect(() => {
+    if (baseMacros) {
+      setLookupBaseMacros(baseMacros);
+      setLookupFdcId(fdcId);
+    }
+  }, [baseMacros, fdcId]);
+
+  const hasLookupData = isNew && lookupBaseMacros !== null;
+
+  const scaledMacros: MacroBreakdown = useMemo(() => {
+    if (hasLookupData) {
+      const r = portionG / 100;
+      return {
+        calories_kcal: lookupBaseMacros.calories_kcal * r,
+        protein_g: lookupBaseMacros.protein_g * r,
+        carbohydrates_g: lookupBaseMacros.carbohydrates_g * r,
+        fat_g: lookupBaseMacros.fat_g * r,
+        fiber_g: lookupBaseMacros.fiber_g != null ? lookupBaseMacros.fiber_g * r : null,
+        sugar_g: lookupBaseMacros.sugar_g != null ? lookupBaseMacros.sugar_g * r : null,
+        sodium_mg: lookupBaseMacros.sodium_mg != null ? lookupBaseMacros.sodium_mg * r : null,
+      };
+    }
+
+    const scaleFactor = portionG / ingredient.quantity_g;
+    return {
+      ...ingredient.macros,
+      calories_kcal: ingredient.macros.calories_kcal * scaleFactor,
+      protein_g: ingredient.macros.protein_g * scaleFactor,
+      carbohydrates_g: ingredient.macros.carbohydrates_g * scaleFactor,
+      fat_g: ingredient.macros.fat_g * scaleFactor,
+      ...(ingredient.macros.fiber_g != null && {
+        fiber_g: ingredient.macros.fiber_g * scaleFactor,
+      }),
+      ...(ingredient.macros.sugar_g != null && {
+        sugar_g: ingredient.macros.sugar_g * scaleFactor,
+      }),
+      ...(ingredient.macros.sodium_mg != null && {
+        sodium_mg: ingredient.macros.sodium_mg * scaleFactor,
+      }),
+    };
+  }, [hasLookupData, lookupBaseMacros, portionG, ingredient]);
 
   const handleSave = () => {
     onSave({
@@ -52,6 +82,7 @@ export const IngredientEditor = ({ ingredient, visible, onClose, onSave }: Props
       name: name.trim() || ingredient.name,
       quantity_g: portionG,
       macros: scaledMacros,
+      usda_fdc_id: lookupFdcId ?? ingredient.usda_fdc_id,
     });
   };
 
@@ -80,6 +111,15 @@ export const IngredientEditor = ({ ingredient, visible, onClose, onSave }: Props
               placeholderTextColor={colors.outlineVariant}
               autoFocus
             />
+            {isNew && isSearching && (
+              <View style={styles.lookupStatus}>
+                <ActivityIndicator size="small" color={colors.primary} />
+                <Text style={styles.lookupText}>{t('lookup_searching')}</Text>
+              </View>
+            )}
+            {isNew && noMatch && !isSearching && (
+              <Text style={styles.lookupNoMatch}>{t('lookup_no_match')}</Text>
+            )}
           </View>
 
           <PortionSlider
@@ -184,6 +224,21 @@ const styles = StyleSheet.create({
     borderRadius: radii.sm,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
+  },
+  lookupStatus: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginTop: spacing.xs,
+  },
+  lookupText: {
+    ...typography.labelSm,
+    color: colors.primary,
+  },
+  lookupNoMatch: {
+    ...typography.labelSm,
+    color: colors.onSurfaceVariant,
+    marginTop: spacing.xs,
   },
   macroPreview: {
     flexDirection: 'row',

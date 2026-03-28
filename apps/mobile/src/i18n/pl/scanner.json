@@ -30,6 +30,9 @@
   "protein": "Białko",
   "carbs": "Węgle",
   "fats": "Tłuszcze",
+  "macro_protein_short": "B",
+  "macro_carbs_short": "W",
+  "macro_fat_short": "T",
   "fiber": "Błonnik",
   "sugar": "Cukier",
   "sodium": "Sód",
@@ -74,5 +77,9 @@
   "nova_1": "Nieprzetworzone",
   "nova_2": "Przetworzone składniki",
   "nova_3": "Żywność przetworzona",
-  "nova_4": "Ultraprzetworzone"
+  "nova_4": "Ultraprzetworzone",
+
+  "reanalyzing": "Aktualizuję analizę na podstawie Twoich odpowiedzi...",
+  "lookup_searching": "Szukam wartości odżywczych...",
+  "lookup_no_match": "Nie znaleziono — wprowadź wartości ręcznie"
 }
