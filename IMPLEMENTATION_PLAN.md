@@ -210,22 +210,22 @@
 
 ### 0.9 Infrastructure as Code (Week 3–4)
 
-- [ ] Document Supabase project configuration as code (`supabase/config.toml`)
-- [ ] Create `supabase/migrations/` with versioned SQL files
-- [ ] Create Edge Function scaffolding in `supabase/functions/`:
-  - [ ] `_shared/` — CORS config, Supabase client initialization, error handling
-  - [ ] `meal-scan/` — placeholder
-  - [ ] `chat/` — placeholder
-  - [ ] `embed/` — placeholder
-  - [ ] `generate-plan/` — placeholder
-  - [ ] `send-notification/` — placeholder
-- [ ] Configure Supabase secrets for API keys (OpenAI, Google AI, Voyage AI, Anthropic, FCM)
-- [ ] Set up `supabase/seed.sql` with realistic test data
-- [ ] Verify full `supabase start` → `supabase db push` → `supabase functions serve` workflow
-- [ ] Create environment strategy documentation:
-  - [ ] Local (supabase start)
-  - [ ] Staging (Supabase cloud project)
-  - [ ] Production (separate Supabase project)
+- [x] Document Supabase project configuration as code (`supabase/config.toml`)
+- [x] Create `supabase/migrations/` with versioned SQL files
+- [x] Create Edge Function scaffolding in `supabase/functions/`:
+  - [x] `_shared/` — CORS config, Supabase client initialization, error handling
+  - [x] `meal-scan/` — placeholder
+  - [x] `chat/` — placeholder
+  - [x] `embed/` — placeholder
+  - [x] `generate-plan/` — placeholder
+  - [x] `send-notification/` — placeholder
+- [x] Configure Supabase secrets for API keys (OpenAI, Google AI, Voyage AI, Anthropic, FCM)
+- [x] Set up `supabase/seed.sql` with realistic test data
+- [x] Verify full `supabase start` → `supabase db push` → `supabase functions serve` workflow
+- [x] Create environment strategy documentation:
+  - [x] Local (supabase start)
+  - [x] Staging (Supabase cloud project)
+  - [x] Production (separate Supabase project)
 
 ### 0.10 Phase 0 Validation
 
