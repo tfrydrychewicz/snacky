@@ -1,1 +1,6 @@
-{}
+{
+  "permission_denied_title": "Notifications Disabled",
+  "permission_denied_message": "Enable notifications in your device settings to receive meal reminders and progress updates.",
+  "permission_denied_cancel": "Not Now",
+  "permission_denied_settings": "Open Settings"
+}

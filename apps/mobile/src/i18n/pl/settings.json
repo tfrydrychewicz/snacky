@@ -1,4 +1,22 @@
 {
   "settings.title": "Ustawienia",
-  "settings.account": "Konto"
+  "settings.account": "Konto",
+  "settings.notifications": "Powiadomienia",
+  "settings.notifications_enable": "Powiadomienia push",
+  "settings.notifications_enable_desc": "Otrzymuj przypomnienia i wskazówki",
+  "settings.meal_reminders": "Przypomnienia o posiłkach",
+  "settings.meal_reminders_desc": "Przypomnij mi o logowaniu posiłków o zwykłych porach",
+  "settings.streak_alerts": "Alerty serii",
+  "settings.streak_alerts_desc": "Przypomnij mi, jeśli dziś nie zalogowałem posiłków",
+  "settings.budget_alerts": "Alerty budżetu",
+  "settings.budget_alerts_desc": "Alert, gdy dzienny budżet makroskładników się wyczerpuje",
+  "settings.nudges": "Inteligentne podpowiedzi",
+  "settings.nudges_desc": "Wskazówki, gdy odchodzę od celów makro",
+  "settings.weekly_report": "Raport tygodniowy",
+  "settings.weekly_report_desc": "Podsumowanie postępów co niedzielę",
+  "settings.quiet_hours": "Godziny ciszy",
+  "settings.quiet_hours_desc": "Wstrzymaj powiadomienia podczas snu",
+  "settings.quiet_start": "Od",
+  "settings.quiet_end": "Do",
+  "settings.permission_needed": "Wymagane pozwolenie na powiadomienia. Kliknij, aby włączyć."
 }

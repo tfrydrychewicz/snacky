@@ -1,1 +1,6 @@
-{}
+{
+  "permission_denied_title": "Powiadomienia wyłączone",
+  "permission_denied_message": "Włącz powiadomienia w ustawieniach urządzenia, aby otrzymywać przypomnienia o posiłkach i aktualizacje postępów.",
+  "permission_denied_cancel": "Nie teraz",
+  "permission_denied_settings": "Otwórz ustawienia"
+}

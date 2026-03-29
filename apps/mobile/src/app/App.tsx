@@ -5,6 +5,7 @@ import { GluestackUIProvider } from '@gluestack-ui/themed';
 import { config } from '@gluestack-ui/config';
 import { ThemeProvider } from './providers/ThemeProvider';
 import { AuthProvider } from './providers/AuthProvider';
+import { NotificationProvider } from './providers/NotificationProvider';
 import { QueryProvider } from './providers/QueryProvider';
 import { RootNavigator } from './navigation/RootNavigator';
 
@@ -16,10 +17,12 @@ export const App = () => {
       <GluestackUIProvider config={config} colorMode={isDarkMode ? 'dark' : 'light'}>
         <ThemeProvider>
           <AuthProvider>
-            <QueryProvider>
-              <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-              <RootNavigator />
-            </QueryProvider>
+            <NotificationProvider>
+              <QueryProvider>
+                <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+                <RootNavigator />
+              </QueryProvider>
+            </NotificationProvider>
           </AuthProvider>
         </ThemeProvider>
       </GluestackUIProvider>

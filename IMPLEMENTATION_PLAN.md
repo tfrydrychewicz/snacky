@@ -532,22 +532,23 @@
 
 ### 2.7 Push Notification / Nudge System (Week 16)
 
-- [ ] Install `@react-native-firebase/messaging`
-- [ ] Configure FCM for Android + APNs for iOS
-- [ ] Implement `send-notification` Edge Function:
-  - [ ] Accept notification payload
-  - [ ] Render template with Handlebars (per locale)
-  - [ ] Dispatch via FCM
-  - [ ] Log to `notification_log` table
-- [ ] Implement notification types:
-  - [ ] Meal Reminder (time-based, user's typical meal window ± 30min)
-  - [ ] Budget Alert (mid-day macro budget exceeded)
-  - [ ] Streak Maintenance (20:00 local time, no meals logged today)
-  - [ ] Weekly Report (Sunday 09:00 local time)
-- [ ] Set up pg_cron jobs for scheduled notifications
-- [ ] Create `NotificationProvider.tsx` for handling incoming notifications
-- [ ] Implement notification permission request flow
-- [ ] Add notification translation keys to `en/notifications.json` and `pl/notifications.json`
+- [x] Install `@react-native-firebase/messaging`
+- [x] Configure FCM for Android + APNs for iOS
+- [x] Implement `send-notification` Edge Function:
+  - [x] Accept notification payload
+  - [x] Render template with Handlebars (per locale)
+  - [x] Dispatch via FCM
+  - [x] Log to `notification_log` table
+- [x] Implement notification types:
+  - [x] Meal Reminder (time-based, user's typical meal window ± 30min)
+  - [x] Budget Alert (mid-day macro budget exceeded)
+  - [x] Streak Maintenance (20:00 local time, no meals logged today)
+  - [x] Weekly Report (Sunday 09:00 local time)
+- [x] Set up pg_cron jobs for scheduled notifications
+- [x] Create `NotificationProvider.tsx` for handling incoming notifications
+- [x] Implement notification permission request flow
+- [x] Add notification translation keys to `en/notifications.json` and `pl/notifications.json`
+- [x] Add fully configurable notification preferences to Settings screen
 
 ### 2.8 Phase 2 Validation
 

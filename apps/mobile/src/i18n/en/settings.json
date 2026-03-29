@@ -1,4 +1,22 @@
 {
   "settings.title": "Settings",
-  "settings.account": "Account"
+  "settings.account": "Account",
+  "settings.notifications": "Notifications",
+  "settings.notifications_enable": "Push Notifications",
+  "settings.notifications_enable_desc": "Receive reminders and insights",
+  "settings.meal_reminders": "Meal Reminders",
+  "settings.meal_reminders_desc": "Remind me to log meals at usual times",
+  "settings.streak_alerts": "Streak Alerts",
+  "settings.streak_alerts_desc": "Nudge me if I haven't logged meals today",
+  "settings.budget_alerts": "Budget Alerts",
+  "settings.budget_alerts_desc": "Alert when daily macro budget is running low",
+  "settings.nudges": "Smart Nudges",
+  "settings.nudges_desc": "Tips when I'm off track on macros",
+  "settings.weekly_report": "Weekly Report",
+  "settings.weekly_report_desc": "Summary of my weekly progress every Sunday",
+  "settings.quiet_hours": "Quiet Hours",
+  "settings.quiet_hours_desc": "Pause notifications during sleep",
+  "settings.quiet_start": "From",
+  "settings.quiet_end": "Until",
+  "settings.permission_needed": "Notification permission required. Tap to enable."
 }
