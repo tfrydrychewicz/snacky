@@ -1,7 +1,12 @@
 import { handleCors, corsHeaders } from '../_shared/cors.ts';
 import { getAuthenticatedUser } from '../_shared/auth.ts';
-import { badRequest, internalError } from '../_shared/errors.ts';
+import { createServiceClient } from '../_shared/supabase-client.ts';
+import { badRequest, internalError, serviceUnavailable } from '../_shared/errors.ts';
 import { createLogger } from '../_shared/logger.ts';
+import { PlanRequestSchema } from './schemas.ts';
+import { fetchUserProfile, fetchCandidateFoods } from './candidates.ts';
+import { solve } from './solver.ts';
+import { storePlan } from './store.ts';
 
 const log = createLogger('generate-plan');
 
@@ -16,40 +21,94 @@ Deno.serve(async (req) => {
   const { user, error: authError } = await getAuthenticatedUser(req);
   if (authError) return authError;
 
-  log.info('Plan generation requested', { user_id: user!.id });
+  const userId = user!.id;
+  log.info('Plan generation requested', { user_id: userId });
+
+  const startTime = performance.now();
 
   try {
     const body = await req.json();
-    const durationDays = body.duration_days as number | undefined;
-    const mealsPerDay = body.meals_per_day as number | undefined;
+    const parseResult = PlanRequestSchema.safeParse(body);
 
-    if (!durationDays || !mealsPerDay) {
-      return badRequest('Missing required fields: duration_days, meals_per_day');
+    if (!parseResult.success) {
+      return badRequest(
+        `Invalid request: ${parseResult.error.issues.map((i) => i.message).join(', ')}`,
+      );
     }
 
-    // TODO Phase 3.1-3.2: Implement MILP solver + LLM recipe generation
-    // 1. Fetch user profile (macros, restrictions, allergies, preferences)
-    // 2. Fetch candidate foods from USDA + recipes DB
-    // 3. Run MILP solver (PuLP) with constraints
-    // 4. Generate recipes via GPT-5.4 with RAG context
-    // 5. Validate (allergen check, re-calculate nutrition)
-    // 6. Store plan in diet_plans + diet_plan_meals tables
+    const request = parseResult.data;
+    const serviceSupabase = createServiceClient();
 
-    const placeholder = {
-      status: 'not_implemented',
-      message: 'Plan generation will be implemented in Phase 3.1-3.2',
-      duration_days: durationDays,
-      meals_per_day: mealsPerDay,
-    };
+    // 1. Fetch user profile
+    log.info('Fetching user profile', { user_id: userId });
+    const profile = await fetchUserProfile(serviceSupabase, userId);
 
-    log.info('Plan generation placeholder response', { user_id: user!.id });
+    // 2. Fetch candidate foods
+    log.info('Fetching candidate foods', { user_id: userId });
+    const candidates = await fetchCandidateFoods(serviceSupabase, profile, request);
 
-    return new Response(JSON.stringify(placeholder), {
+    if (candidates.length < 10) {
+      return serviceUnavailable(
+        'Not enough food data available. Please ensure the USDA foods database has been populated.',
+      );
+    }
+
+    log.info('Candidates ready', {
+      user_id: userId,
+      candidate_count: candidates.length,
+      duration_days: request.duration_days,
+      meals_per_day: request.meals_per_day,
+    });
+
+    // 3. Run solver
+    log.info('Running solver', { user_id: userId });
+    const solverResult = solve(candidates, profile, request);
+
+    log.info('Solver complete', {
+      user_id: userId,
+      method: solverResult.method,
+      solver_time_ms: solverResult.solver_time_ms,
+      objective_value: solverResult.objective_value,
+      meal_count: solverResult.meals.length,
+      unique_ingredients: solverResult.unique_ingredients,
+    });
+
+    // 4. Store plan in database
+    log.info('Storing plan', { user_id: userId });
+    const planResponse = await storePlan(
+      serviceSupabase,
+      userId,
+      request,
+      profile,
+      solverResult,
+    );
+
+    const totalTimeMs = Math.round(performance.now() - startTime);
+
+    log.info('Plan generation complete', {
+      user_id: userId,
+      plan_id: planResponse.plan_id,
+      total_time_ms: totalTimeMs,
+      duration_days: request.duration_days,
+      meal_count: solverResult.meals.length,
+    });
+
+    return new Response(JSON.stringify(planResponse), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (err) {
-    log.error('Plan generation failed', { error: String(err) });
-    return internalError('Failed to generate diet plan');
+    const totalTimeMs = Math.round(performance.now() - startTime);
+    log.error('Plan generation failed', {
+      user_id: userId,
+      error: String(err),
+      total_time_ms: totalTimeMs,
+    });
+
+    if (err instanceof Error && err.message.includes('User profile not found')) {
+      return badRequest('Complete your profile before generating a diet plan');
+    }
+
+    return internalError('Failed to generate diet plan. Please try again.');
   }
 });
