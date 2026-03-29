@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ArrowLeft, ImageIcon, Flame } from 'lucide-react-native';
+import { ArrowLeft, ImageIcon, Flame, Layers } from 'lucide-react-native';
 import { colors, spacing, typography } from '~/shared/theme/tokens';
 import { EmptyState } from '~/shared/components/EmptyState';
 import { SkeletonLoader } from '~/shared/components/SkeletonLoader';
@@ -85,6 +85,7 @@ export const MealPhotoGalleryScreen = () => {
                 navigation.navigate('MealPhotoDetail', {
                   mealId: item.mealId,
                   imageKey: item.imageKey,
+                  imageKeys: item.imageKeys,
                 })
               }
             />
@@ -143,6 +144,7 @@ const PhotoCell = ({
   const { data: imageUrl } = useMealPhoto(entry.imageKey);
   const date = new Date(entry.loggedAt);
   const dayLabel = `${date.getDate()}/${date.getMonth() + 1}`;
+  const hasMultiplePhotos = entry.imageKeys.length > 1;
 
   return (
     <Pressable
@@ -164,6 +166,14 @@ const PhotoCell = ({
           <ImageIcon size={24} color={colors.outlineVariant} strokeWidth={1.5} />
         </View>
       )}
+
+      {hasMultiplePhotos && (
+        <View style={styles.multiPhotoBadge}>
+          <Layers size={10} color="#fff" strokeWidth={2.5} />
+          <Text style={styles.multiPhotoCount}>{entry.imageKeys.length}</Text>
+        </View>
+      )}
+
       <View style={styles.overlay}>
         <Text style={styles.overlayDate}>{dayLabel}</Text>
         <View style={styles.overlayCalRow}>
@@ -202,6 +212,23 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceContainerHigh,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  multiPhotoBadge: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  multiPhotoCount: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#fff',
   },
   overlay: {
     position: 'absolute',

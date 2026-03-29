@@ -18,7 +18,6 @@ export const useImageCompression = () => {
   const [isCompressing, setIsCompressing] = useState(false);
 
   const compress = useCallback(async (sourceUri: string): Promise<CompressionResult | null> => {
-    setIsCompressing(true);
     try {
       let quality = JPEG_QUALITY;
       let result = await ImageResizer.createResizedImage(
@@ -33,7 +32,6 @@ export const useImageCompression = () => {
         { mode: 'contain', onlyScaleDown: true },
       );
 
-      // Re-compress at lower quality if still over 500KB
       let fileInfo = await RNFS.stat(result.uri);
       while (Number(fileInfo.size) > MAX_SIZE_BYTES && quality > 30) {
         quality -= 10;
@@ -63,10 +61,27 @@ export const useImageCompression = () => {
     } catch (err) {
       console.error('Image compression failed:', err);
       return null;
-    } finally {
-      setIsCompressing(false);
     }
   }, []);
 
-  return { compress, isCompressing };
+  const compressMultiple = useCallback(
+    async (sourceUris: string[]): Promise<CompressionResult[]> => {
+      setIsCompressing(true);
+      try {
+        const results: CompressionResult[] = [];
+        for (const uri of sourceUris) {
+          const result = await compress(uri);
+          if (result) {
+            results.push(result);
+          }
+        }
+        return results;
+      } finally {
+        setIsCompressing(false);
+      }
+    },
+    [compress],
+  );
+
+  return { compress, compressMultiple, isCompressing };
 };

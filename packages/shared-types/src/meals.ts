@@ -57,6 +57,7 @@ export const MealRowSchema = z.object({
   logged_at: z.string(),
   timezone_offset: z.number().nullable(),
   image_key: z.string().nullable(),
+  image_keys: z.array(z.string()).default([]),
   ai_analysis: z.record(z.unknown()).nullable(),
   total_calories: z.number(),
   total_protein_g: z.number(),

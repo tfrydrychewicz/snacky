@@ -46,11 +46,23 @@ export const ClarificationAnswerSchema = z.object({
   answer: z.string(),
 });
 
-export const MealScanRequestSchema = z.object({
-  image: z.string().min(1),
-  meal_type: z.enum(['breakfast', 'lunch', 'dinner', 'snack', 'unknown']).default('unknown'),
-  locale: z.string().default('en'),
-  clarifications: z.array(ClarificationAnswerSchema).optional(),
-});
+export const MealScanRequestSchema = z
+  .object({
+    image: z.string().min(1).optional(),
+    images: z.array(z.string().min(1)).min(1).max(5).optional(),
+    meal_type: z.enum(['breakfast', 'lunch', 'dinner', 'snack', 'unknown']).default('unknown'),
+    locale: z.string().default('en'),
+    clarifications: z.array(ClarificationAnswerSchema).optional(),
+  })
+  .refine((data) => data.image != null || (data.images != null && data.images.length > 0), {
+    message: 'Either "image" (single) or "images" (array) must be provided',
+  });
 
 export type MealScanRequest = z.infer<typeof MealScanRequestSchema>;
+
+/** Normalize the request into a guaranteed images array. */
+export function normalizeImages(data: MealScanRequest): string[] {
+  if (data.images && data.images.length > 0) return data.images;
+  if (data.image) return [data.image];
+  return [];
+}

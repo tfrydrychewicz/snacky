@@ -16,21 +16,28 @@ import {
 } from 'react-native-vision-camera';
 import type { TFunction } from 'i18next';
 import type { MealType } from '@snacky/shared-types';
-import { CameraIcon, ImageIcon } from 'lucide-react-native';
+import { CameraIcon, ImageIcon, ScanLine } from 'lucide-react-native';
 import { CameraOverlay } from '../components/CameraOverlay';
-import { useImageCompression } from '../hooks/useImageCompression';
+import { PhotoStrip } from '../components/PhotoStrip';
+import { useImageCompression, type CompressionResult } from '../hooks/useImageCompression';
 import { colors, typography, spacing, radii } from '~/shared/theme/tokens';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
+export type CapturedPhoto = { uri: string; base64?: string };
+
 type Props = {
   mealType: MealType;
   onMealTypeChange: (type: MealType) => void;
-  onAnalyze: (base64: string, mealType: MealType) => void;
-  onPhotoCaptured: (uri: string) => void;
+  onAnalyze: (base64s: string[], mealType: MealType) => void;
+  onPhotosChanged: (photos: CapturedPhoto[]) => void;
   onGallery: () => void;
   showLoader: boolean;
   error: string | null;
+  capturedPhotos: CapturedPhoto[];
+  onRemovePhoto: (index: number) => void;
+  canAddMore: boolean;
+  maxPhotos: number;
   t: TFunction<'scanner'>;
 };
 
@@ -38,18 +45,21 @@ export const CameraViewInner = ({
   mealType,
   onMealTypeChange,
   onAnalyze,
-  onPhotoCaptured,
+  onPhotosChanged,
   onGallery,
   showLoader,
   error,
+  capturedPhotos,
+  onRemovePhoto,
+  canAddMore,
+  maxPhotos,
   t,
 }: Props) => {
   const { hasPermission, requestPermission } = useCameraPermission();
   const device = useCameraDevice('back');
   const cameraRef = useRef<Camera>(null);
-  const [flashEnabled, setFlashEnabled] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
-  const { compress, isCompressing } = useImageCompression();
+  const { compress } = useImageCompression();
 
   useEffect(() => {
     if (!hasPermission) {
@@ -58,11 +68,11 @@ export const CameraViewInner = ({
   }, [hasPermission, requestPermission]);
 
   const handleCapture = useCallback(async () => {
-    if (!cameraRef.current) return;
+    if (!cameraRef.current || !canAddMore) return;
     setIsCapturing(true);
     try {
       const photo: PhotoFile = await cameraRef.current.takePhoto({
-        flash: flashEnabled ? 'on' : 'off',
+        flash: 'off',
         enableShutterSound: true,
       });
 
@@ -70,14 +80,23 @@ export const CameraViewInner = ({
       const compressed = await compress(uri);
       if (!compressed) return;
 
-      onPhotoCaptured(compressed.uri);
-      onAnalyze(compressed.base64, mealType);
+      const newPhoto: CapturedPhoto = { uri: compressed.uri, base64: compressed.base64 };
+      onPhotosChanged([...capturedPhotos, newPhoto]);
     } catch (err) {
       console.error('Capture failed:', err);
     } finally {
       setIsCapturing(false);
     }
-  }, [flashEnabled, compress, onAnalyze, mealType]);
+  }, [cameraRef, canAddMore, compress, capturedPhotos, onPhotosChanged]);
+
+  const handleAnalyzePhotos = useCallback(() => {
+    const base64s = capturedPhotos
+      .map((p) => p.base64)
+      .filter((b): b is string => b != null);
+    if (base64s.length > 0) {
+      onAnalyze(base64s, mealType);
+    }
+  }, [capturedPhotos, onAnalyze, mealType]);
 
   const pulseOpacity = useSharedValue(1);
 
@@ -99,6 +118,9 @@ export const CameraViewInner = ({
   const pulseStyle = useAnimatedStyle(() => ({
     opacity: pulseOpacity.value,
   }));
+
+  const hasPhotos = capturedPhotos.length > 0;
+  const photoUris = capturedPhotos.map((p) => p.uri);
 
   if (!hasPermission || !device) {
     return (
@@ -129,7 +151,7 @@ export const CameraViewInner = ({
     );
   }
 
-  const isBusy = isCapturing || isCompressing || showLoader;
+  const isBusy = isCapturing || showLoader;
 
   return (
     <View style={styles.container}>
@@ -139,18 +161,36 @@ export const CameraViewInner = ({
         isActive={!isBusy}
         photo={true}
         style={StyleSheet.absoluteFill}
-        torch={flashEnabled ? 'on' : 'off'}
       />
 
       <CameraOverlay
-        flashEnabled={flashEnabled}
-        onToggleFlash={() => setFlashEnabled((v) => !v)}
+        flashEnabled={false}
+        onToggleFlash={() => {}}
         onCapture={() => void handleCapture()}
         onGallery={onGallery}
         isCapturing={isBusy}
         selectedMealType={mealType}
         onMealTypeChange={onMealTypeChange}
       />
+
+      {hasPhotos && !showLoader && (
+        <View style={styles.photoStripContainer}>
+          <PhotoStrip
+            photoUris={photoUris}
+            onRemove={onRemovePhoto}
+            onAdd={() => void handleCapture()}
+            canAddMore={canAddMore}
+            maxPhotos={maxPhotos}
+            variant="camera"
+          />
+          <Pressable onPress={handleAnalyzePhotos} style={styles.analyzeButton}>
+            <ScanLine size={20} color={colors.onPrimary} strokeWidth={2} />
+            <Text style={styles.analyzeText}>
+              {t('analyze_photos', { count: capturedPhotos.length })}
+            </Text>
+          </Pressable>
+        </View>
+      )}
 
       {isBusy && (
         <View style={styles.loadingOverlay}>
@@ -215,6 +255,29 @@ const styles = StyleSheet.create({
     color: colors.error,
     textAlign: 'center',
     marginTop: spacing.md,
+  },
+  photoStripContainer: {
+    position: 'absolute',
+    bottom: 120,
+    left: 0,
+    right: 0,
+    gap: spacing.sm,
+    paddingHorizontal: spacing.sm,
+  },
+  analyzeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.primary,
+    paddingVertical: 14,
+    borderRadius: radii.full,
+    marginHorizontal: spacing.md,
+  },
+  analyzeText: {
+    ...typography.titleMd,
+    color: colors.onPrimary,
+    fontWeight: '700',
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,

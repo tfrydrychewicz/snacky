@@ -138,7 +138,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'TOKEN_REFRESHED') {
+        console.log('[Auth] Token refreshed');
+      }
+      if (event === 'SIGNED_OUT') {
+        console.log('[Auth] Signed out (may be due to expired session)');
+      }
       void resolveSession(session);
     });
 

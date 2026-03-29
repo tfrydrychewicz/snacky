@@ -9,9 +9,11 @@ export type CapturedImage = {
   height: number;
 };
 
+const MAX_PHOTOS = 5;
+
 export const useImageCapture = () => {
   const cameraRef = useRef<Camera>(null);
-  const [photoUri, setPhotoUri] = useState<string | null>(null);
+  const [capturedPhotos, setCapturedPhotos] = useState<CapturedImage[]>([]);
   const [isCapturing, setIsCapturing] = useState(false);
 
   const requestCameraPermission = useCallback(async (): Promise<boolean> => {
@@ -31,6 +33,7 @@ export const useImageCapture = () => {
 
   const capturePhoto = useCallback(async (): Promise<CapturedImage | null> => {
     if (!cameraRef.current) return null;
+    if (capturedPhotos.length >= MAX_PHOTOS) return null;
 
     setIsCapturing(true);
     try {
@@ -45,7 +48,7 @@ export const useImageCapture = () => {
         width: photo.width,
         height: photo.height,
       };
-      setPhotoUri(uri);
+      setCapturedPhotos((prev) => [...prev, result]);
       return result;
     } catch (err) {
       console.error('Failed to capture photo:', err);
@@ -53,44 +56,59 @@ export const useImageCapture = () => {
     } finally {
       setIsCapturing(false);
     }
-  }, []);
+  }, [capturedPhotos.length]);
 
-  const pickFromGallery = useCallback(async (): Promise<CapturedImage | null> => {
+  const pickFromGallery = useCallback(async (): Promise<CapturedImage[]> => {
     try {
+      const remaining = MAX_PHOTOS - capturedPhotos.length;
+      if (remaining <= 0) return [];
+
       const result = await launchImageLibrary({
         mediaType: 'photo',
-        selectionLimit: 1,
+        selectionLimit: remaining,
         quality: 1,
         maxWidth: 2048,
         maxHeight: 2048,
       });
 
       const assets = result.assets;
-      if (result.didCancel || !assets?.length) return null;
+      if (result.didCancel || !assets?.length) return [];
 
-      const asset = assets[0];
-      if (!asset?.uri) return null;
+      const images: CapturedImage[] = assets
+        .filter((a) => a.uri != null)
+        .map((a) => ({
+          uri: a.uri!,
+          width: a.width ?? 1080,
+          height: a.height ?? 1080,
+        }));
 
-      const image: CapturedImage = {
-        uri: asset.uri,
-        width: asset.width ?? 1080,
-        height: asset.height ?? 1080,
-      };
-      setPhotoUri(asset.uri);
-      return image;
+      setCapturedPhotos((prev) => [...prev, ...images].slice(0, MAX_PHOTOS));
+      return images;
     } catch (err) {
-      console.error('Failed to pick image:', err);
-      return null;
+      console.error('Failed to pick images:', err);
+      return [];
     }
+  }, [capturedPhotos.length]);
+
+  const removePhoto = useCallback((index: number) => {
+    setCapturedPhotos((prev) => prev.filter((_, i) => i !== index));
+  }, []);
+
+  const clearPhotos = useCallback(() => {
+    setCapturedPhotos([]);
   }, []);
 
   return {
     cameraRef,
-    photoUri,
+    capturedPhotos,
     isCapturing,
+    canAddMore: capturedPhotos.length < MAX_PHOTOS,
+    maxPhotos: MAX_PHOTOS,
     capturePhoto,
     pickFromGallery,
+    removePhoto,
+    clearPhotos,
     requestCameraPermission,
-    setPhotoUri,
+    setCapturedPhotos,
   };
 };

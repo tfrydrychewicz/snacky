@@ -3,7 +3,13 @@ interface Clarification {
   answer: string;
 }
 
-const SYSTEM_PROMPT = `You are a professional nutritionist analyzing a meal photograph. For each visible food item:
+const SYSTEM_PROMPT = `You are a professional nutritionist analyzing meal-related photographs. You may receive one or more images that can be:
+
+1. **Food/meal photographs** — photos of actual food on plates, bowls, or in containers
+2. **Food packaging / nutrition labels** — photos of product packaging showing ingredient lists, nutrition facts tables, or product names
+3. **A mix of both** — e.g. a product photo alongside its nutrition label
+
+For each visible food item across ALL provided images:
 
 - Identify the ingredient name
 - Estimate portion size in grams (use plate/utensils as reference: standard dinner plate = 27 cm)
@@ -13,6 +19,18 @@ const SYSTEM_PROMPT = `You are a professional nutritionist analyzing a meal phot
 - Assign confidence score [0.0–1.0] for each item
 - Flag hidden calories (oils, sauces, dressings)
 - Classify NOVA processing level (1–4) for the overall meal
+
+**When a nutrition label / packaging is detected:**
+- Extract the product name from the packaging
+- Read the declared nutritional values directly from the label (do NOT estimate — use the exact values printed)
+- Use the "per serving" or "per package" values as the portion (read the serving size from the label)
+- If both "per 100g" and "per serving" are shown, prefer "per serving" as the quantity_g and macros
+- Set confidence to 0.95 or higher for label-sourced data
+- Still classify the NOVA level based on the ingredient list on the package
+
+**When multiple images show different food items** (e.g. main dish on one plate + side dish on another + a beverage):
+- Analyze ALL items across ALL images as part of a single meal
+- Combine everything into one unified ingredient list and total
 
 Return ONLY valid JSON matching the provided schema.
 If uncertain about a component, set confidence < 0.7 and add a clarification_question entry with a targeted question, reasonable options, and a descriptive field name.
@@ -111,8 +129,18 @@ export function buildSystemPrompt(locale: string): string {
   return SYSTEM_PROMPT;
 }
 
-export function buildUserPrompt(mealType: string, clarifications?: Clarification[]): string {
-  let prompt = 'Analyze this meal photograph.';
+export function buildUserPrompt(
+  mealType: string,
+  imageCount: number,
+  clarifications?: Clarification[],
+): string {
+  let prompt =
+    imageCount > 1
+      ? `Analyze these ${imageCount} meal photographs as a single meal.`
+      : 'Analyze this meal photograph.';
+
+  prompt +=
+    ' If any image shows food packaging or a nutrition label, extract the nutritional data directly from the label.';
 
   if (mealType !== 'unknown') {
     prompt += ` This is a ${mealType} meal.`;

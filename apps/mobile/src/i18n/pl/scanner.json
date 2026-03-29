@@ -82,5 +82,13 @@
   "reanalyzing": "Aktualizuję analizę na podstawie Twoich odpowiedzi...",
   "lookup_searching": "Szukam wartości odżywczych...",
   "lookup_no_match": "Nie znaleziono — wprowadź wartości ręcznie",
-  "portion_value_g": "{{value}}g"
+  "portion_value_g": "{{value}}g",
+
+  "photo_count": "{{count}}/{{max}} zdjęć",
+  "photo_add": "Dodaj kolejne zdjęcie",
+  "photo_remove": "Usuń zdjęcie",
+  "analyze_photos_one": "Analizuj {{count}} zdjęcie",
+  "analyze_photos_few": "Analizuj {{count}} zdjęcia",
+  "analyze_photos_many": "Analizuj {{count}} zdjęć",
+  "analyze_photos_other": "Analizuj {{count}} zdjęć"
 }

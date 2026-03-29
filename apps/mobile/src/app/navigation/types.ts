@@ -10,7 +10,7 @@ export type RootStackParamList = {
   MealEdit: { mealId: string };
   ManualMealEntry: undefined;
   MealPhotoGallery: undefined;
-  MealPhotoDetail: { mealId: string; imageKey: string };
+  MealPhotoDetail: { mealId: string; imageKey: string; imageKeys?: string[] };
   MeasurementInput: { quickWeight?: boolean } | undefined;
   MeasurementList: undefined;
 };
@@ -35,7 +35,7 @@ export type ScannerStackParamList = {
   Capture: undefined;
   Results: {
     scanResult: MealScanResult;
-    photoUri: string;
+    photoUris: string[];
     mealType: MealType;
   };
 };

@@ -8,6 +8,7 @@ import {
   Alert,
   StyleSheet,
   ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +21,7 @@ import { MealScanResultSchema } from '@snacky/shared-types';
 import { AppHeader } from '~/shared/components/AppHeader';
 import { colors, spacing, typography, radii, elevation } from '~/shared/theme/tokens';
 import { getSupabase } from '~/shared/api/client';
+import { tryRefreshSession, isJwtError } from '~/shared/api/sessionRecovery';
 import { useAuth } from '~/app/providers/AuthProvider';
 import type { ScannerStackParamList } from '~/app/navigation/types';
 import { ScanResultCard } from '../components/ScanResultCard';
@@ -29,6 +31,8 @@ import { CommentInput } from '../components/CommentInput';
 
 type ResultsRoute = RouteProp<ScannerStackParamList, 'Results'>;
 
+const SCREEN_WIDTH = Dimensions.get('window').width;
+
 export const ScanResultsScreen = () => {
   const { t, i18n } = useTranslation('scanner');
   const insets = useSafeAreaInsets();
@@ -36,7 +40,7 @@ export const ScanResultsScreen = () => {
   const route = useRoute<ResultsRoute>();
   const { user } = useAuth();
 
-  const { scanResult, photoUri, mealType } = route.params;
+  const { scanResult, photoUris, mealType } = route.params;
 
   const [ingredients, setIngredients] = useState<IngredientAnalysis[]>(scanResult.ingredients);
   const [comment, setComment] = useState('');
@@ -50,6 +54,7 @@ export const ScanResultsScreen = () => {
     currentScanResult.clarification_needed &&
     clarificationIndex < currentScanResult.clarification_questions.length;
   const [isLogging, setIsLogging] = useState(false);
+  const [activePhotoIndex, setActivePhotoIndex] = useState(0);
 
   const totals: MacroBreakdown = useMemo(() => {
     return ingredients.reduce<MacroBreakdown>(
@@ -117,19 +122,34 @@ export const ScanResultsScreen = () => {
   }, [ingredients.length, t]);
 
   const triggerReanalysis = useCallback(async () => {
-    if (!photoUri) return;
+    if (photoUris.length === 0) return;
     setIsReanalyzing(true);
     try {
-      const base64 = await RNFS.readFile(photoUri, 'base64');
+      const base64s: string[] = [];
+      for (const uri of photoUris) {
+        const b64 = await RNFS.readFile(uri, 'base64');
+        base64s.push(b64);
+      }
+
       const supabase = getSupabase();
-      const response = await supabase.functions.invoke<unknown>('meal-scan', {
-        body: {
-          image: base64,
-          meal_type: mealType,
-          locale: i18n.language,
-          clarifications: clarificationAnswers.current,
-        },
-      });
+      const invokeBody = {
+        images: base64s,
+        meal_type: mealType,
+        locale: i18n.language,
+        clarifications: clarificationAnswers.current,
+      };
+
+      let response = await supabase.functions.invoke<unknown>('meal-scan', { body: invokeBody });
+
+      if (response.error && isJwtError(response.error)) {
+        const refreshed = await tryRefreshSession();
+        if (refreshed) {
+          response = await supabase.functions.invoke<unknown>('meal-scan', { body: invokeBody });
+        } else {
+          await supabase.auth.signOut();
+          return;
+        }
+      }
 
       if (response.error) {
         console.error('[Reanalysis] Edge function error:', response.error);
@@ -149,7 +169,7 @@ export const ScanResultsScreen = () => {
     } finally {
       setIsReanalyzing(false);
     }
-  }, [photoUri, mealType, i18n.language]);
+  }, [photoUris, mealType, i18n.language]);
 
   const handleClarificationSubmit = useCallback(
     (question: string, answer: string) => {
@@ -185,21 +205,27 @@ export const ScanResultsScreen = () => {
     try {
       const supabase = getSupabase();
 
-      // Upload photo if available
-      let imageKey: string | null = null;
-      if (photoUri) {
-        const photoResponse = await fetch(photoUri);
-        const blob = await photoResponse.blob();
-        const storagePath = `${user.id}/${Date.now()}.jpg`;
+      const imageKeys: string[] = [];
+      let primaryImageKey: string | null = null;
 
-        const { error: uploadError } = await supabase.storage
-          .from('meal-photos')
-          .upload(storagePath, blob, { contentType: 'image/jpeg' });
+      for (let i = 0; i < photoUris.length; i++) {
+        try {
+          const base64Data = await RNFS.readFile(photoUris[i], 'base64');
+          const byteArray = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
+          const storagePath = `${user.id}/${Date.now()}_${i}.jpg`;
 
-        if (!uploadError) {
-          imageKey = storagePath;
-        } else {
-          console.warn('Photo upload failed:', uploadError.message);
+          const { error: uploadError } = await supabase.storage
+            .from('meal-photos')
+            .upload(storagePath, byteArray, { contentType: 'image/jpeg' });
+
+          if (!uploadError) {
+            imageKeys.push(storagePath);
+            if (i === 0) primaryImageKey = storagePath;
+          } else {
+            console.warn(`Photo ${i} upload failed:`, uploadError.message);
+          }
+        } catch (err) {
+          console.warn(`Photo ${i} upload failed:`, err);
         }
       }
 
@@ -217,7 +243,8 @@ export const ScanResultsScreen = () => {
           meal_type: mealType,
           logged_at: new Date().toISOString(),
           timezone_offset: new Date().getTimezoneOffset(),
-          image_key: imageKey,
+          image_key: primaryImageKey,
+          image_keys: imageKeys,
           ai_analysis: {
             model_used: scanResult.model_used,
             processing_time_ms: scanResult.processing_time_ms,
@@ -285,7 +312,7 @@ export const ScanResultsScreen = () => {
     }
   }, [
     user,
-    photoUri,
+    photoUris,
     mealType,
     ingredients,
     totals,
@@ -304,6 +331,8 @@ export const ScanResultsScreen = () => {
   const carbsPct = macroTotalG > 0 ? (totals.carbohydrates_g / macroTotalG) * 100 : 33;
   const fatPct = macroTotalG > 0 ? (totals.fat_g / macroTotalG) * 100 : 34;
 
+  const hasMultiplePhotos = photoUris.length > 1;
+
   return (
     <View style={styles.root}>
       <AppHeader />
@@ -311,10 +340,46 @@ export const ScanResultsScreen = () => {
         contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Photo Banner */}
+        {/* Photo Banner / Carousel */}
         <View style={styles.photoBanner}>
-          {photoUri ? (
-            <Image source={{ uri: photoUri }} style={styles.photoImage} resizeMode="cover" />
+          {photoUris.length > 0 ? (
+            <>
+              <ScrollView
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                onMomentumScrollEnd={(e) => {
+                  const index = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
+                  setActivePhotoIndex(index);
+                }}
+              >
+                {photoUris.map((uri, i) => (
+                  <Image
+                    key={`photo-${i}`}
+                    source={{ uri }}
+                    style={styles.photoImage}
+                    resizeMode="cover"
+                  />
+                ))}
+              </ScrollView>
+              {hasMultiplePhotos && (
+                <View style={styles.paginationDots}>
+                  {photoUris.map((_, i) => (
+                    <View
+                      key={`dot-${i}`}
+                      style={[styles.dot, i === activePhotoIndex && styles.dotActive]}
+                    />
+                  ))}
+                </View>
+              )}
+              {hasMultiplePhotos && (
+                <View style={styles.photoCounter}>
+                  <Text style={styles.photoCounterText}>
+                    {activePhotoIndex + 1}/{photoUris.length}
+                  </Text>
+                </View>
+              )}
+            </>
           ) : (
             <ImageIcon size={64} color={colors.outline} strokeWidth={1.2} />
           )}
@@ -478,8 +543,38 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   photoImage: {
-    width: '100%',
-    height: '100%',
+    width: SCREEN_WIDTH,
+    height: 280,
+  },
+  paginationDots: {
+    position: 'absolute',
+    bottom: 12,
+    flexDirection: 'row',
+    gap: 6,
+    alignSelf: 'center',
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: 'rgba(255,255,255,0.4)',
+  },
+  dotActive: {
+    backgroundColor: '#FFFFFF',
+    width: 20,
+  },
+  photoCounter: {
+    position: 'absolute',
+    top: spacing.lg,
+    left: spacing.lg,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: radii.full,
+  },
+  photoCounterText: {
+    ...typography.labelMd,
+    color: '#FFFFFF',
   },
   confidenceBadge: {
     position: 'absolute',
@@ -626,15 +721,17 @@ const styles = StyleSheet.create({
   },
   reanalysisCard: {
     backgroundColor: colors.surfaceContainerLowest,
-    borderRadius: radii.DEFAULT,
+    borderRadius: 20,
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.lg,
     alignItems: 'center',
     gap: spacing.md,
+    maxWidth: 260,
     ...elevation.float,
   },
   reanalysisText: {
     ...typography.titleMd,
     color: colors.onSurface,
+    textAlign: 'center',
   },
 });

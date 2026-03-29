@@ -3,11 +3,12 @@ import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { MealScanResultSchema, type MealScanResult, type MealType } from '@snacky/shared-types';
 import { getSupabase } from '~/shared/api/client';
+import { tryRefreshSession, isJwtError } from '~/shared/api/sessionRecovery';
 
 const MAX_CLARIFICATION_ROUNDS = 3;
 
 export type ScanRequest = {
-  imageBase64: string;
+  images: string[];
   mealType: MealType;
   locale: string;
   clarifications?: Array<{ question: string; answer: string }>;
@@ -19,19 +20,37 @@ export type ScanState = {
   error: string | null;
 };
 
-const analyzeMeal = async (request: ScanRequest): Promise<MealScanResult> => {
+const invokeEdgeFunction = async (request: ScanRequest) => {
   const supabase = getSupabase();
-
-  console.log('[MealScan] Invoking meal-scan edge function…');
-
-  const response = await supabase.functions.invoke<unknown>('meal-scan', {
+  return supabase.functions.invoke<unknown>('meal-scan', {
     body: {
-      image: request.imageBase64,
+      images: request.images,
       meal_type: request.mealType,
       locale: request.locale,
       clarifications: request.clarifications ?? [],
     },
   });
+};
+
+const analyzeMeal = async (request: ScanRequest): Promise<MealScanResult> => {
+  console.log('[MealScan] Invoking meal-scan edge function…', {
+    imageCount: request.images.length,
+  });
+
+  let response = await invokeEdgeFunction(request);
+
+  if (response.error && isJwtError(response.error)) {
+    console.log('[MealScan] JWT error detected, attempting session refresh…');
+    const refreshed = await tryRefreshSession();
+    if (refreshed) {
+      console.log('[MealScan] Session refreshed, retrying…');
+      response = await invokeEdgeFunction(request);
+    } else {
+      console.error('[MealScan] Session refresh failed — user needs to re-authenticate');
+      await getSupabase().auth.signOut();
+      throw new Error('SESSION_EXPIRED');
+    }
+  }
 
   if (response.error) {
     let detail = '';
@@ -88,10 +107,10 @@ export const useScanAnalysis = () => {
   });
 
   const analyze = useCallback(
-    (imageBase64: string, mealType: MealType) => {
+    (imageBase64s: string[], mealType: MealType) => {
       setClarificationRound(0);
       setAccumulatedClarifications([]);
-      mutation.mutate({ imageBase64, mealType, locale: i18n.language });
+      mutation.mutate({ images: imageBase64s, mealType, locale: i18n.language });
     },
     [mutation, i18n.language],
   );
@@ -106,7 +125,7 @@ export const useScanAnalysis = () => {
       const lastRequest = mutation.variables;
       if (lastRequest) {
         mutation.mutate({
-          imageBase64: lastRequest.imageBase64,
+          images: lastRequest.images,
           mealType: lastRequest.mealType,
           locale: i18n.language,
           clarifications: newClarifications,

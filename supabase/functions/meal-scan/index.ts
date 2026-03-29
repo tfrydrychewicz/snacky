@@ -2,8 +2,8 @@ import { handleCors, corsHeaders } from '../_shared/cors.ts';
 import { getAuthenticatedUser } from '../_shared/auth.ts';
 import { badRequest, internalError, serviceUnavailable } from '../_shared/errors.ts';
 import { createLogger } from '../_shared/logger.ts';
-import { MealScanRequestSchema, VisionResponseSchema } from './schemas.ts';
-import { validateImage, stripDataUri, detectMimeType } from './validation.ts';
+import { MealScanRequestSchema, VisionResponseSchema, normalizeImages } from './schemas.ts';
+import { validateImages } from './validation.ts';
 import { buildSystemPrompt, buildUserPrompt, getResponseSchema } from './prompt.ts';
 import { callVisionPipeline } from './providers.ts';
 import { crossReferenceUSDA } from './usda.ts';
@@ -27,7 +27,6 @@ Deno.serve(async (req) => {
   const startTime = performance.now();
 
   try {
-    // 1. Parse & validate request body with Zod
     const body = await req.json();
     const parseResult = MealScanRequestSchema.safeParse(body);
     if (!parseResult.success) {
@@ -36,37 +35,28 @@ Deno.serve(async (req) => {
       );
     }
 
-    const { image, meal_type, locale, clarifications } = parseResult.data;
+    const { meal_type, locale, clarifications } = parseResult.data;
+    const images = normalizeImages(parseResult.data);
 
-    // 2. Validate image format, size, encoding
-    const imgCheck = validateImage(image);
+    const imgCheck = validateImages(images);
     if (!imgCheck.valid) {
       return badRequest(imgCheck.error!);
     }
 
-    log.info('Image validated', {
+    log.info('Images validated', {
       user_id: userId,
-      format: imgCheck.format,
-      size_bytes: imgCheck.estimatedSizeBytes,
+      image_count: images.length,
+      formats: imgCheck.results.map((r) => r.format),
+      total_size_bytes: imgCheck.results.reduce((s, r) => s + r.estimatedSizeBytes, 0),
     });
 
-    // 3. Build vision prompts
     const systemPrompt = buildSystemPrompt(locale);
-    const userPrompt = buildUserPrompt(meal_type, clarifications);
+    const userPrompt = buildUserPrompt(meal_type, images.length, clarifications);
     const responseSchema = getResponseSchema();
-    const rawBase64 = stripDataUri(image);
-    const mimeType = detectMimeType(image);
 
-    // 4. Call vision pipeline (GPT-5.4 → Gemini 3.1 Pro → Claude Sonnet 4.6)
     let visionResult;
     try {
-      visionResult = await callVisionPipeline(
-        rawBase64,
-        mimeType,
-        systemPrompt,
-        userPrompt,
-        responseSchema,
-      );
+      visionResult = await callVisionPipeline(images, systemPrompt, userPrompt, responseSchema);
     } catch (_err) {
       log.error('All vision providers failed', { user_id: userId });
       return serviceUnavailable(
@@ -74,7 +64,6 @@ Deno.serve(async (req) => {
       );
     }
 
-    // 5. Parse vision response with Zod strict validation
     let parsed;
     try {
       const rawJson = JSON.parse(visionResult.content);
@@ -89,7 +78,6 @@ Deno.serve(async (req) => {
       return internalError('Vision model returned an invalid response. Please try again.');
     }
 
-    // 6. Cross-reference with USDA FoodData Central (best-effort)
     let finalIngredients = parsed.ingredients;
     let finalTotal = parsed.total;
     let usdaAdjusted = false;
@@ -113,7 +101,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // 7. Clarification flow: if user already answered, mark resolved
     let clarificationNeeded = parsed.clarification_needed;
     let clarificationQuestions = parsed.clarification_questions;
     if (clarifications && clarifications.length > 0) {
@@ -137,6 +124,7 @@ Deno.serve(async (req) => {
     log.info('Meal scan completed', {
       user_id: userId,
       model: visionResult.model,
+      image_count: images.length,
       ingredient_count: result.ingredients.length,
       confidence: result.overall_confidence,
       processing_time_ms: processingTimeMs,

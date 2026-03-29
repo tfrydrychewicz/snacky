@@ -1,4 +1,5 @@
 import { createLogger } from '../_shared/logger.ts';
+import { stripDataUri, detectMimeType } from './validation.ts';
 
 const log = createLogger('meal-scan:providers');
 
@@ -8,15 +9,26 @@ export interface VisionProviderResult {
   usage?: { prompt_tokens: number; completion_tokens: number };
 }
 
-const PROVIDER_TIMEOUT_MS = 30_000;
+export interface ImageInput {
+  base64: string;
+  mimeType: string;
+}
+
+const PROVIDER_TIMEOUT_MS = 45_000;
+
+function prepareImages(rawImages: string[]): ImageInput[] {
+  return rawImages.map((img) => ({
+    base64: stripDataUri(img),
+    mimeType: detectMimeType(img),
+  }));
+}
 
 // ---------------------------------------------------------------------------
 // Individual provider implementations
 // ---------------------------------------------------------------------------
 
 async function callOpenAI(
-  imageBase64: string,
-  mimeType: string,
+  images: ImageInput[],
   systemPrompt: string,
   userPrompt: string,
   responseSchema: Record<string, unknown>,
@@ -27,6 +39,17 @@ async function callOpenAI(
   const model = 'gpt-5.4';
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), PROVIDER_TIMEOUT_MS);
+
+  const contentParts: Array<Record<string, unknown>> = [{ type: 'text', text: userPrompt }];
+  for (const img of images) {
+    contentParts.push({
+      type: 'image_url',
+      image_url: {
+        url: `data:${img.mimeType};base64,${img.base64}`,
+        detail: 'high',
+      },
+    });
+  }
 
   try {
     const resp = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -40,19 +63,7 @@ async function callOpenAI(
         model,
         messages: [
           { role: 'system', content: systemPrompt },
-          {
-            role: 'user',
-            content: [
-              { type: 'text', text: userPrompt },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: `data:${mimeType};base64,${imageBase64}`,
-                  detail: 'high',
-                },
-              },
-            ],
-          },
+          { role: 'user', content: contentParts },
         ],
         response_format: {
           type: 'json_schema',
@@ -83,8 +94,7 @@ async function callOpenAI(
 }
 
 async function callGemini(
-  imageBase64: string,
-  mimeType: string,
+  images: ImageInput[],
   systemPrompt: string,
   userPrompt: string,
   responseSchema: Record<string, unknown>,
@@ -96,6 +106,11 @@ async function callGemini(
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), PROVIDER_TIMEOUT_MS);
 
+  const parts: Array<Record<string, unknown>> = [{ text: userPrompt }];
+  for (const img of images) {
+    parts.push({ inline_data: { mime_type: img.mimeType, data: img.base64 } });
+  }
+
   try {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
     const resp = await fetch(url, {
@@ -104,14 +119,7 @@ async function callGemini(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         system_instruction: { parts: [{ text: systemPrompt }] },
-        contents: [
-          {
-            parts: [
-              { text: userPrompt },
-              { inline_data: { mime_type: mimeType, data: imageBase64 } },
-            ],
-          },
-        ],
+        contents: [{ parts }],
         generation_config: {
           temperature: 0.1,
           max_output_tokens: 4096,
@@ -137,8 +145,7 @@ async function callGemini(
 }
 
 async function callAnthropic(
-  imageBase64: string,
-  mimeType: string,
+  images: ImageInput[],
   systemPrompt: string,
   userPrompt: string,
   _responseSchema: Record<string, unknown>,
@@ -147,9 +154,22 @@ async function callAnthropic(
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY not configured');
 
   const model = 'claude-sonnet-4-6-20260301';
-  const mediaType = mimeType === 'image/png' ? ('image/png' as const) : ('image/jpeg' as const);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), PROVIDER_TIMEOUT_MS);
+
+  const contentBlocks: Array<Record<string, unknown>> = [];
+  for (const img of images) {
+    const mediaType = img.mimeType === 'image/png' ? 'image/png' : 'image/jpeg';
+    contentBlocks.push({
+      type: 'image',
+      source: {
+        type: 'base64',
+        media_type: mediaType,
+        data: img.base64,
+      },
+    });
+  }
+  contentBlocks.push({ type: 'text', text: userPrompt });
 
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
@@ -166,22 +186,7 @@ async function callAnthropic(
         temperature: 0.1,
         system:
           systemPrompt + '\n\nYou MUST respond with ONLY valid JSON. No markdown, no code fences.',
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'image',
-                source: {
-                  type: 'base64',
-                  media_type: mediaType,
-                  data: imageBase64,
-                },
-              },
-              { type: 'text', text: userPrompt },
-            ],
-          },
-        ],
+        messages: [{ role: 'user', content: contentBlocks }],
       }),
     });
 
@@ -217,8 +222,7 @@ async function callAnthropic(
 // ---------------------------------------------------------------------------
 
 type ProviderFn = (
-  imageBase64: string,
-  mimeType: string,
+  images: ImageInput[],
   systemPrompt: string,
   userPrompt: string,
   responseSchema: Record<string, unknown>,
@@ -236,24 +240,21 @@ const PROVIDERS: ProviderConfig[] = [
 ];
 
 export async function callVisionPipeline(
-  imageBase64: string,
-  mimeType: string,
+  rawImages: string[],
   systemPrompt: string,
   userPrompt: string,
   responseSchema: Record<string, unknown>,
 ): Promise<VisionProviderResult> {
+  const images = prepareImages(rawImages);
   const errors: Array<{ provider: string; error: string }> = [];
 
   for (const provider of PROVIDERS) {
     try {
-      log.info(`Attempting vision analysis`, { provider: provider.name });
-      const result = await provider.fn(
-        imageBase64,
-        mimeType,
-        systemPrompt,
-        userPrompt,
-        responseSchema,
-      );
+      log.info(`Attempting vision analysis`, {
+        provider: provider.name,
+        image_count: images.length,
+      });
+      const result = await provider.fn(images, systemPrompt, userPrompt, responseSchema);
       log.info(`Vision analysis succeeded`, { provider: provider.name });
       return result;
     } catch (err) {

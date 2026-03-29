@@ -2,6 +2,7 @@ const JPEG_MAGIC = '/9j/';
 const PNG_MAGIC = 'iVBORw0KGgo';
 const MAX_BASE64_LENGTH = 4 * 1024 * 1024; // ~3 MB decoded
 const MIN_BASE64_LENGTH = 1_000; // reject trivially small payloads
+const MAX_IMAGE_COUNT = 5;
 
 export interface ImageValidationResult {
   valid: boolean;
@@ -55,6 +56,41 @@ export function validateImage(base64: string): ImageValidationResult {
   }
 
   return { valid: true, format, estimatedSizeBytes };
+}
+
+export interface MultiImageValidationResult {
+  valid: boolean;
+  results: ImageValidationResult[];
+  error?: string;
+}
+
+export function validateImages(base64Images: string[]): MultiImageValidationResult {
+  if (base64Images.length === 0) {
+    return { valid: false, results: [], error: 'At least one image is required.' };
+  }
+
+  if (base64Images.length > MAX_IMAGE_COUNT) {
+    return {
+      valid: false,
+      results: [],
+      error: `Too many images (${base64Images.length}). Maximum is ${MAX_IMAGE_COUNT}.`,
+    };
+  }
+
+  const results: ImageValidationResult[] = [];
+  for (let i = 0; i < base64Images.length; i++) {
+    const result = validateImage(base64Images[i]);
+    if (!result.valid) {
+      return {
+        valid: false,
+        results,
+        error: `Image ${i + 1}: ${result.error}`,
+      };
+    }
+    results.push(result);
+  }
+
+  return { valid: true, results };
 }
 
 export function stripDataUri(base64: string): string {

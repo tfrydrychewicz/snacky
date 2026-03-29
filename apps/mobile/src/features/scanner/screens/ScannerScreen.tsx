@@ -4,14 +4,18 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { MealType } from '@snacky/shared-types';
-import { Camera as CameraIcon, ImageIcon } from 'lucide-react-native';
-import { useImageCapture } from '../hooks/useImageCapture';
+import { Camera as CameraIcon, ImageIcon, ScanLine } from 'lucide-react-native';
 import { useImageCompression } from '../hooks/useImageCompression';
 import { useScanAnalysis } from '../hooks/useScanAnalysis';
+import { PhotoStrip } from '../components/PhotoStrip';
+import type { CapturedPhoto } from './CameraViewInner';
 import type { ScannerStackParamList } from '~/app/navigation/types';
 import { colors, typography, spacing, radii } from '~/shared/theme/tokens';
+import { launchImageLibrary } from 'react-native-image-picker';
 
 type Nav = NativeStackNavigationProp<ScannerStackParamList, 'Capture'>;
+
+const MAX_PHOTOS = 5;
 
 const nativeModuleAvailable = NativeModules.CameraView != null;
 
@@ -23,36 +27,80 @@ export const ScannerScreen = () => {
   const { t } = useTranslation('scanner');
   const navigation = useNavigation<Nav>();
   const [mealType, setMealType] = useState<MealType>('lunch');
-  const [capturedPhotoUri, setCapturedPhotoUri] = useState('');
+  const [capturedPhotos, setCapturedPhotos] = useState<CapturedPhoto[]>([]);
 
-  const { pickFromGallery } = useImageCapture();
-  const { compress, isCompressing } = useImageCompression();
+  const { compressMultiple, isCompressing } = useImageCompression();
   const { analyze, result, isAnalyzing, error, reset } = useScanAnalysis();
 
   useEffect(() => {
-    if (result) {
+    if (result && capturedPhotos.length > 0) {
       navigation.navigate('Results', {
         scanResult: result,
-        photoUri: capturedPhotoUri,
+        photoUris: capturedPhotos.map((p) => p.uri),
         mealType,
       });
       reset();
-      setCapturedPhotoUri('');
+      setCapturedPhotos([]);
     }
-  }, [result, navigation, mealType, capturedPhotoUri, reset]);
+  }, [result, navigation, mealType, capturedPhotos, reset]);
+
+  const handleAnalyze = useCallback(
+    async (photos: CapturedPhoto[]) => {
+      const uris = photos.map((p) => p.uri);
+      const compressed = await compressMultiple(uris);
+      if (compressed.length === 0) return;
+
+      const updated = photos.map((p, i) => ({
+        ...p,
+        base64: compressed[i]?.base64,
+      }));
+      setCapturedPhotos(updated);
+
+      analyze(
+        compressed.map((c) => c.base64),
+        mealType,
+      );
+    },
+    [compressMultiple, analyze, mealType],
+  );
 
   const handleGallery = useCallback(async () => {
-    const photo = await pickFromGallery();
-    if (!photo) return;
+    try {
+      const remaining = MAX_PHOTOS - capturedPhotos.length;
+      if (remaining <= 0) return;
 
-    const compressed = await compress(photo.uri);
-    if (!compressed) return;
+      const result = await launchImageLibrary({
+        mediaType: 'photo',
+        selectionLimit: remaining,
+        quality: 1,
+        maxWidth: 2048,
+        maxHeight: 2048,
+      });
 
-    setCapturedPhotoUri(compressed.uri);
-    analyze(compressed.base64, mealType);
-  }, [pickFromGallery, compress, analyze, mealType]);
+      const assets = result.assets;
+      if (result.didCancel || !assets?.length) return;
+
+      const newPhotos: CapturedPhoto[] = assets
+        .filter((a) => a.uri != null)
+        .map((a) => ({ uri: a.uri! }));
+
+      const allPhotos = [...capturedPhotos, ...newPhotos].slice(0, MAX_PHOTOS);
+      setCapturedPhotos(allPhotos);
+
+      if (capturedPhotos.length === 0) {
+        void handleAnalyze(allPhotos);
+      }
+    } catch (err) {
+      console.error('Gallery pick failed:', err);
+    }
+  }, [capturedPhotos, handleAnalyze]);
+
+  const handleRemovePhoto = useCallback((index: number) => {
+    setCapturedPhotos((prev) => prev.filter((_, i) => i !== index));
+  }, []);
 
   const showLoader = isCompressing || isAnalyzing;
+  const hasPhotos = capturedPhotos.length > 0;
 
   if (!nativeModuleAvailable) {
     return (
@@ -63,17 +111,43 @@ export const ScannerScreen = () => {
 
         <MealTypePicker selected={mealType} onSelect={setMealType} t={t} />
 
+        {hasPhotos && (
+          <PhotoStrip
+            photoUris={capturedPhotos.map((p) => p.uri)}
+            onRemove={handleRemovePhoto}
+            onAdd={() => void handleGallery()}
+            canAddMore={capturedPhotos.length < MAX_PHOTOS}
+            maxPhotos={MAX_PHOTOS}
+            variant="light"
+          />
+        )}
+
         <View style={styles.fallbackActions}>
-          <Pressable
-            onPress={() => void handleGallery()}
-            disabled={showLoader}
-            style={[styles.galleryButton, showLoader && { opacity: 0.6 }]}
-          >
-            <ImageIcon size={22} color={colors.onPrimary} strokeWidth={2} />
-            <Text style={styles.galleryButtonText}>
-              {showLoader ? t('analyzing') : t('gallery_pick')}
-            </Text>
-          </Pressable>
+          {hasPhotos ? (
+            <Pressable
+              onPress={() => void handleAnalyze(capturedPhotos)}
+              disabled={showLoader}
+              style={[styles.galleryButton, showLoader && { opacity: 0.6 }]}
+            >
+              <ScanLine size={22} color={colors.onPrimary} strokeWidth={2} />
+              <Text style={styles.galleryButtonText}>
+                {showLoader
+                  ? t('analyzing')
+                  : t('analyze_photos', { count: capturedPhotos.length })}
+              </Text>
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={() => void handleGallery()}
+              disabled={showLoader}
+              style={[styles.galleryButton, showLoader && { opacity: 0.6 }]}
+            >
+              <ImageIcon size={22} color={colors.onPrimary} strokeWidth={2} />
+              <Text style={styles.galleryButtonText}>
+                {showLoader ? t('analyzing') : t('gallery_pick')}
+              </Text>
+            </Pressable>
+          )}
         </View>
 
         {error && <Text style={styles.errorInline}>{t('scan_error')}</Text>}
@@ -92,11 +166,15 @@ export const ScannerScreen = () => {
       <LazyCameraView
         mealType={mealType}
         onMealTypeChange={setMealType}
-        onAnalyze={analyze}
-        onPhotoCaptured={setCapturedPhotoUri}
+        onAnalyze={(base64s, mt) => analyze(base64s, mt)}
+        onPhotosChanged={setCapturedPhotos}
         onGallery={() => void handleGallery()}
         showLoader={showLoader}
         error={error}
+        capturedPhotos={capturedPhotos}
+        onRemovePhoto={handleRemovePhoto}
+        canAddMore={capturedPhotos.length < MAX_PHOTOS}
+        maxPhotos={MAX_PHOTOS}
         t={t}
       />
     </Suspense>

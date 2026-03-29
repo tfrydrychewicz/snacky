@@ -7,6 +7,7 @@ const PAGE_SIZE = 24;
 export interface MealPhotoEntry {
   mealId: string;
   imageKey: string;
+  imageKeys: string[];
   loggedAt: string;
   mealType: string;
   totalCalories: number;
@@ -22,7 +23,7 @@ const fetchMealPhotos = async (cursor: string | null, userId: string): Promise<P
 
   let query = supabase
     .from('meals')
-    .select('id, image_key, logged_at, meal_type, total_calories')
+    .select('id, image_key, image_keys, logged_at, meal_type, total_calories')
     .eq('user_id', userId)
     .not('image_key', 'is', null)
     .order('logged_at', { ascending: false })
@@ -38,6 +39,7 @@ const fetchMealPhotos = async (cursor: string | null, userId: string): Promise<P
   const rows = (data ?? []) as Array<{
     id: string;
     image_key: string;
+    image_keys: string[] | null;
     logged_at: string;
     meal_type: string;
     total_calories: number;
@@ -46,6 +48,7 @@ const fetchMealPhotos = async (cursor: string | null, userId: string): Promise<P
   const photos: MealPhotoEntry[] = rows.map((r) => ({
     mealId: r.id,
     imageKey: r.image_key,
+    imageKeys: r.image_keys ?? (r.image_key ? [r.image_key] : []),
     loggedAt: r.logged_at,
     mealType: r.meal_type,
     totalCalories: r.total_calories,

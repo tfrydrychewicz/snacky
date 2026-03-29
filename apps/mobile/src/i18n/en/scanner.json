@@ -82,5 +82,11 @@
   "reanalyzing": "Updating analysis with your answers...",
   "lookup_searching": "Looking up nutrition...",
   "lookup_no_match": "No match found — enter values manually",
-  "portion_value_g": "{{value}}g"
+  "portion_value_g": "{{value}}g",
+
+  "photo_count": "{{count}}/{{max}} photos",
+  "photo_add": "Add another photo",
+  "photo_remove": "Remove photo",
+  "analyze_photos_one": "Analyze {{count}} photo",
+  "analyze_photos_other": "Analyze {{count}} photos"
 }
