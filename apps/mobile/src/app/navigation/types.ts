@@ -11,6 +11,8 @@ export type RootStackParamList = {
   ManualMealEntry: undefined;
   MealPhotoGallery: undefined;
   MealPhotoDetail: { mealId: string; imageKey: string };
+  MeasurementInput: { quickWeight?: boolean } | undefined;
+  MeasurementList: undefined;
 };
 
 export type AuthStackParamList = {

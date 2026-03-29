@@ -19,6 +19,7 @@
 
   "tiles.quickScan": "Scan Meal",
   "tiles.manualEntry": "Manual Entry",
+  "tiles.logWeight": "Log Weight",
 
   "tiles.weightTrend": "Weight Trend",
   "tiles.weightLost": "You've lost {{lbs}} lbs this month. Keep it up!",

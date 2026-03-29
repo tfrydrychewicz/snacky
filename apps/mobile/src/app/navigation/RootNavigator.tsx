@@ -14,6 +14,8 @@ import { MealEditScreen } from '~/features/meals/screens/MealEditScreen';
 import { ManualMealEntryScreen } from '~/features/meals/screens/ManualMealEntryScreen';
 import { MealPhotoGalleryScreen } from '~/features/meals/screens/MealPhotoGalleryScreen';
 import { MealPhotoDetailScreen } from '~/features/meals/screens/MealPhotoDetailScreen';
+import { MeasurementInputScreen } from '~/features/progress/screens/MeasurementInputScreen';
+import { MeasurementListScreen } from '~/features/progress/screens/MeasurementListScreen';
 import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -89,6 +91,16 @@ export const RootNavigator = () => {
                 animation: 'fade',
                 presentation: 'transparentModal',
               }}
+            />
+            <Stack.Screen
+              name="MeasurementInput"
+              component={MeasurementInputScreen}
+              options={{ animation: 'slide_from_bottom' }}
+            />
+            <Stack.Screen
+              name="MeasurementList"
+              component={MeasurementListScreen}
+              options={{ animation: 'slide_from_right' }}
             />
           </>
         )}

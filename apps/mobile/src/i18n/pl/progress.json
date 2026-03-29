@@ -1,1 +1,27 @@
-{}
+{
+  "measurements": "Pomiary",
+  "add_measurement": "Dodaj pomiar",
+  "quick_weight_title": "Zapisz wagę",
+  "weight": "Waga",
+  "waist": "Talia",
+  "chest": "Klatka piersiowa",
+  "hips": "Biodra",
+  "body_fat": "Tkanka tłuszczowa",
+  "source_label": "Źródło",
+  "source_manual": "Ręcznie",
+  "source_healthkit": "HealthKit",
+  "source_health_connect": "Health Connect",
+  "save": "Zapisz",
+  "saving": "Zapisywanie...",
+  "error": "Błąd",
+  "weight_required": "Waga jest wymagana.",
+  "save_failed": "Nie udało się zapisać pomiaru. Spróbuj ponownie.",
+  "delete_title": "Usuń pomiar",
+  "delete_confirm": "Czy na pewno chcesz usunąć ten pomiar?",
+  "delete": "Usuń",
+  "cancel": "Anuluj",
+  "sort_newest": "Najnowsze",
+  "sort_oldest": "Najstarsze",
+  "empty_title": "Brak pomiarów",
+  "empty_subtitle": "Śledź wagę i wymiary ciała, aby monitorować swoje postępy."
+}

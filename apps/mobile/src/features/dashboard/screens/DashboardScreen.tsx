@@ -104,6 +104,7 @@ export const DashboardScreen = () => {
         <QuickActionsTile
           onScan={navigateToScanner}
           onManualEntry={() => navigation.navigate('ManualMealEntry')}
+          onWeightEntry={() => navigation.navigate('MeasurementInput', { quickWeight: true })}
           index={1}
         />
 

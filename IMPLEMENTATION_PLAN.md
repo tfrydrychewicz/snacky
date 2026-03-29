@@ -487,16 +487,16 @@
 
 ### 2.4 Measurement Tracking (Week 14–15)
 
-- [ ] Create `MeasurementInputScreen`:
-  - [ ] Weight input (required) — numeric keyboard
-  - [ ] Waist, chest, hips measurements (optional)
-  - [ ] Body fat % (optional)
-  - [ ] Source indicator (manual / HealthKit / Health Connect)
-  - [ ] Save to `measurements` table via Supabase PostgREST
-- [ ] Implement quick-add weight from dashboard (`QuickActionsTile`)
-- [ ] Implement measurement list view (sortable by date)
-- [ ] Implement measurement delete
-- [ ] Add progress/measurements translation keys
+- [x] Create `MeasurementInputScreen`:
+  - [x] Weight input (required) — numeric keyboard with decimal-pad
+  - [x] Waist, chest, hips measurements (optional)
+  - [x] Body fat % (optional)
+  - [x] Source indicator (manual / HealthKit / Health Connect)
+  - [x] Save to `measurements` table via Supabase PostgREST
+- [x] Implement quick-add weight from dashboard (`QuickActionsTile`) — navigates with `quickWeight: true`
+- [x] Implement measurement list view (sortable by date, newest/oldest toggle)
+- [x] Implement measurement delete (with confirmation alert)
+- [x] Add progress/measurements translation keys (`en/progress.json`, `pl/progress.json`)
 
 ### 2.5 Progress Charts & Analytics (Week 15–16)
 

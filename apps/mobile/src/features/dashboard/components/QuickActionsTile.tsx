@@ -2,16 +2,22 @@ import React from 'react';
 import { Text, Pressable } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { Camera, PenLine } from 'lucide-react-native';
+import { Camera, PenLine, Scale } from 'lucide-react-native';
 import { colors, spacing, typography, radii } from '~/shared/theme/tokens';
 
 interface QuickActionsTileProps {
   onScan: () => void;
   onManualEntry: () => void;
+  onWeightEntry: () => void;
   index?: number;
 }
 
-export const QuickActionsTile = ({ onScan, onManualEntry, index = 4 }: QuickActionsTileProps) => {
+export const QuickActionsTile = ({
+  onScan,
+  onManualEntry,
+  onWeightEntry,
+  index = 4,
+}: QuickActionsTileProps) => {
   const { t } = useTranslation('dashboard');
 
   return (
@@ -38,7 +44,14 @@ export const QuickActionsTile = ({ onScan, onManualEntry, index = 4 }: QuickActi
         })}
       >
         <Camera size={28} color={colors.onPrimary} strokeWidth={2} />
-        <Text style={{ ...typography.titleMd, color: colors.onPrimary, fontWeight: '700' }}>
+        <Text
+          style={{
+            ...typography.titleMd,
+            color: colors.onPrimary,
+            fontWeight: '700',
+            textAlign: 'center',
+          }}
+        >
           {t('tiles.quickScan')}
         </Text>
       </Pressable>
@@ -59,6 +72,25 @@ export const QuickActionsTile = ({ onScan, onManualEntry, index = 4 }: QuickActi
         <PenLine size={24} color={colors.primary} strokeWidth={2} />
         <Text style={{ ...typography.labelMd, color: colors.primary, textAlign: 'center' }}>
           {t('tiles.manualEntry')}
+        </Text>
+      </Pressable>
+
+      <Pressable
+        onPress={onWeightEntry}
+        style={({ pressed }) => ({
+          flex: 1,
+          backgroundColor: colors.surfaceContainerLow,
+          borderRadius: radii.DEFAULT,
+          padding: spacing.lg,
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: spacing.sm,
+          transform: [{ scale: pressed ? 0.97 : 1 }],
+        })}
+      >
+        <Scale size={24} color={colors.primary} strokeWidth={2} />
+        <Text style={{ ...typography.labelMd, color: colors.primary, textAlign: 'center' }}>
+          {t('tiles.logWeight')}
         </Text>
       </Pressable>
     </Animated.View>

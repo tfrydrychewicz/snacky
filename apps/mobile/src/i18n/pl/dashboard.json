@@ -19,6 +19,7 @@
 
   "tiles.quickScan": "Skanuj posiłek",
   "tiles.manualEntry": "Wpis ręczny",
+  "tiles.logWeight": "Zapisz wagę",
 
   "tiles.weightTrend": "Trend wagi",
   "tiles.weightLost": "Schudłeś {{lbs}} funtów w tym miesiącu. Tak trzymaj!",
