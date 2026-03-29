@@ -22,7 +22,7 @@ type MeasurementInputRouteProp = RouteProp<RootStackParamList, 'MeasurementInput
 
 interface FieldConfig {
   key: string;
-  labelKey: string;
+  labelKey: 'weight' | 'waist' | 'chest' | 'hips' | 'body_fat';
   unit: string;
   icon: typeof Scale;
   required?: boolean;

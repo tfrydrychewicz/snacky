@@ -500,22 +500,22 @@
 
 ### 2.5 Progress Charts & Analytics (Week 15–16)
 
-- [ ] Install Victory Native + @shopify/react-native-skia
-- [ ] Create `ProgressDashboardScreen` with tab views:
-  - [ ] `WeightChart.tsx`:
-    - [ ] Line chart with trend line and goal marker
+- [x] ~~Install Victory Native + @shopify/react-native-skia~~ Used react-native-svg (already installed) for lightweight SVG charts
+- [x] Create `TrendsScreen` (ProgressDashboard) with tab views (Overview / Weight / Macros / Calories):
+  - [x] `WeightChart.tsx`:
+    - [x] Line chart with trend line and goal marker
     - [ ] Tap data point → navigate to day's log
     - [ ] Sparkline variant for dashboard tile
-  - [ ] `MacroTrendChart.tsx`:
-    - [ ] Stacked area chart (protein, carbs, fat over time)
-  - [ ] Caloric intake vs. expenditure dual-axis line chart
-  - [ ] `DQIScoreCard.tsx` — weekly DQI-I score trend (placeholder, scoring in next task)
-  - [ ] `MealPhotoGallery.tsx` — scrollable grid with dates
-- [ ] Implement daily summary API (aggregate meals → totals per day)
-- [ ] Implement weekly report generation:
-  - [ ] `WeeklyReportCard.tsx`
-  - [ ] Caloric adherence percentage
-  - [ ] Nutrient gaps highlighted
+  - [x] `MacroTrendChart.tsx`:
+    - [x] Stacked bar chart (protein, carbs, fat over time) with 7-day and 30-day views
+  - [x] `CalorieChart.tsx` — caloric intake vs target line chart
+  - [x] `DQIScoreCard.tsx` — weekly DQI-I score trend (placeholder, scoring in §2.6)
+  - [x] `MealPhotoGallery` link — navigates to existing MealPhotoGalleryScreen (built in §1.6)
+- [x] Implement daily summary aggregation (`useDailyAggregates`, `useWeightTrend` hooks)
+- [x] Implement weekly report generation:
+  - [x] `WeeklyReportCard.tsx`
+  - [x] Caloric adherence percentage
+  - [x] Macro adherence bars (protein, carbs, fat)
   - [ ] Top nutritional insights (LLM-generated)
   - [ ] Personalized tips based on behavioral patterns
 

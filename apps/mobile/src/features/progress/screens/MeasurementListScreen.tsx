@@ -33,7 +33,7 @@ const MeasurementCard = ({
   index: number;
   onDelete: (id: string) => void;
   locale: string;
-  t: (key: string, opts?: Record<string, unknown>) => string;
+  t: ReturnType<typeof useTranslation<'progress'>>['t'];
 }) => {
   const fields = useMemo(() => {
     const result: Array<{ label: string; value: string; icon: typeof Scale }> = [];

@@ -1,292 +1,224 @@
-import React from 'react';
-import { ScrollView, View, Text, Pressable } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { ScrollView, View, Text, Pressable, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import Svg, { Path, Defs, LinearGradient, Stop } from 'react-native-svg';
-import { TrendingUp, Brain, UtensilsCrossed } from 'lucide-react-native';
+import { UtensilsCrossed } from 'lucide-react-native';
 import { AppHeader } from '~/shared/components/AppHeader';
 import { BentoTile } from '~/shared/components/BentoTile';
 import { colors, spacing, typography, radii } from '~/shared/theme/tokens';
+import { WeightChart } from '../components/WeightChart';
+import { MacroTrendChart } from '../components/MacroTrendChart';
+import { CalorieChart } from '../components/CalorieChart';
+import { WeeklyReportCard } from '../components/WeeklyReportCard';
+import { DQIScoreCard } from '../components/DQIScoreCard';
+import { useDailyAggregates, useWeightTrend, computeWeeklyReport } from '../hooks/useTrendData';
+import { useUserTargets } from '~/features/dashboard/hooks/useUserTargets';
+import type { RootStackParamList } from '~/app/navigation/types';
+
+type Tab = 'overview' | 'weight' | 'macros' | 'calories';
+
+const TABS: Tab[] = ['overview', 'weight', 'macros', 'calories'];
 
 export const TrendsScreen = () => {
   const { t } = useTranslation('trends');
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const [activeTab, setActiveTab] = useState<Tab>('overview');
+
+  const { data: aggregates, isLoading: agLoading } = useDailyAggregates(30);
+  const { data: weightData, isLoading: wLoading } = useWeightTrend(30);
+  const { data: targets } = useUserTargets();
+
+  const weeklyReport = useMemo(() => {
+    if (!aggregates || !targets) return null;
+    return computeWeeklyReport(
+      aggregates,
+      targets.targetKcal,
+      targets.targetProteinG,
+      targets.targetCarbsG,
+      targets.targetFatG,
+    );
+  }, [aggregates, targets]);
+
+  const isLoading = agLoading || wLoading;
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface }}>
       <AppHeader />
-      <ScrollView
-        contentContainerStyle={{
+
+      {/* Tab bar */}
+      <View
+        style={{
+          flexDirection: 'row',
           paddingHorizontal: spacing.lg,
-          paddingBottom: insets.bottom + 100,
+          paddingBottom: spacing.sm,
+          gap: spacing.xs,
         }}
-        showsVerticalScrollIndicator={false}
       >
-        {/* DQI Score Hero */}
-        <BentoTile index={0} style={{ marginBottom: spacing.lg }}>
-          <Text
+        {TABS.map((tab) => (
+          <Pressable
+            key={tab}
+            onPress={() => setActiveTab(tab)}
             style={{
-              ...typography.labelSm,
-              color: colors.onSurfaceVariant,
-              textTransform: 'uppercase',
-              letterSpacing: 1.5,
-              marginBottom: spacing.sm,
-            }}
-          >
-            {t('dqi_label')}
-          </Text>
-          <View style={{ flexDirection: 'row', alignItems: 'baseline', marginBottom: spacing.md }}>
-            <Text style={{ ...typography.displayLg, color: colors.onSurface }}>78</Text>
-            <Text
-              style={{ ...typography.titleMd, color: colors.onSurfaceVariant, fontWeight: '500' }}
-            >
-              /100
-            </Text>
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 6,
-              backgroundColor: `${colors.primaryContainer}30`,
-              alignSelf: 'flex-start',
-              paddingHorizontal: 10,
-              paddingVertical: 4,
+              flex: 1,
+              paddingVertical: spacing.sm,
               borderRadius: radii.full,
-              marginBottom: spacing.lg,
+              backgroundColor: activeTab === tab ? colors.primary : colors.surfaceContainerLow,
+              alignItems: 'center',
             }}
           >
-            <TrendingUp size={14} color={colors.primary} strokeWidth={2.5} />
-            <Text style={{ ...typography.labelMd, color: colors.primary, fontWeight: '700' }}>
-              {t('dqi_change', { val: '+3' })}
-            </Text>
-          </View>
-          <Text
-            style={{
-              ...typography.bodySm,
-              color: colors.onSurfaceVariant,
-              lineHeight: 20,
-              maxWidth: 280,
-            }}
-          >
-            {t('dqi_insight')}
-          </Text>
-          {/* Progress dots */}
-          <View style={{ flexDirection: 'row', gap: 6, marginTop: spacing.lg }}>
-            {[1, 1, 0.3, 0.3].map((op, i) => (
-              <View
-                key={i}
-                style={{
-                  flex: 1,
-                  height: 5,
-                  backgroundColor: colors.primary,
-                  borderRadius: 3,
-                  opacity: op,
-                }}
-              />
-            ))}
-          </View>
-        </BentoTile>
-
-        {/* Weight Trend Chart */}
-        <BentoTile index={1} variant="lowest" style={{ marginBottom: spacing.lg }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'flex-start',
-              marginBottom: spacing.lg,
-            }}
-          >
-            <View>
-              <Text style={{ ...typography.titleLg, marginBottom: 2 }}>{t('weight_trend')}</Text>
-              <Text
-                style={{
-                  ...typography.labelSm,
-                  color: colors.onSurfaceVariant,
-                  textTransform: 'uppercase',
-                  letterSpacing: 1.2,
-                }}
-              >
-                {t('last_30_days')}
-              </Text>
-            </View>
-            <View style={{ alignItems: 'flex-end' }}>
-              <Text style={{ ...typography.headlineMd }}>
-                84.2{' '}
-                <Text
-                  style={{
-                    ...typography.labelMd,
-                    color: colors.onSurfaceVariant,
-                    fontWeight: '500',
-                  }}
-                >
-                  kg
-                </Text>
-              </Text>
-              <Text style={{ ...typography.labelSm, color: colors.secondary, fontWeight: '700' }}>
-                {t('goal')}: 82.3 kg
-              </Text>
-            </View>
-          </View>
-          {/* SVG chart */}
-          <View style={{ height: 120, marginBottom: spacing.sm }}>
-            <Svg width="100%" height="100%" viewBox="0 0 400 100" preserveAspectRatio="none">
-              <Defs>
-                <LinearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <Stop offset="0%" stopColor={colors.secondary} stopOpacity="1" />
-                  <Stop offset="100%" stopColor={colors.primary} stopOpacity="1" />
-                </LinearGradient>
-              </Defs>
-              <Path
-                d="M0,80 Q50,75 100,60 T200,50 T300,35 T400,20"
-                fill="none"
-                stroke="url(#lineGrad)"
-                strokeWidth="3"
-              />
-            </Svg>
-          </View>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            {(['week_1', 'week_2', 'week_3', 'week_4'] as const).map((key) => (
-              <Text
-                key={key}
-                style={{
-                  ...typography.labelSm,
-                  color: colors.onSurfaceVariant,
-                  textTransform: 'uppercase',
-                  letterSpacing: 1.5,
-                }}
-              >
-                {t(key)}
-              </Text>
-            ))}
-          </View>
-        </BentoTile>
-
-        {/* Meal History Gallery */}
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'flex-end',
-            marginBottom: spacing.md,
-          }}
-        >
-          <Text style={{ ...typography.headlineMd }}>{t('meal_gallery')}</Text>
-          <Pressable hitSlop={8}>
-            <Text style={{ ...typography.labelMd, color: colors.primary, fontWeight: '700' }}>
-              {t('view_all')}
+            <Text
+              style={{
+                ...typography.labelMd,
+                color: activeTab === tab ? colors.onPrimary : colors.onSurfaceVariant,
+                fontWeight: activeTab === tab ? '700' : '500',
+              }}
+            >
+              {t(`tab_${tab}`)}
             </Text>
           </Pressable>
+        ))}
+      </View>
+
+      {isLoading ? (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            gap: spacing.sm,
-            marginBottom: spacing.lg,
+      ) : (
+        <ScrollView
+          contentContainerStyle={{
+            paddingHorizontal: spacing.lg,
+            paddingBottom: insets.bottom + 100,
+            paddingTop: spacing.md,
           }}
+          showsVerticalScrollIndicator={false}
         >
-          {[0, 1, 2, 3, 4, 5].map((i) => (
-            <Animated.View
-              key={i}
-              entering={FadeInDown.delay(100 + i * 60).duration(350)}
-              style={{
-                width: '31%',
-                aspectRatio: 1,
-                borderRadius: radii.DEFAULT,
-                backgroundColor: colors.surfaceContainerLow,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <UtensilsCrossed size={28} color={colors.onSurfaceVariant} strokeWidth={1.5} />
+          {activeTab === 'overview' && (
+            <>
+              {/* DQI Score */}
+              <BentoTile index={0} style={{ marginBottom: spacing.lg }}>
+                <DQIScoreCard />
+              </BentoTile>
+
+              {/* Weight Trend */}
+              <BentoTile index={1} variant="lowest" style={{ marginBottom: spacing.lg }}>
+                <WeightChart
+                  data={weightData ?? []}
+                  goalKg={targets?.targetKcal ? undefined : undefined}
+                />
+              </BentoTile>
+
+              {/* Calorie summary */}
+              {aggregates && targets && (
+                <BentoTile index={2} style={{ marginBottom: spacing.lg }}>
+                  <CalorieChart data={aggregates} targetKcal={targets.targetKcal} days={7} />
+                </BentoTile>
+              )}
+
+              {/* Weekly Report */}
+              {weeklyReport && targets && (
+                <BentoTile index={3} style={{ marginBottom: spacing.lg }}>
+                  <WeeklyReportCard report={weeklyReport} targetKcal={targets.targetKcal} />
+                </BentoTile>
+              )}
+
+              {/* Meal Photo Gallery preview */}
               <View
                 style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  paddingVertical: 6,
-                  paddingHorizontal: 8,
-                  borderBottomLeftRadius: radii.DEFAULT,
-                  borderBottomRightRadius: radii.DEFAULT,
-                  backgroundColor: 'rgba(0,0,0,0.45)',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-end',
+                  marginBottom: spacing.md,
                 }}
               >
-                <Text style={{ ...typography.labelSm, color: '#FFF', textTransform: 'uppercase' }}>
-                  {['Breakfast', 'Lunch', 'Dinner', 'Snack', 'Dinner', 'Lunch'][i]}
-                </Text>
+                <Text style={{ ...typography.headlineMd }}>{t('meal_gallery')}</Text>
+                <Pressable hitSlop={8} onPress={() => navigation.navigate('MealPhotoGallery')}>
+                  <Text
+                    style={{
+                      ...typography.labelMd,
+                      color: colors.primary,
+                      fontWeight: '700',
+                    }}
+                  >
+                    {t('view_all')}
+                  </Text>
+                </Pressable>
               </View>
-            </Animated.View>
-          ))}
-        </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  gap: spacing.sm,
+                  marginBottom: spacing.lg,
+                }}
+              >
+                {[0, 1, 2, 3, 4, 5].map((i) => (
+                  <Animated.View
+                    key={i}
+                    entering={FadeInDown.delay(100 + i * 60).duration(350)}
+                    style={{
+                      width: '31%',
+                      aspectRatio: 1,
+                      borderRadius: radii.DEFAULT,
+                      backgroundColor: colors.surfaceContainerLow,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <UtensilsCrossed size={28} color={colors.onSurfaceVariant} strokeWidth={1.5} />
+                  </Animated.View>
+                ))}
+              </View>
+            </>
+          )}
 
-        {/* Insight Tiles */}
-        <BentoTile
-          index={5}
-          style={{ marginBottom: spacing.lg, backgroundColor: colors.tertiaryFixed }}
-        >
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'flex-start',
-              marginBottom: spacing.md,
-            }}
-          >
-            <Brain size={22} color={colors.onTertiaryContainer} strokeWidth={2} />
-            <Text
-              style={{
-                ...typography.labelSm,
-                color: colors.onTertiaryContainer,
-                textTransform: 'uppercase',
-                letterSpacing: 1.2,
-              }}
-            >
-              {t('mindful_eating')}
-            </Text>
-          </View>
-          <Text style={{ ...typography.titleLg, color: '#261A00' }}>
-            {t('consistency', { pct: 85 })}
-          </Text>
-          <Text style={{ ...typography.bodySm, color: '#5B4300', marginTop: 4 }}>
-            {t('consistency_detail')}
-          </Text>
-        </BentoTile>
+          {activeTab === 'weight' && (
+            <BentoTile index={0} variant="lowest" style={{ marginBottom: spacing.lg }}>
+              <WeightChart data={weightData ?? []} height={200} />
+            </BentoTile>
+          )}
 
-        <BentoTile
-          index={6}
-          style={{ marginBottom: spacing.lg, backgroundColor: colors.secondaryFixed }}
-        >
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
-            <View
-              style={{
-                width: 64,
-                height: 64,
-                borderRadius: 32,
-                borderWidth: 3,
-                borderColor: 'rgba(255,255,255,0.3)',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Text style={{ ...typography.headlineMd, fontWeight: '800', color: '#00105C' }}>
-                8/10
-              </Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={{ ...typography.titleLg, color: '#00105C' }}>
-                {t('hydration_title')}
-              </Text>
-              <Text style={{ ...typography.bodySm, color: '#293CA0', marginTop: 4 }}>
-                {t('hydration_detail')}
-              </Text>
-            </View>
-          </View>
-        </BentoTile>
-      </ScrollView>
+          {activeTab === 'macros' && aggregates && (
+            <>
+              <BentoTile index={0} style={{ marginBottom: spacing.lg }}>
+                <MacroTrendChart data={aggregates} days={7} height={180} />
+              </BentoTile>
+              <BentoTile index={1} style={{ marginBottom: spacing.lg }}>
+                <MacroTrendChart data={aggregates} days={30} height={180} />
+              </BentoTile>
+            </>
+          )}
+
+          {activeTab === 'calories' && aggregates && targets && (
+            <>
+              <BentoTile index={0} style={{ marginBottom: spacing.lg }}>
+                <CalorieChart
+                  data={aggregates}
+                  targetKcal={targets.targetKcal}
+                  days={7}
+                  height={180}
+                />
+              </BentoTile>
+              <BentoTile index={1} style={{ marginBottom: spacing.lg }}>
+                <CalorieChart
+                  data={aggregates}
+                  targetKcal={targets.targetKcal}
+                  days={30}
+                  height={180}
+                />
+              </BentoTile>
+              {weeklyReport && (
+                <BentoTile index={2} style={{ marginBottom: spacing.lg }}>
+                  <WeeklyReportCard report={weeklyReport} targetKcal={targets.targetKcal} />
+                </BentoTile>
+              )}
+            </>
+          )}
+        </ScrollView>
+      )}
     </View>
   );
 };
