@@ -570,13 +570,13 @@
 - [x] Set up Meal Planning Service (Python / FastAPI):
   - [x] Create service in `supabase/functions/generate-plan/` (Deno Edge Function with heuristic MILP-style solver; Python/PuLP migration path available)
   - [x] Heuristic solver with greedy food selection + least-squares portion optimization (PuLP/CBC fallback path documented)
-  - [ ] Install scikit-fuzzy for ad-hoc adjustments (deferred to Phase 3.2 LLM integration)
+  - [x] Fuzzy logic layer for ad-hoc adjustments — native TypeScript implementation in `fuzzy.ts` (triangular/trapezoidal/sigmoid MFs, centroid defuzzification); scikit-fuzzy not needed
 - [x] Implement MILP formulation:
   - [x] Candidate food items from USDA DB (filtered by allergens/restrictions, categorized by food group)
   - [x] Objective: minimize deviation from target macronutrient goals across N days
   - [x] Hard constraints: daily calorie ± 5%, allergens (zero tolerance), prep time
   - [x] Soft constraints: ingredient diversity (min 15 unique/week), cost, variety
-  - [ ] Each micronutrient ≥ 80% RDA per day (3-day window average) — requires micronutrient data expansion
+  - [x] Each micronutrient ≥ 80% RDA per day (3-day window average) — 20 micronutrients (12 vitamins + 8 minerals) added to usda_foods, RDA lookup by sex/age, solver repair pass with rolling average
   - [x] No ingredient repeated in same meal slot within 3 consecutive days
 - [x] Implement solver timeout (30s) with fallback to heuristic generation
 - [x] Output: nutrient matrix (Day × MealSlot × {foods, grams})
@@ -589,7 +589,7 @@
   - [ ] Inject user context: cuisine preferences, cooking skill, taste profile (from comment embeddings)
   - [ ] Call GPT-5.4 via LangChain with RAG context
   - [ ] Output: recipe name, instructions, prep time, presentation suggestions
-- [ ] Implement fuzzy logic layer (scikit-fuzzy) for flexibility margins
+- [x] Fuzzy logic layer for flexibility margins — native TypeScript `fuzzy.ts` integrated into solver (macro scoring, portion sizing, calorie correction, micronutrient repair urgency)
 - [ ] Validate generated plans:
   - [ ] Verify no allergen leakage
   - [ ] Re-calculate exact nutrition from recipe ingredients

@@ -41,7 +41,7 @@ const DATA_SOURCES: Array<{ type: string; label: string }> = [
   { type: 'Foundation', label: 'foundation' },
 ];
 
-// USDA nutrient IDs
+// USDA nutrient IDs — macros + micronutrients
 const NUTRIENT = {
   ENERGY: 1008,
   PROTEIN: 1003,
@@ -51,6 +51,28 @@ const NUTRIENT = {
   SUGAR: 2000,
   SODIUM: 1093,
   SAT_FAT: 1258,
+  // Vitamins
+  VITAMIN_A: 1106,
+  VITAMIN_C: 1162,
+  VITAMIN_D: 1114,
+  VITAMIN_E: 1109,
+  VITAMIN_K: 1185,
+  THIAMIN: 1165,
+  RIBOFLAVIN: 1166,
+  NIACIN: 1167,
+  VITAMIN_B6: 1175,
+  FOLATE: 1190,
+  VITAMIN_B12: 1178,
+  CHOLINE: 1180,
+  // Minerals
+  CALCIUM: 1087,
+  IRON: 1089,
+  MAGNESIUM: 1090,
+  PHOSPHORUS: 1091,
+  POTASSIUM: 1092,
+  ZINC: 1095,
+  COPPER: 1098,
+  SELENIUM: 1103,
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -91,6 +113,28 @@ interface UsdaRow {
   saturated_fat_per_100g: number | null;
   serving_size_g: number | null;
   serving_description: string | null;
+  // Vitamins
+  vitamin_a_ug_per_100g: number | null;
+  vitamin_c_mg_per_100g: number | null;
+  vitamin_d_ug_per_100g: number | null;
+  vitamin_e_mg_per_100g: number | null;
+  vitamin_k_ug_per_100g: number | null;
+  thiamin_mg_per_100g: number | null;
+  riboflavin_mg_per_100g: number | null;
+  niacin_mg_per_100g: number | null;
+  vitamin_b6_mg_per_100g: number | null;
+  folate_ug_per_100g: number | null;
+  vitamin_b12_ug_per_100g: number | null;
+  choline_mg_per_100g: number | null;
+  // Minerals
+  calcium_mg_per_100g: number | null;
+  iron_mg_per_100g: number | null;
+  magnesium_mg_per_100g: number | null;
+  phosphorus_mg_per_100g: number | null;
+  potassium_mg_per_100g: number | null;
+  zinc_mg_per_100g: number | null;
+  copper_mg_per_100g: number | null;
+  selenium_ug_per_100g: number | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -124,6 +168,28 @@ function toRow(food: FdcFood, dataSource: string): UsdaRow {
     saturated_fat_per_100g: extractNutrient(n, NUTRIENT.SAT_FAT),
     serving_size_g: food.servingSize && food.servingSizeUnit === 'g' ? food.servingSize : null,
     serving_description: food.householdServingFullText ?? null,
+    // Vitamins
+    vitamin_a_ug_per_100g: extractNutrient(n, NUTRIENT.VITAMIN_A),
+    vitamin_c_mg_per_100g: extractNutrient(n, NUTRIENT.VITAMIN_C),
+    vitamin_d_ug_per_100g: extractNutrient(n, NUTRIENT.VITAMIN_D),
+    vitamin_e_mg_per_100g: extractNutrient(n, NUTRIENT.VITAMIN_E),
+    vitamin_k_ug_per_100g: extractNutrient(n, NUTRIENT.VITAMIN_K),
+    thiamin_mg_per_100g: extractNutrient(n, NUTRIENT.THIAMIN),
+    riboflavin_mg_per_100g: extractNutrient(n, NUTRIENT.RIBOFLAVIN),
+    niacin_mg_per_100g: extractNutrient(n, NUTRIENT.NIACIN),
+    vitamin_b6_mg_per_100g: extractNutrient(n, NUTRIENT.VITAMIN_B6),
+    folate_ug_per_100g: extractNutrient(n, NUTRIENT.FOLATE),
+    vitamin_b12_ug_per_100g: extractNutrient(n, NUTRIENT.VITAMIN_B12),
+    choline_mg_per_100g: extractNutrient(n, NUTRIENT.CHOLINE),
+    // Minerals
+    calcium_mg_per_100g: extractNutrient(n, NUTRIENT.CALCIUM),
+    iron_mg_per_100g: extractNutrient(n, NUTRIENT.IRON),
+    magnesium_mg_per_100g: extractNutrient(n, NUTRIENT.MAGNESIUM),
+    phosphorus_mg_per_100g: extractNutrient(n, NUTRIENT.PHOSPHORUS),
+    potassium_mg_per_100g: extractNutrient(n, NUTRIENT.POTASSIUM),
+    zinc_mg_per_100g: extractNutrient(n, NUTRIENT.ZINC),
+    copper_mg_per_100g: extractNutrient(n, NUTRIENT.COPPER),
+    selenium_ug_per_100g: extractNutrient(n, NUTRIENT.SELENIUM),
   };
 }
 

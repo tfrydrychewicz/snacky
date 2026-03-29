@@ -1,5 +1,6 @@
 import type { SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.0';
 import type { SolverResult, PlanRequest, UserProfile, PlanResponse } from './schemas.ts';
+import { FOOD_COL_TO_RDA_KEY } from './rda.ts';
 
 export async function storePlan(
   supabase: SupabaseClient,
@@ -75,20 +76,31 @@ export async function storePlan(
     recipe_name: buildRecipeName(meal.foods.map((f) => f.food.description)),
     recipe_instructions: null,
     prep_time_min: null,
-    ingredients: meal.foods.map((f) => ({
-      name: f.food.description,
-      amount_g: f.portion_g,
-      usda_fdc_id: f.food.fdc_id,
-      calories: Math.round((f.food.calories_per_100g ?? 0) * f.portion_g / 100),
-      protein_g: Math.round((f.food.protein_per_100g ?? 0) * f.portion_g / 100 * 10) / 10,
-      carbs_g: Math.round((f.food.carbs_per_100g ?? 0) * f.portion_g / 100 * 10) / 10,
-      fat_g: Math.round((f.food.fat_per_100g ?? 0) * f.portion_g / 100 * 10) / 10,
-    })),
+    ingredients: meal.foods.map((f) => {
+      const scale = f.portion_g / 100;
+      const micros: Record<string, number> = {};
+      for (const [col, key] of Object.entries(FOOD_COL_TO_RDA_KEY)) {
+        const val = (f.food as unknown as Record<string, number | null>)[col];
+        if (val != null) {
+          micros[key] = Math.round(val * scale * 100) / 100;
+        }
+      }
+      return {
+        name: f.food.description,
+        amount_g: f.portion_g,
+        usda_fdc_id: f.food.fdc_id,
+        calories: Math.round((f.food.calories_per_100g ?? 0) * scale),
+        protein_g: Math.round((f.food.protein_per_100g ?? 0) * scale * 10) / 10,
+        carbs_g: Math.round((f.food.carbs_per_100g ?? 0) * scale * 10) / 10,
+        fat_g: Math.round((f.food.fat_per_100g ?? 0) * scale * 10) / 10,
+        micronutrients: micros,
+      };
+    }),
     calories: meal.total_calories,
     protein_g: meal.total_protein_g,
     carbs_g: meal.total_carbs_g,
     fat_g: meal.total_fat_g,
-    micronutrients: null,
+    micronutrients: meal.micronutrients,
     image_url: null,
     sort_order: idx,
   }));

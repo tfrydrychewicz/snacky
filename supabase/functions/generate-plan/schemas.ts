@@ -30,6 +30,8 @@ export interface UserProfile {
   dietary_restrictions: string[];
   cooking_skill: string | null;
   cuisine_preferences: string[];
+  date_of_birth: string | null;
+  biological_sex: string | null;
 }
 
 export interface CandidateFood {
@@ -45,6 +47,51 @@ export interface CandidateFood {
   sodium_per_100g: number | null;
   saturated_fat_per_100g: number | null;
   serving_size_g: number | null;
+  // Vitamins
+  vitamin_a_ug_per_100g: number | null;
+  vitamin_c_mg_per_100g: number | null;
+  vitamin_d_ug_per_100g: number | null;
+  vitamin_e_mg_per_100g: number | null;
+  vitamin_k_ug_per_100g: number | null;
+  thiamin_mg_per_100g: number | null;
+  riboflavin_mg_per_100g: number | null;
+  niacin_mg_per_100g: number | null;
+  vitamin_b6_mg_per_100g: number | null;
+  folate_ug_per_100g: number | null;
+  vitamin_b12_ug_per_100g: number | null;
+  choline_mg_per_100g: number | null;
+  // Minerals
+  calcium_mg_per_100g: number | null;
+  iron_mg_per_100g: number | null;
+  magnesium_mg_per_100g: number | null;
+  phosphorus_mg_per_100g: number | null;
+  potassium_mg_per_100g: number | null;
+  zinc_mg_per_100g: number | null;
+  copper_mg_per_100g: number | null;
+  selenium_ug_per_100g: number | null;
+}
+
+export interface MicronutrientTotals {
+  vitamin_a_ug: number;
+  vitamin_c_mg: number;
+  vitamin_d_ug: number;
+  vitamin_e_mg: number;
+  vitamin_k_ug: number;
+  thiamin_mg: number;
+  riboflavin_mg: number;
+  niacin_mg: number;
+  vitamin_b6_mg: number;
+  folate_ug: number;
+  vitamin_b12_ug: number;
+  choline_mg: number;
+  calcium_mg: number;
+  iron_mg: number;
+  magnesium_mg: number;
+  phosphorus_mg: number;
+  potassium_mg: number;
+  zinc_mg: number;
+  copper_mg: number;
+  selenium_ug: number;
 }
 
 export interface SlotAssignment {
@@ -60,6 +107,7 @@ export interface PlannedMeal {
   total_protein_g: number;
   total_carbs_g: number;
   total_fat_g: number;
+  micronutrients: MicronutrientTotals;
 }
 
 export interface SolverResult {

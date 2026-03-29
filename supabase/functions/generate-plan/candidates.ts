@@ -4,6 +4,21 @@ import type { UserProfile, CandidateFood, PlanRequest } from './schemas.ts';
 const MIN_CANDIDATES = 80;
 const MAX_CANDIDATES = 300;
 
+const FOOD_SELECT_COLS = [
+  'fdc_id', 'description', 'food_category',
+  'calories_per_100g', 'protein_per_100g', 'carbs_per_100g', 'fat_per_100g',
+  'fiber_per_100g', 'sugar_per_100g', 'sodium_per_100g', 'saturated_fat_per_100g',
+  'serving_size_g',
+  'vitamin_a_ug_per_100g', 'vitamin_c_mg_per_100g', 'vitamin_d_ug_per_100g',
+  'vitamin_e_mg_per_100g', 'vitamin_k_ug_per_100g',
+  'thiamin_mg_per_100g', 'riboflavin_mg_per_100g', 'niacin_mg_per_100g',
+  'vitamin_b6_mg_per_100g', 'folate_ug_per_100g', 'vitamin_b12_ug_per_100g',
+  'choline_mg_per_100g',
+  'calcium_mg_per_100g', 'iron_mg_per_100g', 'magnesium_mg_per_100g',
+  'phosphorus_mg_per_100g', 'potassium_mg_per_100g', 'zinc_mg_per_100g',
+  'copper_mg_per_100g', 'selenium_ug_per_100g',
+].join(', ');
+
 export async function fetchUserProfile(
   supabase: SupabaseClient,
   userId: string,
@@ -11,7 +26,7 @@ export async function fetchUserProfile(
   const { data, error } = await supabase
     .from('user_profiles')
     .select(
-      'target_kcal, target_protein_g, target_carbs_g, target_fat_g, allergies, dietary_restrictions, cooking_skill, cuisine_preferences',
+      'target_kcal, target_protein_g, target_carbs_g, target_fat_g, allergies, dietary_restrictions, cooking_skill, cuisine_preferences, date_of_birth, biological_sex',
     )
     .eq('user_id', userId)
     .single();
@@ -31,6 +46,8 @@ export async function fetchUserProfile(
     dietary_restrictions: (p.dietary_restrictions as string[]) ?? [],
     cooking_skill: (p.cooking_skill as string) ?? null,
     cuisine_preferences: (p.cuisine_preferences as string[]) ?? [],
+    date_of_birth: (p.date_of_birth as string) ?? null,
+    biological_sex: (p.biological_sex as string) ?? null,
   };
 }
 
@@ -51,9 +68,7 @@ export async function fetchCandidateFoods(
 
   let query = supabase
     .from('usda_foods')
-    .select(
-      'fdc_id, description, food_category, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g, fiber_per_100g, sugar_per_100g, sodium_per_100g, saturated_fat_per_100g, serving_size_g',
-    )
+    .select(FOOD_SELECT_COLS)
     .not('calories_per_100g', 'is', null)
     .gt('calories_per_100g', 0)
     .order('food_category', { ascending: true })
@@ -78,9 +93,7 @@ export async function fetchCandidateFoods(
   if (!data || data.length === 0) {
     const { data: fallbackData, error: fallbackError } = await supabase
       .from('usda_foods')
-      .select(
-        'fdc_id, description, food_category, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g, fiber_per_100g, sugar_per_100g, sodium_per_100g, saturated_fat_per_100g, serving_size_g',
-      )
+      .select(FOOD_SELECT_COLS)
       .not('calories_per_100g', 'is', null)
       .gt('calories_per_100g', 0)
       .limit(MAX_CANDIDATES);
@@ -98,9 +111,7 @@ export async function fetchCandidateFoods(
     const existingIds = new Set(candidates.map((c) => c.fdc_id));
     const { data: moreData } = await supabase
       .from('usda_foods')
-      .select(
-        'fdc_id, description, food_category, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g, fiber_per_100g, sugar_per_100g, sodium_per_100g, saturated_fat_per_100g, serving_size_g',
-      )
+      .select(FOOD_SELECT_COLS)
       .not('calories_per_100g', 'is', null)
       .gt('calories_per_100g', 0)
       .limit(MAX_CANDIDATES);
