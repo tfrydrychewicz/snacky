@@ -3,3 +3,4 @@ packages:
   - packages/*
 patchedDependencies:
   '@bam.tech/react-native-image-resizer@3.0.11': patches/@bam.tech__react-native-image-resizer@3.0.11.patch
+  '@react-native-google-signin/google-signin': patches/@react-native-google-signin__google-signin.patch

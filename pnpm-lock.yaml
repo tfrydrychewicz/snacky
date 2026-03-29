@@ -8,6 +8,9 @@ patchedDependencies:
   '@bam.tech/react-native-image-resizer@3.0.11':
     hash: 621ae8aa723f1156d59f91ad4c7c70f0c49139a2bf74a41175d727b847c0d157
     path: patches/@bam.tech__react-native-image-resizer@3.0.11.patch
+  '@react-native-google-signin/google-signin':
+    hash: d826f04429449b4fff2c3ae2e71aa0bdc2c24727beeb3dc0305acd5f40bbca30
+    path: patches/@react-native-google-signin__google-signin.patch
 
 importers:
 
@@ -60,7 +63,7 @@ importers:
         version: 23.8.8(@react-native-firebase/app@23.8.8(react-native@0.84.1(@babel/core@7.29.0)(@react-native-community/cli@20.1.3(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))
       '@react-native-google-signin/google-signin':
         specifier: ^16.1.2
-        version: 16.1.2(react-native@0.84.1(@babel/core@7.29.0)(@react-native-community/cli@20.1.3(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+        version: 16.1.2(patch_hash=d826f04429449b4fff2c3ae2e71aa0bdc2c24727beeb3dc0305acd5f40bbca30)(react-native@0.84.1(@babel/core@7.29.0)(@react-native-community/cli@20.1.3(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       '@react-navigation/bottom-tabs':
         specifier: ^7.x
         version: 7.15.9(@react-navigation/native@7.2.2(react-native@0.84.1(@babel/core@7.29.0)(@react-native-community/cli@20.1.3(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native-safe-area-context@5.7.0(react-native@0.84.1(@babel/core@7.29.0)(@react-native-community/cli@20.1.3(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native-screens@4.24.0(react-native@0.84.1(@babel/core@7.29.0)(@react-native-community/cli@20.1.3(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native@0.84.1(@babel/core@7.29.0)(@react-native-community/cli@20.1.3(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
@@ -8679,7 +8682,7 @@ snapshots:
     dependencies:
       '@react-native-firebase/app': 23.8.8(react-native@0.84.1(@babel/core@7.29.0)(@react-native-community/cli@20.1.3(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
 
-  '@react-native-google-signin/google-signin@16.1.2(react-native@0.84.1(@babel/core@7.29.0)(@react-native-community/cli@20.1.3(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)':
+  '@react-native-google-signin/google-signin@16.1.2(patch_hash=d826f04429449b4fff2c3ae2e71aa0bdc2c24727beeb3dc0305acd5f40bbca30)(react-native@0.84.1(@babel/core@7.29.0)(@react-native-community/cli@20.1.3(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)':
     dependencies:
       react: 19.2.3
       react-native: 0.84.1(@babel/core@7.29.0)(@react-native-community/cli@20.1.3(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
