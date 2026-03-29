@@ -88,5 +88,7 @@
   "photo_add": "Add another photo",
   "photo_remove": "Remove photo",
   "analyze_photos_one": "Analyze {{count}} photo",
+  "analyze_photos_few": "Analyze {{count}} photos",
+  "analyze_photos_many": "Analyze {{count}} photos",
   "analyze_photos_other": "Analyze {{count}} photos"
 }
