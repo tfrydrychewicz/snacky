@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import { getSupabase } from '~/shared/api/client';
+import { Alert } from 'react-native';
 import { ensureValidSession } from '~/shared/api/sessionRecovery';
 import Config from 'react-native-config';
 import type { ChatAttachments } from '@snacky/shared-types';
@@ -92,6 +92,12 @@ export function useChatStream(): UseChatStreamReturn {
           } catch {
             errText = `HTTP ${resp.status}`;
           }
+
+          Alert.alert(
+            `Chat failed (${resp.status})`,
+            `URL: ${url}\nToken: ${accessToken.slice(0, 30)}…\n\n${errText}`,
+          );
+
           setState((prev) => ({
             ...prev,
             isStreaming: false,

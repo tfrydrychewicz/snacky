@@ -1,3 +1,4 @@
+import { Alert } from 'react-native';
 import { getSupabase } from './client';
 
 /**
@@ -22,6 +23,7 @@ const REFRESH_MARGIN_S = 120;
 /**
  * Ensures the current session has a valid, non-expired access token.
  * Proactively refreshes if the token expires within REFRESH_MARGIN_S seconds.
+ * Also validates the token server-side via getUser().
  * Returns the valid access_token or null if unauthenticated.
  */
 export async function ensureValidSession(): Promise<string | null> {
@@ -30,16 +32,39 @@ export async function ensureValidSession(): Promise<string | null> {
     data: { session },
   } = await supabase.auth.getSession();
 
-  if (!session) return null;
+  if (!session) {
+    console.warn('[SessionRecovery] No session found');
+    return null;
+  }
 
   const nowSec = Math.floor(Date.now() / 1000);
   const expiresAt = session.expires_at ?? 0;
+  const ttl = expiresAt - nowSec;
 
-  if (expiresAt - nowSec < REFRESH_MARGIN_S) {
+  console.log('[SessionRecovery] Session check:', {
+    hasToken: !!session.access_token,
+    tokenPrefix: session.access_token?.slice(0, 20),
+    expiresAt,
+    ttlSeconds: ttl,
+    userId: session.user?.id,
+  });
+
+  if (ttl < REFRESH_MARGIN_S) {
     console.log('[SessionRecovery] Token expiring soon, refreshing…');
     const { data, error } = await supabase.auth.refreshSession();
     if (error || !data.session) {
       console.warn('[SessionRecovery] Proactive refresh failed:', error?.message);
+      return null;
+    }
+    return data.session.access_token;
+  }
+
+  const { error: verifyError } = await supabase.auth.getUser(session.access_token);
+  if (verifyError) {
+    console.warn('[SessionRecovery] Token verification failed:', verifyError.message);
+    const { data, error: refreshError } = await supabase.auth.refreshSession();
+    if (refreshError || !data.session) {
+      console.warn('[SessionRecovery] Refresh after verify failure also failed');
       return null;
     }
     return data.session.access_token;

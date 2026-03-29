@@ -1,13 +1,11 @@
 import { useCallback, useState } from 'react';
+import { Alert } from 'react-native';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { MealScanResultSchema, type MealScanResult, type MealType } from '@snacky/shared-types';
+import Config from 'react-native-config';
 import { getSupabase } from '~/shared/api/client';
-import {
-  tryRefreshSession,
-  isJwtError,
-  ensureValidSession,
-} from '~/shared/api/sessionRecovery';
+import { ensureValidSession } from '~/shared/api/sessionRecovery';
 
 const MAX_CLARIFICATION_ROUNDS = 3;
 
@@ -24,61 +22,50 @@ export type ScanState = {
   error: string | null;
 };
 
-const invokeEdgeFunction = async (request: ScanRequest) => {
-  const supabase = getSupabase();
-  return supabase.functions.invoke<unknown>('meal-scan', {
-    body: {
-      images: request.images,
-      meal_type: request.mealType,
-      locale: request.locale,
-      clarifications: request.clarifications ?? [],
-    },
-  });
-};
-
 const analyzeMeal = async (request: ScanRequest): Promise<MealScanResult> => {
   console.log('[MealScan] Invoking meal-scan edge function…', {
     imageCount: request.images.length,
   });
 
-  const token = await ensureValidSession();
-  if (!token) {
+  const accessToken = await ensureValidSession();
+  if (!accessToken) {
+    await getSupabase().auth.signOut();
     throw new Error('SESSION_EXPIRED');
   }
 
-  let response = await invokeEdgeFunction(request);
+  const baseUrl = Config.SUPABASE_URL ?? '';
+  const url = `${baseUrl}/functions/v1/meal-scan`;
 
-  if (response.error && isJwtError(response.error)) {
-    console.log('[MealScan] JWT error detected, attempting session refresh…');
-    const refreshed = await tryRefreshSession();
-    if (refreshed) {
-      console.log('[MealScan] Session refreshed, retrying…');
-      response = await invokeEdgeFunction(request);
-    } else {
-      console.error('[MealScan] Session refresh failed — user needs to re-authenticate');
-      await getSupabase().auth.signOut();
-      throw new Error('SESSION_EXPIRED');
-    }
+  console.log('[MealScan] Calling:', url, 'token prefix:', accessToken.slice(0, 20));
+
+  const resp = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+      apikey: Config.SUPABASE_ANON_KEY ?? '',
+    },
+    body: JSON.stringify({
+      images: request.images,
+      meal_type: request.mealType,
+      locale: request.locale,
+      clarifications: request.clarifications ?? [],
+    }),
+  });
+
+  if (!resp.ok) {
+    const errBody = await resp.text().catch(() => `HTTP ${resp.status}`);
+    console.error('[MealScan] Edge function error:', resp.status, errBody);
+
+    Alert.alert(
+      `Scan failed (${resp.status})`,
+      `URL: ${url}\nToken: ${accessToken.slice(0, 30)}…\n\n${errBody}`,
+    );
+
+    throw new Error(errBody);
   }
 
-  if (response.error) {
-    let detail = '';
-    const err = response.error as Record<string, unknown>;
-    if (err.context && typeof (err.context as Response).text === 'function') {
-      try {
-        const body = await (err.context as Response).text();
-        detail = body;
-      } catch {
-        // response body already consumed
-      }
-    }
-    const message =
-      response.error instanceof Error ? response.error.message : 'Scan analysis failed';
-    console.error('[MealScan] Edge function error:', message, detail || response.error);
-    throw new Error(detail || message);
-  }
-
-  const data: unknown = response.data;
+  const data: unknown = await resp.json();
   console.log('[MealScan] Response received, validating schema…');
 
   const parsed = MealScanResultSchema.safeParse(data);
