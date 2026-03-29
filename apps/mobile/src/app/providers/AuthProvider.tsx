@@ -12,7 +12,7 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import * as Keychain from 'react-native-keychain';
 import Config from 'react-native-config';
 import { getSupabase } from '~/shared/api/client';
-import { generateNonce } from '~/shared/utils/crypto';
+import { decodeJwtNonce } from '~/shared/utils/crypto';
 
 const KEYCHAIN_SERVICE = 'com.snacky.auth';
 
@@ -156,18 +156,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signInWithGoogle = useCallback(async () => {
     await GoogleSignin.hasPlayServices();
-
-    const { raw } = generateNonce();
-    const response = await GoogleSignin.signIn({ nonce: raw });
+    const response = await GoogleSignin.signIn();
 
     if (!response.data?.idToken) {
       throw new Error('Google Sign-In failed: no ID token received');
     }
 
+    const nonce = decodeJwtNonce(response.data.idToken);
+
     const { error } = await getSupabase().auth.signInWithIdToken({
       provider: 'google',
       token: response.data.idToken,
-      nonce: raw,
+      ...(nonce ? { nonce } : {}),
     });
 
     if (error) throw error;
