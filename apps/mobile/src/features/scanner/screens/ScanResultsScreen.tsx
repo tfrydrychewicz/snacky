@@ -210,8 +210,13 @@ export const ScanResultsScreen = () => {
 
       for (let i = 0; i < photoUris.length; i++) {
         try {
-          const base64Data = await RNFS.readFile(photoUris[i], 'base64');
-          const byteArray = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
+          const uri = photoUris[i];
+          if (!uri) continue;
+          const base64Data = await RNFS.readFile(uri, 'base64');
+          const decoded = (globalThis as unknown as { atob: (s: string) => string }).atob(
+            base64Data,
+          );
+          const byteArray = Uint8Array.from(decoded, (c: string) => c.charCodeAt(0));
           const storagePath = `${user.id}/${Date.now()}_${i}.jpg`;
 
           const { error: uploadError } = await supabase.storage

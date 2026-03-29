@@ -90,9 +90,7 @@ export const CameraViewInner = ({
   }, [cameraRef, canAddMore, compress, capturedPhotos, onPhotosChanged]);
 
   const handleAnalyzePhotos = useCallback(() => {
-    const base64s = capturedPhotos
-      .map((p) => p.base64)
-      .filter((b): b is string => b != null);
+    const base64s = capturedPhotos.map((p) => p.base64).filter((b): b is string => b != null);
     if (base64s.length > 0) {
       onAnalyze(base64s, mealType);
     }

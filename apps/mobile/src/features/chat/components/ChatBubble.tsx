@@ -58,9 +58,15 @@ const markdownOptions: useMarkdownHookOptions = {
       borderColor: colors.outlineVariant,
       borderRadius: 8,
     },
-    thead: { backgroundColor: colors.surfaceContainerLow },
-    th: { ...typography.labelMd, color: colors.onSurface, padding: 8 },
-    td: { ...typography.bodySm, color: colors.onSurfaceVariant, padding: 8 },
+    tableRow: {
+      borderBottomWidth: 1,
+      borderColor: colors.outlineVariant,
+    },
+    tableCell: {
+      padding: 8,
+      borderRightWidth: 1,
+      borderColor: colors.outlineVariant,
+    },
     hr: { backgroundColor: colors.outlineVariant, height: 1, marginVertical: 12 },
   },
 };

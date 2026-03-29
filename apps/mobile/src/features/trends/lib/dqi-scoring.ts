@@ -83,7 +83,6 @@ const GRAIN_CATEGORIES = [
   'Bread',
 ];
 
-
 function matchesAny(category: string, list: string[]): boolean {
   const lower = category.toLowerCase();
   return list.some((c) => lower.includes(c.toLowerCase()));

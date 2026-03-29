@@ -359,7 +359,8 @@ async function handleDirectNotification(
   }
 
   const locale = user.locale ?? 'en';
-  const title = payload.title ?? TEMPLATES[type]?.[locale]?.title ?? TEMPLATES[type]?.en?.title ?? type;
+  const title =
+    payload.title ?? TEMPLATES[type]?.[locale]?.title ?? TEMPLATES[type]?.en?.title ?? type;
   const body = payload.body ?? TEMPLATES[type]?.[locale]?.body ?? TEMPLATES[type]?.en?.body ?? '';
 
   const { data: devices } = await supabase

@@ -102,7 +102,13 @@ export const InlineCalorieChart = ({ data, targetKcal }: InlineCalorieChartProps
             />
           )}
 
-          <Path d={path} fill="none" stroke="url(#inlineCGrad)" strokeWidth="2.5" strokeLinecap="round" />
+          <Path
+            d={path}
+            fill="none"
+            stroke="url(#inlineCGrad)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          />
         </Svg>
       </View>
     </View>

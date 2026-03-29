@@ -355,7 +355,12 @@ async function fetchDirectData(
   let rawMeals: MealRowFetched[] = [];
   let rawMeasurements: MeasRowFetched[] = [];
 
-  const needsMeals: Intent[] = ['data_lookup', 'health_insight', 'meal_suggestion', 'plan_creation'];
+  const needsMeals: Intent[] = [
+    'data_lookup',
+    'health_insight',
+    'meal_suggestion',
+    'plan_creation',
+  ];
   const needsMeasurements: Intent[] = ['data_lookup', 'health_insight', 'plan_creation'];
 
   if (needsMeals.includes(intent)) {
@@ -364,7 +369,9 @@ async function fetchDirectData(
 
     const { data: recentMeals } = await supabase
       .from('meals')
-      .select('id, meal_type, logged_at, image_key, total_calories, total_protein_g, total_carbs_g, total_fat_g, total_fiber_g, source, meal_ingredients(name, portion_g, calories, protein_g, carbs_g, fat_g)')
+      .select(
+        'id, meal_type, logged_at, image_key, total_calories, total_protein_g, total_carbs_g, total_fat_g, total_fiber_g, source, meal_ingredients(name, portion_g, calories, protein_g, carbs_g, fat_g)',
+      )
       .eq('user_id', userId)
       .gte('logged_at', `${sevenDaysAgo}T00:00:00Z`)
       .order('logged_at', { ascending: false })
@@ -378,7 +385,10 @@ async function fetchDirectData(
       if (todayMeals.length > 0) {
         const lines = todayMeals.map((m) => {
           const ingr = m.meal_ingredients
-            .map((i) => `  - ${i.name}: ${i.portion_g}g (${i.calories} kcal, P${i.protein_g}g C${i.carbs_g}g F${i.fat_g}g)`)
+            .map(
+              (i) =>
+                `  - ${i.name}: ${i.portion_g}g (${i.calories} kcal, P${i.protein_g}g C${i.carbs_g}g F${i.fat_g}g)`,
+            )
             .join('\n');
           return `${m.meal_type} (${m.logged_at}): ${m.total_calories} kcal, P${m.total_protein_g}g C${m.total_carbs_g}g F${m.total_fat_g}g${m.total_fiber_g ? ` Fiber${m.total_fiber_g}g` : ''}${ingr ? '\n' + ingr : ''}`;
         });
@@ -402,7 +412,10 @@ async function fetchDirectData(
       const olderMeals = meals.filter((m) => !m.logged_at.startsWith(today));
       if (olderMeals.length > 0) {
         const summary = olderMeals
-          .map((m) => `${m.logged_at.slice(0, 10)} ${m.meal_type}: ${m.total_calories} kcal (P${m.total_protein_g}g C${m.total_carbs_g}g F${m.total_fat_g}g)`)
+          .map(
+            (m) =>
+              `${m.logged_at.slice(0, 10)} ${m.meal_type}: ${m.total_calories} kcal (P${m.total_protein_g}g C${m.total_carbs_g}g F${m.total_fat_g}g)`,
+          )
           .join('\n');
         sections.push({
           label: 'Recent meals (last 7 days)',
@@ -489,7 +502,10 @@ function buildAttachmentBlocks(
   }
 
   if (chartIntents.includes(intent) && directData.rawMeals.length > 1) {
-    const dayMap = new Map<string, { calories: number; protein_g: number; carbs_g: number; fat_g: number }>();
+    const dayMap = new Map<
+      string,
+      { calories: number; protein_g: number; carbs_g: number; fat_g: number }
+    >();
     for (const m of directData.rawMeals) {
       const date = m.logged_at.slice(0, 10);
       const existing = dayMap.get(date) ?? { calories: 0, protein_g: 0, carbs_g: 0, fat_g: 0 };

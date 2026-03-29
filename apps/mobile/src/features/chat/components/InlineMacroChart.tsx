@@ -46,7 +46,14 @@ export const InlineMacroChart = ({ data }: InlineMacroChartProps) => {
 
   return (
     <View style={{ marginTop: spacing.sm }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 4,
+        }}
+      >
         <Text style={{ ...typography.labelMd, color: colors.onSurface, fontWeight: '600' }}>
           {t('macro_trend')}
         </Text>
@@ -70,9 +77,29 @@ export const InlineMacroChart = ({ data }: InlineMacroChartProps) => {
 
             return (
               <React.Fragment key={i}>
-                <Rect x={x} y={baseY - fH} width={barW} height={fH} fill={colors.macro.fat} rx={2} />
-                <Rect x={x} y={baseY - fH - cH} width={barW} height={cH} fill={colors.macro.carbs} />
-                <Rect x={x} y={baseY - fH - cH - pH} width={barW} height={pH} fill={colors.macro.protein} rx={2} />
+                <Rect
+                  x={x}
+                  y={baseY - fH}
+                  width={barW}
+                  height={fH}
+                  fill={colors.macro.fat}
+                  rx={2}
+                />
+                <Rect
+                  x={x}
+                  y={baseY - fH - cH}
+                  width={barW}
+                  height={cH}
+                  fill={colors.macro.carbs}
+                />
+                <Rect
+                  x={x}
+                  y={baseY - fH - cH - pH}
+                  width={barW}
+                  height={pH}
+                  fill={colors.macro.protein}
+                  rx={2}
+                />
               </React.Fragment>
             );
           })}

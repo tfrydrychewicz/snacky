@@ -63,18 +63,16 @@ export const MealCard = ({
         {photoLoading ? (
           <ActivityIndicator size="small" color={colors.outline} />
         ) : photoUrl ? (
-          <Image
-            source={{ uri: photoUrl }}
-            style={{ width: 72, height: 72 }}
-            resizeMode="cover"
-          />
+          <Image source={{ uri: photoUrl }} style={{ width: 72, height: 72 }} resizeMode="cover" />
         ) : (
           <UtensilsCrossed size={28} color={colors.outline} strokeWidth={1.5} />
         )}
       </View>
 
       <View style={{ flex: 1, padding: spacing.md, justifyContent: 'center', gap: 4 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <View
+          style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+        >
           <Text style={{ ...typography.labelLg, color: colors.onSurface }}>
             {t(`meal_type_${mealType}`, { defaultValue: mealType })}
           </Text>
@@ -86,8 +84,16 @@ export const MealCard = ({
         </Text>
 
         <View style={{ flexDirection: 'row', gap: spacing.xs, flexWrap: 'wrap' }}>
-          <NutrientBadge label="P" value={`${Math.round(totalProteinG)}g`} color={colors.macro.protein} />
-          <NutrientBadge label="C" value={`${Math.round(totalCarbsG)}g`} color={colors.macro.carbs} />
+          <NutrientBadge
+            label="P"
+            value={`${Math.round(totalProteinG)}g`}
+            color={colors.macro.protein}
+          />
+          <NutrientBadge
+            label="C"
+            value={`${Math.round(totalCarbsG)}g`}
+            color={colors.macro.carbs}
+          />
           <NutrientBadge label="F" value={`${Math.round(totalFatG)}g`} color={colors.macro.fat} />
         </View>
       </View>

@@ -22,7 +22,7 @@ export async function tryRefreshSession(): Promise<boolean> {
  * Supabase gateway or Edge Function runtime.
  */
 export function isJwtError(error: unknown): boolean {
-  const msg = typeof error === 'string' ? error : (error as Error)?.message ?? '';
+  const msg = typeof error === 'string' ? error : ((error as Error)?.message ?? '');
   return (
     msg.includes('Invalid JWT') ||
     msg.includes('JWT expired') ||

@@ -21,7 +21,15 @@ import { useMealPhoto } from '../hooks/useMealPhoto';
 type DetailRoute = RouteProp<RootStackParamList, 'MealPhotoDetail'>;
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
-const PhotoView = ({ imageKey, width, height }: { imageKey: string; width: number; height: number }) => {
+const PhotoView = ({
+  imageKey,
+  width,
+  height,
+}: {
+  imageKey: string;
+  width: number;
+  height: number;
+}) => {
   const { data: imageUrl, isLoading } = useMealPhoto(imageKey);
 
   if (isLoading) {
@@ -36,11 +44,7 @@ const PhotoView = ({ imageKey, width, height }: { imageKey: string; width: numbe
 
   return (
     <Animated.View entering={FadeIn.duration(300)}>
-      <Image
-        source={{ uri: imageUrl }}
-        style={{ width, height }}
-        resizeMode="contain"
-      />
+      <Image source={{ uri: imageUrl }} style={{ width, height }} resizeMode="contain" />
     </Animated.View>
   );
 };
@@ -80,10 +84,7 @@ export const MealPhotoDetailScreen = () => {
 
           <View style={styles.paginationDots}>
             {imageKeys.map((_, i) => (
-              <View
-                key={`dot-${i}`}
-                style={[styles.dot, i === activeIndex && styles.dotActive]}
-              />
+              <View key={`dot-${i}`} style={[styles.dot, i === activeIndex && styles.dotActive]} />
             ))}
           </View>
 
@@ -94,7 +95,7 @@ export const MealPhotoDetailScreen = () => {
           </View>
         </View>
       ) : (
-        <PhotoView imageKey={imageKeys[0]} width={width} height={photoHeight} />
+        <PhotoView imageKey={imageKeys[0] ?? ''} width={width} height={photoHeight} />
       )}
 
       {/* Back button */}
