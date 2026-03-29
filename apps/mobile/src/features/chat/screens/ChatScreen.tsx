@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import { MessageCircle } from 'lucide-react-native';
 import { MMKV } from 'react-native-mmkv';
+import type { ChatAttachments } from '@snacky/shared-types';
 import { AppHeader } from '~/shared/components/AppHeader';
 import { EmptyState } from '~/shared/components/EmptyState';
 import { ChatBubble } from '../components/ChatBubble';
@@ -44,6 +45,7 @@ interface DisplayMessage {
   id: string;
   role: 'user' | 'assistant' | 'error';
   content: string;
+  attachments?: ChatAttachments | null;
 }
 
 export const ChatScreen = () => {
@@ -76,6 +78,7 @@ export const ChatScreen = () => {
       id: m.id,
       role: m.role,
       content: m.content,
+      attachments: (m.attachments as ChatAttachments | null) ?? null,
     }));
 
     const historyContents = new Set(historyMessages.map((m) => `${m.role}:${m.content}`));
@@ -121,6 +124,7 @@ export const ChatScreen = () => {
           id: `opt_asst_${Date.now()}`,
           role: 'assistant',
           content: result.content,
+          attachments: result.attachments,
         };
         setOptimisticMessages((prev) => [...prev, assistantMsg]);
         setIsWaiting(false);
@@ -174,7 +178,7 @@ export const ChatScreen = () => {
 
       return (
         <View style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.xs }}>
-          <ChatBubble role={item.role} content={item.content} />
+          <ChatBubble role={item.role} content={item.content} attachments={item.attachments} />
         </View>
       );
     },

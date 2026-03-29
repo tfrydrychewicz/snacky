@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { getSupabase } from '~/shared/api/client';
 import Config from 'react-native-config';
+import type { ChatAttachments } from '@snacky/shared-types';
 
 export interface StreamingState {
   isStreaming: boolean;
@@ -10,13 +11,14 @@ export interface StreamingState {
   error: string | null;
 }
 
-interface ChatResponse {
+export interface ChatResponse {
   session_id: string;
   intent: string;
   model: string;
   content: string;
   tokens_used: number;
   context_ids: string[];
+  attachments: ChatAttachments | null;
 }
 
 interface UseChatStreamReturn {

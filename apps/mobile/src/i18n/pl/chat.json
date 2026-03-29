@@ -7,5 +7,13 @@
   "recipe_suggestion": "Propozycja przepisu",
   "error_generic": "Coś poszło nie tak. Spróbuj ponownie.",
   "error_not_authenticated": "Zaloguj się, aby korzystać z czatu.",
-  "cancel_streaming": "Zatrzymaj"
+  "cancel_streaming": "Zatrzymaj",
+  "meal_type_breakfast": "Śniadanie",
+  "meal_type_lunch": "Obiad",
+  "meal_type_dinner": "Kolacja",
+  "meal_type_snack": "Przekąska",
+  "kcal": "kcal",
+  "calorie_trend": "Trend kaloryczny",
+  "macro_trend": "Trend makroskładników",
+  "avg": "śr."
 }

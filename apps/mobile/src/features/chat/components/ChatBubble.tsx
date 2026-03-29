@@ -3,11 +3,14 @@ import { View, Text } from 'react-native';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
 import { Bot } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+import type { ChatAttachments } from '@snacky/shared-types';
+import { ChatBlockRenderer } from './ChatBlockRenderer';
 import { colors, spacing, typography, radii, elevation } from '~/shared/theme/tokens';
 
 interface ChatBubbleProps {
   role: 'user' | 'assistant';
   content: string;
+  attachments?: ChatAttachments | null;
   isLatest?: boolean;
 }
 
@@ -32,8 +35,15 @@ const UserBubble = ({ content }: { content: string }) => (
   </Animated.View>
 );
 
-const AssistantBubble = ({ content }: { content: string }) => {
+const AssistantBubble = ({
+  content,
+  attachments,
+}: {
+  content: string;
+  attachments?: ChatAttachments | null;
+}) => {
   const { t } = useTranslation('chat');
+  const blocks = attachments?.blocks ?? [];
 
   return (
     <Animated.View entering={FadeInDown.delay(100).duration(300).springify()} style={{ gap: 8 }}>
@@ -79,14 +89,15 @@ const AssistantBubble = ({ content }: { content: string }) => {
         >
           {content}
         </Text>
+        {blocks.length > 0 && <ChatBlockRenderer blocks={blocks} />}
       </View>
     </Animated.View>
   );
 };
 
-export const ChatBubble = ({ role, content }: ChatBubbleProps) => {
+export const ChatBubble = ({ role, content, attachments }: ChatBubbleProps) => {
   if (role === 'user') {
     return <UserBubble content={content} />;
   }
-  return <AssistantBubble content={content} />;
+  return <AssistantBubble content={content} attachments={attachments} />;
 };

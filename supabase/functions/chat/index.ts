@@ -200,6 +200,7 @@ async function retrieveContext(
 interface UserProfileResult {
   serialized: string;
   locale: string;
+  raw: Record<string, unknown>;
 }
 
 async function getUserProfile(
@@ -208,7 +209,7 @@ async function getUserProfile(
 ): Promise<UserProfileResult> {
   const { data } = await supabase.from('user_profiles').select('*').eq('user_id', userId).single();
 
-  if (!data) return { serialized: 'No profile data available.', locale: 'en' };
+  if (!data) return { serialized: 'No profile data available.', locale: 'en', raw: {} };
 
   const p = data as Record<string, unknown>;
   const parts = [
@@ -235,6 +236,7 @@ async function getUserProfile(
   return {
     serialized: parts.filter(Boolean).join('\n'),
     locale: (p.locale as string) ?? 'en',
+    raw: p,
   };
 }
 
@@ -300,10 +302,253 @@ async function getOrCreateSession(
 }
 
 // ---------------------------------------------------------------------------
+// Direct data lookups — supplement RAG with fresh SQL queries
+// ---------------------------------------------------------------------------
+
+interface DirectDataSection {
+  label: string;
+  text: string;
+}
+
+interface MealRowFetched {
+  id: string;
+  meal_type: string;
+  logged_at: string;
+  image_key: string | null;
+  total_calories: number;
+  total_protein_g: number;
+  total_carbs_g: number;
+  total_fat_g: number;
+  total_fiber_g: number | null;
+  source: string;
+  meal_ingredients: Array<{
+    name: string;
+    portion_g: number;
+    calories: number;
+    protein_g: number;
+    carbs_g: number;
+    fat_g: number;
+  }>;
+}
+
+interface MeasRowFetched {
+  measured_at: string;
+  weight_kg: number | null;
+  waist_cm: number | null;
+  chest_cm: number | null;
+  hips_cm: number | null;
+  body_fat_pct: number | null;
+}
+
+interface DirectDataResult {
+  sections: DirectDataSection[];
+  rawMeals: MealRowFetched[];
+  rawMeasurements: MeasRowFetched[];
+}
+
+async function fetchDirectData(
+  supabase: ReturnType<typeof createServiceClient>,
+  userId: string,
+  intent: Intent,
+): Promise<DirectDataResult> {
+  const sections: DirectDataSection[] = [];
+  let rawMeals: MealRowFetched[] = [];
+  let rawMeasurements: MeasRowFetched[] = [];
+
+  const needsMeals: Intent[] = ['data_lookup', 'health_insight', 'meal_suggestion', 'plan_creation'];
+  const needsMeasurements: Intent[] = ['data_lookup', 'health_insight', 'plan_creation'];
+
+  if (needsMeals.includes(intent)) {
+    const today = new Date().toISOString().slice(0, 10);
+    const sevenDaysAgo = new Date(Date.now() - 7 * 86_400_000).toISOString().slice(0, 10);
+
+    const { data: recentMeals } = await supabase
+      .from('meals')
+      .select('id, meal_type, logged_at, image_key, total_calories, total_protein_g, total_carbs_g, total_fat_g, total_fiber_g, source, meal_ingredients(name, portion_g, calories, protein_g, carbs_g, fat_g)')
+      .eq('user_id', userId)
+      .gte('logged_at', `${sevenDaysAgo}T00:00:00Z`)
+      .order('logged_at', { ascending: false })
+      .limit(30);
+
+    if (recentMeals && recentMeals.length > 0) {
+      const meals = recentMeals as unknown as MealRowFetched[];
+      rawMeals = meals;
+      const todayMeals = meals.filter((m) => m.logged_at.startsWith(today));
+
+      if (todayMeals.length > 0) {
+        const lines = todayMeals.map((m) => {
+          const ingr = m.meal_ingredients
+            .map((i) => `  - ${i.name}: ${i.portion_g}g (${i.calories} kcal, P${i.protein_g}g C${i.carbs_g}g F${i.fat_g}g)`)
+            .join('\n');
+          return `${m.meal_type} (${m.logged_at}): ${m.total_calories} kcal, P${m.total_protein_g}g C${m.total_carbs_g}g F${m.total_fat_g}g${m.total_fiber_g ? ` Fiber${m.total_fiber_g}g` : ''}${ingr ? '\n' + ingr : ''}`;
+        });
+
+        const totals = todayMeals.reduce(
+          (acc, m) => ({
+            kcal: acc.kcal + (m.total_calories ?? 0),
+            p: acc.p + (m.total_protein_g ?? 0),
+            c: acc.c + (m.total_carbs_g ?? 0),
+            f: acc.f + (m.total_fat_g ?? 0),
+          }),
+          { kcal: 0, p: 0, c: 0, f: 0 },
+        );
+
+        sections.push({
+          label: "Today's meals",
+          text: `${lines.join('\n')}\n\nDay totals: ${totals.kcal} kcal, protein ${totals.p}g, carbs ${totals.c}g, fat ${totals.f}g`,
+        });
+      }
+
+      const olderMeals = meals.filter((m) => !m.logged_at.startsWith(today));
+      if (olderMeals.length > 0) {
+        const summary = olderMeals
+          .map((m) => `${m.logged_at.slice(0, 10)} ${m.meal_type}: ${m.total_calories} kcal (P${m.total_protein_g}g C${m.total_carbs_g}g F${m.total_fat_g}g)`)
+          .join('\n');
+        sections.push({
+          label: 'Recent meals (last 7 days)',
+          text: summary,
+        });
+      }
+    }
+  }
+
+  if (needsMeasurements.includes(intent)) {
+    const { data: recentMeasurements } = await supabase
+      .from('measurements')
+      .select('measured_at, weight_kg, waist_cm, chest_cm, hips_cm, body_fat_pct')
+      .eq('user_id', userId)
+      .order('measured_at', { ascending: false })
+      .limit(10);
+
+    if (recentMeasurements && recentMeasurements.length > 0) {
+      const meas = recentMeasurements as unknown as MeasRowFetched[];
+      rawMeasurements = meas;
+      const lines = meas.map((m) => {
+        const parts = [
+          m.weight_kg ? `${m.weight_kg} kg` : null,
+          m.waist_cm ? `waist ${m.waist_cm}cm` : null,
+          m.body_fat_pct ? `BF ${m.body_fat_pct}%` : null,
+        ].filter(Boolean);
+        return `${m.measured_at}: ${parts.join(', ')}`;
+      });
+      sections.push({
+        label: 'Recent body measurements',
+        text: lines.join('\n'),
+      });
+    }
+  }
+
+  return { sections, rawMeals, rawMeasurements };
+}
+
+// ---------------------------------------------------------------------------
+// Build attachment blocks from raw data
+// ---------------------------------------------------------------------------
+
+interface AttachmentBlock {
+  type: string;
+  [key: string]: unknown;
+}
+
+function buildAttachmentBlocks(
+  intent: Intent,
+  directData: DirectDataResult,
+  profile: Record<string, unknown>,
+): AttachmentBlock[] {
+  const blocks: AttachmentBlock[] = [];
+
+  const mealsIntents: Intent[] = ['data_lookup', 'health_insight', 'meal_suggestion'];
+  const chartIntents: Intent[] = ['data_lookup', 'health_insight'];
+
+  if (mealsIntents.includes(intent) && directData.rawMeals.length > 0) {
+    const today = new Date().toISOString().slice(0, 10);
+    const todayMeals = directData.rawMeals.filter((m) => m.logged_at.startsWith(today));
+    const mealsForBlock = todayMeals.length > 0 ? todayMeals : directData.rawMeals.slice(0, 5);
+
+    blocks.push({
+      type: 'meal_summary',
+      meals: mealsForBlock.map((m) => ({
+        meal_id: m.id,
+        meal_type: m.meal_type,
+        logged_at: m.logged_at,
+        image_key: m.image_key,
+        total_calories: m.total_calories,
+        total_protein_g: m.total_protein_g,
+        total_carbs_g: m.total_carbs_g,
+        total_fat_g: m.total_fat_g,
+        ingredients: m.meal_ingredients.map((i) => ({
+          name: i.name,
+          portion_g: i.portion_g,
+          calories: i.calories,
+          protein_g: i.protein_g,
+          carbs_g: i.carbs_g,
+          fat_g: i.fat_g,
+        })),
+      })),
+    });
+  }
+
+  if (chartIntents.includes(intent) && directData.rawMeals.length > 1) {
+    const dayMap = new Map<string, { calories: number; protein_g: number; carbs_g: number; fat_g: number }>();
+    for (const m of directData.rawMeals) {
+      const date = m.logged_at.slice(0, 10);
+      const existing = dayMap.get(date) ?? { calories: 0, protein_g: 0, carbs_g: 0, fat_g: 0 };
+      existing.calories += m.total_calories ?? 0;
+      existing.protein_g += m.total_protein_g ?? 0;
+      existing.carbs_g += m.total_carbs_g ?? 0;
+      existing.fat_g += m.total_fat_g ?? 0;
+      dayMap.set(date, existing);
+    }
+
+    if (dayMap.size > 1) {
+      const chartData = [...dayMap.entries()]
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([date, agg]) => ({ date, ...agg }));
+
+      blocks.push({
+        type: 'calorie_chart',
+        data: chartData,
+        target_kcal: (profile.target_kcal as number) ?? null,
+      });
+
+      blocks.push({
+        type: 'nutrient_chart',
+        data: chartData,
+        target_protein_g: (profile.target_protein_g as number) ?? null,
+        target_carbs_g: (profile.target_carbs_g as number) ?? null,
+        target_fat_g: (profile.target_fat_g as number) ?? null,
+      });
+    }
+  }
+
+  if (chartIntents.includes(intent) && directData.rawMeasurements.length > 1) {
+    const weightData = directData.rawMeasurements
+      .filter((m) => m.weight_kg != null)
+      .map((m) => ({ date: m.measured_at, weight_kg: m.weight_kg! }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    if (weightData.length > 1) {
+      blocks.push({
+        type: 'weight_chart',
+        data: weightData,
+        goal_kg: (profile.goal_weight_kg as number) ?? null,
+      });
+    }
+  }
+
+  return blocks;
+}
+
+// ---------------------------------------------------------------------------
 // Prompt assembly
 // ---------------------------------------------------------------------------
 
-function assembleSystemPrompt(profile: string, context: RetrievedChunk[], locale: string): string {
+function assembleSystemPrompt(
+  profile: string,
+  context: RetrievedChunk[],
+  directSections: DirectDataSection[],
+  locale: string,
+): string {
   const contextBlock =
     context.length > 0
       ? context
@@ -314,10 +559,16 @@ function assembleSystemPrompt(profile: string, context: RetrievedChunk[], locale
           .join('\n\n')
       : 'No relevant context found.';
 
+  const directBlock =
+    directSections.length > 0
+      ? directSections.map((d) => `### ${d.label}\n${d.text}`).join('\n\n')
+      : '';
+
   return `You are Snacky, a warm, knowledgeable, and empathetic AI nutrition assistant.
 
 RULES:
 - Always ground responses in the user's actual data when available (provided below)
+- LIVE DATA section contains the most up-to-date information from the database — prefer it over RETRIEVED CONTEXT when answering about recent meals or measurements
 - Never diagnose medical conditions or prescribe medication
 - Cite specific meals/dates when referencing user history
 - If asked about topics outside nutrition/health, politely redirect
@@ -328,6 +579,7 @@ RULES:
 
 USER PROFILE:
 ${profile}
+${directBlock ? `\nLIVE DATA (from database):\n${directBlock}` : ''}
 
 RETRIEVED CONTEXT:
 ${contextBlock}`;
@@ -386,16 +638,25 @@ Deno.serve(async (req) => {
     const context = await retrieveContext(serviceSupabase, queryEmbedding, user.id, config);
     log.info('Context retrieved', { chunks: context.length });
 
-    // 4. User profile + chat history
-    const [profileResult, history] = await Promise.all([
+    // 4. User profile, chat history, and direct data (in parallel)
+    const [profileResult, history, directData] = await Promise.all([
       getUserProfile(serviceSupabase, user.id),
       getChatHistory(serviceSupabase, resolvedSessionId),
+      fetchDirectData(serviceSupabase, user.id, intent),
     ]);
+
+    log.info('Direct data fetched', { sections: directData.sections.length });
+
+    // 4b. Build attachment blocks from raw data
+    const attachmentBlocks = buildAttachmentBlocks(intent, directData, profileResult.raw);
+    const attachments = attachmentBlocks.length > 0 ? { blocks: attachmentBlocks } : null;
+    log.info('Attachment blocks built', { count: attachmentBlocks.length });
 
     // 5. Assemble messages
     const systemPrompt = assembleSystemPrompt(
       profileResult.serialized,
       context,
+      directData.sections,
       profileResult.locale,
     );
     const messages = [
@@ -440,6 +701,7 @@ Deno.serve(async (req) => {
         model_used: config.model,
         tokens_used: tokensUsed || null,
         retrieved_context_ids: contextIds.length > 0 ? contextIds : null,
+        attachments,
       });
       await serviceSupabase
         .from('chat_sessions')
@@ -485,6 +747,7 @@ Deno.serve(async (req) => {
           content,
           tokens_used: tokensUsed,
           context_ids: contextIds,
+          attachments,
         }),
         {
           status: 200,
@@ -573,6 +836,7 @@ Deno.serve(async (req) => {
                 model: config.model,
                 tokens_used: totalTokens,
                 context_ids: contextIds,
+                attachments,
               }),
             ),
           );
