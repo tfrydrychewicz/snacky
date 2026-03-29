@@ -457,7 +457,7 @@ function buildAttachmentBlocks(
 ): AttachmentBlock[] {
   const blocks: AttachmentBlock[] = [];
 
-  const mealsIntents: Intent[] = ['data_lookup', 'health_insight', 'meal_suggestion'];
+  const mealsIntents: Intent[] = ['data_lookup', 'health_insight'];
   const chartIntents: Intent[] = ['data_lookup', 'health_insight'];
 
   if (mealsIntents.includes(intent) && directData.rawMeals.length > 0) {
@@ -564,7 +564,7 @@ function assembleSystemPrompt(
       ? directSections.map((d) => `### ${d.label}\n${d.text}`).join('\n\n')
       : '';
 
-  return `You are Snacky, a warm, knowledgeable, and empathetic AI nutrition assistant.
+  return `You are Snacky, a warm, knowledgeable, and empathetic AI nutrition assistant inside a mobile app.
 
 RULES:
 - Always ground responses in the user's actual data when available (provided below)
@@ -574,8 +574,15 @@ RULES:
 - If asked about topics outside nutrition/health, politely redirect
 - Express uncertainty when data is insufficient
 - Respond in the user's preferred language: ${locale}
-- Keep responses concise but thorough
 - Use metric units (g, kg, kcal) by default
+
+FORMATTING (mobile screen):
+- Responses are displayed on a small phone screen (~375pt wide). Keep them concise.
+- Use markdown: **bold** for emphasis, bullet lists for structure, headings (##, ###) for sections.
+- NEVER use wide markdown tables — they overflow on mobile. Use bullet lists or compact key: value pairs instead.
+- Keep lines short. Prefer line breaks and lists over dense paragraphs.
+- Use numbered lists for steps/recipes.
+- When listing nutritional info, use a compact format like: **B 17g** · **W 62g** · **T 7g** · **~400 kcal**
 
 USER PROFILE:
 ${profile}

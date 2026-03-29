@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { View, Text } from 'react-native';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
+import { useMarkdown, type useMarkdownHookOptions } from 'react-native-marked';
 import { Bot } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import type { ChatAttachments } from '@snacky/shared-types';
@@ -13,6 +14,56 @@ interface ChatBubbleProps {
   attachments?: ChatAttachments | null;
   isLatest?: boolean;
 }
+
+const markdownOptions: useMarkdownHookOptions = {
+  colorScheme: 'light',
+  theme: {
+    colors: {
+      text: colors.onSurfaceVariant,
+      link: colors.primary,
+      border: colors.outlineVariant,
+      code: colors.onSurface,
+      background: colors.surfaceContainerLowest,
+    },
+  },
+  styles: {
+    h1: { ...typography.titleLg, color: colors.onSurface, marginBottom: 6 },
+    h2: { ...typography.titleMd, color: colors.onSurface, marginBottom: 4 },
+    h3: { ...typography.labelLg, color: colors.onSurface, marginBottom: 4 },
+    text: { ...typography.bodyLg, color: colors.onSurfaceVariant, lineHeight: 24 },
+    em: { fontStyle: 'italic' },
+    strong: { fontWeight: '700', color: colors.onSurface },
+    li: { ...typography.bodyLg, color: colors.onSurfaceVariant, lineHeight: 24 },
+    blockquote: {
+      borderLeftWidth: 3,
+      borderLeftColor: colors.primaryContainer,
+      paddingLeft: 12,
+      backgroundColor: `${colors.primary}08`,
+    },
+    code: {
+      backgroundColor: colors.surfaceContainerHigh,
+      borderRadius: 8,
+      padding: 12,
+    },
+    codespan: {
+      backgroundColor: colors.surfaceContainerHigh,
+      borderRadius: 4,
+      paddingHorizontal: 4,
+      fontFamily: 'monospace',
+      fontSize: 13,
+      color: colors.onSurface,
+    },
+    table: {
+      borderWidth: 1,
+      borderColor: colors.outlineVariant,
+      borderRadius: 8,
+    },
+    thead: { backgroundColor: colors.surfaceContainerLow },
+    th: { ...typography.labelMd, color: colors.onSurface, padding: 8 },
+    td: { ...typography.bodySm, color: colors.onSurfaceVariant, padding: 8 },
+    hr: { backgroundColor: colors.outlineVariant, height: 1, marginVertical: 12 },
+  },
+};
 
 const UserBubble = ({ content }: { content: string }) => (
   <Animated.View
@@ -44,6 +95,7 @@ const AssistantBubble = ({
 }) => {
   const { t } = useTranslation('chat');
   const blocks = attachments?.blocks ?? [];
+  const markdownElements = useMarkdown(content, markdownOptions);
 
   return (
     <Animated.View entering={FadeInDown.delay(100).duration(300).springify()} style={{ gap: 8 }}>
@@ -83,12 +135,9 @@ const AssistantBubble = ({
           ...elevation.ambient,
         }}
       >
-        <Text
-          style={{ ...typography.bodyLg, color: colors.onSurfaceVariant, lineHeight: 24 }}
-          selectable
-        >
-          {content}
-        </Text>
+        {markdownElements.map((el, i) => (
+          <Fragment key={`md_${i}`}>{el}</Fragment>
+        ))}
         {blocks.length > 0 && <ChatBlockRenderer blocks={blocks} />}
       </View>
     </Animated.View>

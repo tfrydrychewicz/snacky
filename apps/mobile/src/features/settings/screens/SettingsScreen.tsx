@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, Switch, Text, View } from 'react-native';
+import { Alert, Image, Pressable, ScrollView, Switch, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -218,6 +218,7 @@ export const SettingsScreen = () => {
 
   const fullName = String(user?.user_metadata?.full_name ?? '');
   const email = String(user?.email ?? '');
+  const avatarUrl = user?.user_metadata?.avatar_url as string | undefined;
 
   const [prefs, setPrefs] = useState<NotificationPrefs>(DEFAULT_PREFS);
   const [saving, setSaving] = useState(false);
@@ -346,18 +347,29 @@ export const SettingsScreen = () => {
               gap: spacing.md,
             }}
           >
-            <View
-              style={{
-                width: 48,
-                height: 48,
-                borderRadius: 24,
-                backgroundColor: `${colors.primary}15`,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <User size={24} color={colors.primary} strokeWidth={2} />
-            </View>
+            {avatarUrl ? (
+              <Image
+                source={{ uri: avatarUrl }}
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 24,
+                }}
+              />
+            ) : (
+              <View
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 24,
+                  backgroundColor: `${colors.primary}15`,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <User size={24} color={colors.primary} strokeWidth={2} />
+              </View>
+            )}
             <View style={{ flex: 1 }}>
               {fullName ? (
                 <Text style={{ ...typography.titleMd, color: colors.onSurface }}>{fullName}</Text>
