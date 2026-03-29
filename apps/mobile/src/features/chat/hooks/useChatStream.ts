@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { getSupabase } from '~/shared/api/client';
+import { ensureValidSession } from '~/shared/api/sessionRecovery';
 import Config from 'react-native-config';
 import type { ChatAttachments } from '@snacky/shared-types';
 
@@ -59,12 +60,9 @@ export function useChatStream(): UseChatStreamReturn {
       });
 
       try {
-        const supabase = getSupabase();
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
+        const accessToken = await ensureValidSession();
 
-        if (!session?.access_token) {
+        if (!accessToken) {
           setState((prev) => ({ ...prev, isStreaming: false, error: 'Not authenticated' }));
           return null;
         }
@@ -76,7 +74,7 @@ export function useChatStream(): UseChatStreamReturn {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${session.access_token}`,
+            Authorization: `Bearer ${accessToken}`,
             apikey: Config.SUPABASE_ANON_KEY ?? '',
           },
           body: JSON.stringify({

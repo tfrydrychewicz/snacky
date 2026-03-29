@@ -3,7 +3,11 @@ import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { MealScanResultSchema, type MealScanResult, type MealType } from '@snacky/shared-types';
 import { getSupabase } from '~/shared/api/client';
-import { tryRefreshSession, isJwtError } from '~/shared/api/sessionRecovery';
+import {
+  tryRefreshSession,
+  isJwtError,
+  ensureValidSession,
+} from '~/shared/api/sessionRecovery';
 
 const MAX_CLARIFICATION_ROUNDS = 3;
 
@@ -36,6 +40,11 @@ const analyzeMeal = async (request: ScanRequest): Promise<MealScanResult> => {
   console.log('[MealScan] Invoking meal-scan edge function…', {
     imageCount: request.images.length,
   });
+
+  const token = await ensureValidSession();
+  if (!token) {
+    throw new Error('SESSION_EXPIRED');
+  }
 
   let response = await invokeEdgeFunction(request);
 

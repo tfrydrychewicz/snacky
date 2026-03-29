@@ -288,7 +288,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = dev.snacky;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tfrydrychewicz.snacky;
 				PRODUCT_NAME = Snacky;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -318,7 +318,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = dev.snacky;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tfrydrychewicz.snacky;
 				PRODUCT_NAME = Snacky;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 5.0;

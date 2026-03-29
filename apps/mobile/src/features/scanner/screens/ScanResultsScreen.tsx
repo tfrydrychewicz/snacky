@@ -21,7 +21,11 @@ import { MealScanResultSchema } from '@snacky/shared-types';
 import { AppHeader } from '~/shared/components/AppHeader';
 import { colors, spacing, typography, radii, elevation } from '~/shared/theme/tokens';
 import { getSupabase } from '~/shared/api/client';
-import { tryRefreshSession, isJwtError } from '~/shared/api/sessionRecovery';
+import {
+  tryRefreshSession,
+  isJwtError,
+  ensureValidSession,
+} from '~/shared/api/sessionRecovery';
 import { useAuth } from '~/app/providers/AuthProvider';
 import type { ScannerStackParamList } from '~/app/navigation/types';
 import { ScanResultCard } from '../components/ScanResultCard';
@@ -129,6 +133,12 @@ export const ScanResultsScreen = () => {
       for (const uri of photoUris) {
         const b64 = await RNFS.readFile(uri, 'base64');
         base64s.push(b64);
+      }
+
+      const token = await ensureValidSession();
+      if (!token) {
+        await getSupabase().auth.signOut();
+        return;
       }
 
       const supabase = getSupabase();
