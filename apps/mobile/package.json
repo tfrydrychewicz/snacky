@@ -8,7 +8,7 @@
     "ios:simulator": "react-native run-ios --simulator 'iPhone 17 Pro'",
     "ios:simulator:staging": "ENVFILE=.env.staging react-native run-ios --simulator 'iPhone 17 Pro'",
     "ios:device": "ENVFILE=.env.staging react-native run-ios --device",
-    "ios:staging": "ENVFILE=.env.staging react-native run-ios --mode Release --device",
+    "ios:staging": "ENVFILE=.env.staging react-native run-ios --mode Release --device --no-packager",
     "start": "react-native start",
     "start:wireless": "ENVFILE=.env.wireless react-native start --host 0.0.0.0",
     "lint": "eslint src/",
