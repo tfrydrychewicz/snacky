@@ -30,6 +30,7 @@
     "ios:simulator:staging": "pnpm --filter @snacky/mobile ios:simulator:staging",
     "ios:device": "pnpm --filter @snacky/mobile ios:device",
     "ios:staging": "pnpm --filter @snacky/mobile ios:staging",
+    "build:ios:staging": "pnpm --filter @snacky/mobile build:ios:staging",
     "android": "pnpm --filter @snacky/mobile android",
     "start": "pnpm --filter @snacky/mobile start",
     "start:wireless": "bash scripts/start-wireless.sh",

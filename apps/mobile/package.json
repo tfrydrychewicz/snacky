@@ -9,6 +9,7 @@
     "ios:simulator:staging": "ENVFILE=.env.staging react-native run-ios --simulator 'iPhone 17 Pro'",
     "ios:device": "ENVFILE=.env.staging react-native run-ios --device",
     "ios:staging": "ENVFILE=.env.staging react-native run-ios --mode Release --device --no-packager",
+    "build:ios:staging": "ENVFILE=.env.staging xcodebuild -workspace ios/Snacky.xcworkspace -scheme Snacky -configuration Release -sdk iphoneos -derivedDataPath ios/build -allowProvisioningUpdates build",
     "start": "react-native start",
     "start:wireless": "ENVFILE=.env.wireless react-native start --host 0.0.0.0",
     "lint": "eslint src/",
