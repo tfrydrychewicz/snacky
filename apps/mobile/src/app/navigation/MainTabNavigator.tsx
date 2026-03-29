@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable, Platform } from 'react-native';
+import { View, Text, Pressable, Platform, NativeModules } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -27,9 +27,14 @@ const SCREEN_MAP: Record<string, React.ComponentType> = {
   Trends: TrendsScreen,
 };
 
+const cameraAvailable = NativeModules.CameraView != null;
+
 const GlassTabBar = ({ state, navigation }: BottomTabBarProps) => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation('common');
+
+  const activeRoute = state.routes[state.index]?.name;
+  if (activeRoute === 'Scanner' && cameraAvailable) return null;
 
   return (
     <View

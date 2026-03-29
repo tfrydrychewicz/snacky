@@ -32,6 +32,7 @@ type Props = {
   onAnalyze: (base64s: string[], mealType: MealType) => void;
   onPhotosChanged: (photos: CapturedPhoto[]) => void;
   onGallery: () => void;
+  onBack: () => void;
   showLoader: boolean;
   error: string | null;
   capturedPhotos: CapturedPhoto[];
@@ -47,6 +48,7 @@ export const CameraViewInner = ({
   onAnalyze,
   onPhotosChanged,
   onGallery,
+  onBack,
   showLoader,
   error,
   capturedPhotos,
@@ -166,6 +168,7 @@ export const CameraViewInner = ({
         onToggleFlash={() => {}}
         onCapture={() => void handleCapture()}
         onGallery={onGallery}
+        onBack={onBack}
         isCapturing={isBusy}
         selectedMealType={mealType}
         onMealTypeChange={onMealTypeChange}

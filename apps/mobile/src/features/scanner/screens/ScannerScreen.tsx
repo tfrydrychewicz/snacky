@@ -1,7 +1,7 @@
 import React, { Suspense, useCallback, useEffect, useState } from 'react';
 import { View, Text, Pressable, StyleSheet, ActivityIndicator, NativeModules } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, type NavigationProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { MealType } from '@snacky/shared-types';
 import { Camera as CameraIcon, ImageIcon, ScanLine } from 'lucide-react-native';
@@ -14,6 +14,7 @@ import { colors, typography, spacing, radii } from '~/shared/theme/tokens';
 import { launchImageLibrary } from 'react-native-image-picker';
 
 type Nav = NativeStackNavigationProp<ScannerStackParamList, 'Capture'>;
+type TabNav = NavigationProp<{ Dashboard: undefined }>;
 
 const MAX_PHOTOS = 5;
 
@@ -26,6 +27,7 @@ const LazyCameraView = React.lazy(() =>
 export const ScannerScreen = () => {
   const { t } = useTranslation('scanner');
   const navigation = useNavigation<Nav>();
+  const tabNavigation = useNavigation<TabNav>();
   const [mealType, setMealType] = useState<MealType>('lunch');
   const [capturedPhotos, setCapturedPhotos] = useState<CapturedPhoto[]>([]);
 
@@ -99,6 +101,10 @@ export const ScannerScreen = () => {
     setCapturedPhotos((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
+  const handleBack = useCallback(() => {
+    tabNavigation.navigate('Dashboard');
+  }, [tabNavigation]);
+
   const showLoader = isCompressing || isAnalyzing;
   const hasPhotos = capturedPhotos.length > 0;
 
@@ -169,6 +175,7 @@ export const ScannerScreen = () => {
         onAnalyze={(base64s, mt) => analyze(base64s, mt)}
         onPhotosChanged={setCapturedPhotos}
         onGallery={() => void handleGallery()}
+        onBack={handleBack}
         showLoader={showLoader}
         error={error}
         capturedPhotos={capturedPhotos}

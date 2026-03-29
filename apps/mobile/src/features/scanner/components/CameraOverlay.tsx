@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Pressable, Text, StyleSheet } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Zap, ZapOff, ImageIcon } from 'lucide-react-native';
+import { ChevronLeft, Zap, ZapOff, ImageIcon } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, radii, typography } from '~/shared/theme/tokens';
 import type { MealType } from '@snacky/shared-types';
@@ -19,6 +19,7 @@ type Props = {
   onToggleFlash: () => void;
   onCapture: () => void;
   onGallery: () => void;
+  onBack: () => void;
   isCapturing: boolean;
   selectedMealType: MealType;
   onMealTypeChange: (type: MealType) => void;
@@ -31,6 +32,7 @@ export const CameraOverlay = ({
   onToggleFlash,
   onCapture,
   onGallery,
+  onBack,
   isCapturing,
   selectedMealType,
   onMealTypeChange,
@@ -53,8 +55,14 @@ export const CameraOverlay = ({
 
   return (
     <View style={[styles.overlay, { paddingTop: insets.top + spacing.sm }]}>
-      {/* Top bar: flash + meal type */}
+      {/* Top bar: back, title, flash */}
       <View style={styles.topBar}>
+        <Pressable onPress={onBack} style={styles.iconButton} hitSlop={12}>
+          <ChevronLeft size={24} color="#FFFFFF" strokeWidth={2.5} />
+        </Pressable>
+
+        <Text style={styles.title}>{t('camera_title')}</Text>
+
         <Pressable onPress={onToggleFlash} style={styles.iconButton} hitSlop={12}>
           {flashEnabled ? (
             <Zap
@@ -67,10 +75,6 @@ export const CameraOverlay = ({
             <ZapOff size={22} color="#FFFFFF" strokeWidth={2} />
           )}
         </Pressable>
-
-        <Text style={styles.title}>{t('camera_title')}</Text>
-
-        <View style={{ width: 44 }} />
       </View>
 
       {/* Meal type selector */}
