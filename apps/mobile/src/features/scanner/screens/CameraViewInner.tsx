@@ -19,7 +19,7 @@ import type { MealType } from '@snacky/shared-types';
 import { CameraIcon, ImageIcon, ScanLine } from 'lucide-react-native';
 import { CameraOverlay } from '../components/CameraOverlay';
 import { PhotoStrip } from '../components/PhotoStrip';
-import { useImageCompression, type CompressionResult } from '../hooks/useImageCompression';
+import { useImageCompression } from '../hooks/useImageCompression';
 import { colors, typography, spacing, radii } from '~/shared/theme/tokens';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);

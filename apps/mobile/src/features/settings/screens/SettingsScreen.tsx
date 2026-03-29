@@ -399,7 +399,7 @@ export const SettingsScreen = () => {
                 label={t('settings.notifications_enable')}
                 description={t('settings.notifications_enable_desc')}
                 value={prefs.enabled}
-                onChange={handleMasterToggle}
+                onChange={(v) => void handleMasterToggle(v)}
               />
               <Divider />
               <ToggleRow

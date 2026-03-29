@@ -9,10 +9,11 @@ import React, {
 } from 'react';
 import { Alert, Linking, NativeModules, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import type FirebaseMessaging from '@react-native-firebase/messaging';
 import { useAuth } from './AuthProvider';
 import { getSupabase } from '~/shared/api/client';
 
-type MessagingModule = typeof import('@react-native-firebase/messaging').default;
+type MessagingModule = typeof FirebaseMessaging;
 
 const FIREBASE_AVAILABLE = NativeModules.RNFBAppModule != null;
 
@@ -25,7 +26,7 @@ interface NotificationContextValue {
 const NotificationContext = createContext<NotificationContextValue>({
   fcmToken: null,
   permissionGranted: false,
-  requestPermission: async () => false,
+  requestPermission: () => Promise.resolve(false),
 });
 
 export const useNotifications = () => useContext(NotificationContext);
@@ -36,7 +37,7 @@ function tryLoadMessaging(): MessagingModule | null {
     return null;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-member-access
   return require('@react-native-firebase/messaging').default as MessagingModule;
 }
 
@@ -153,7 +154,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     if (!msg) return;
 
     try {
-      const unsubscribe = msg().onMessage(async (remoteMessage) => {
+      const unsubscribe = msg().onMessage((remoteMessage) => {
         const { notification } = remoteMessage;
         if (notification) {
           Alert.alert(notification.title ?? '', notification.body ?? '');
