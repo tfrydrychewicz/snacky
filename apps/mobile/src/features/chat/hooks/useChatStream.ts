@@ -68,14 +68,16 @@ export function useChatStream(): UseChatStreamReturn {
         }
 
         const baseUrl = Config.SUPABASE_URL ?? '';
+        const anonKey = Config.SUPABASE_ANON_KEY ?? '';
         const url = `${baseUrl}/functions/v1/chat`;
 
         const resp = await fetch(url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`,
-            apikey: Config.SUPABASE_ANON_KEY ?? '',
+            Authorization: `Bearer ${anonKey}`,
+            apikey: anonKey,
+            'x-user-token': accessToken,
           },
           body: JSON.stringify({
             message,

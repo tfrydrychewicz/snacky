@@ -34,6 +34,7 @@ const analyzeMeal = async (request: ScanRequest): Promise<MealScanResult> => {
   }
 
   const baseUrl = Config.SUPABASE_URL ?? '';
+  const anonKey = Config.SUPABASE_ANON_KEY ?? '';
   const url = `${baseUrl}/functions/v1/meal-scan`;
 
   console.log('[MealScan] Calling:', url, 'token prefix:', accessToken.slice(0, 20));
@@ -42,8 +43,9 @@ const analyzeMeal = async (request: ScanRequest): Promise<MealScanResult> => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
-      apikey: Config.SUPABASE_ANON_KEY ?? '',
+      Authorization: `Bearer ${anonKey}`,
+      apikey: anonKey,
+      'x-user-token': accessToken,
     },
     body: JSON.stringify({
       images: request.images,

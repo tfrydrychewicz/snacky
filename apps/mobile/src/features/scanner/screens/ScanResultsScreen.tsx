@@ -21,11 +21,8 @@ import { MealScanResultSchema } from '@snacky/shared-types';
 import { AppHeader } from '~/shared/components/AppHeader';
 import { colors, spacing, typography, radii, elevation } from '~/shared/theme/tokens';
 import { getSupabase } from '~/shared/api/client';
-import {
-  tryRefreshSession,
-  isJwtError,
-  ensureValidSession,
-} from '~/shared/api/sessionRecovery';
+import Config from 'react-native-config';
+import { ensureValidSession } from '~/shared/api/sessionRecovery';
 import { useAuth } from '~/app/providers/AuthProvider';
 import type { ScannerStackParamList } from '~/app/navigation/types';
 import { ScanResultCard } from '../components/ScanResultCard';
@@ -135,38 +132,37 @@ export const ScanResultsScreen = () => {
         base64s.push(b64);
       }
 
-      const token = await ensureValidSession();
-      if (!token) {
+      const accessToken = await ensureValidSession();
+      if (!accessToken) {
         await getSupabase().auth.signOut();
         return;
       }
 
-      const supabase = getSupabase();
-      const invokeBody = {
-        images: base64s,
-        meal_type: mealType,
-        locale: i18n.language,
-        clarifications: clarificationAnswers.current,
-      };
+      const baseUrl = Config.SUPABASE_URL ?? '';
+      const anonKey = Config.SUPABASE_ANON_KEY ?? '';
 
-      let response = await supabase.functions.invoke<unknown>('meal-scan', { body: invokeBody });
+      const resp = await fetch(`${baseUrl}/functions/v1/meal-scan`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${anonKey}`,
+          apikey: anonKey,
+          'x-user-token': accessToken,
+        },
+        body: JSON.stringify({
+          images: base64s,
+          meal_type: mealType,
+          locale: i18n.language,
+          clarifications: clarificationAnswers.current,
+        }),
+      });
 
-      if (response.error && isJwtError(response.error)) {
-        const refreshed = await tryRefreshSession();
-        if (refreshed) {
-          response = await supabase.functions.invoke<unknown>('meal-scan', { body: invokeBody });
-        } else {
-          await supabase.auth.signOut();
-          return;
-        }
-      }
-
-      if (response.error) {
-        console.error('[Reanalysis] Edge function error:', response.error);
+      if (!resp.ok) {
+        console.error('[Reanalysis] Edge function error:', resp.status);
         return;
       }
 
-      const parsed = MealScanResultSchema.safeParse(response.data);
+      const parsed = MealScanResultSchema.safeParse(await resp.json());
       if (!parsed.success) {
         console.error('[Reanalysis] Invalid response:', parsed.error.format());
         return;
