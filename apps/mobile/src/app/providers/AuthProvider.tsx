@@ -157,8 +157,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signInWithGoogle = useCallback(async () => {
     await GoogleSignin.hasPlayServices();
 
-    const { raw, hashed } = generateNonce();
-    const response = await GoogleSignin.signIn({ nonce: hashed });
+    const { raw } = generateNonce();
+    const response = await GoogleSignin.signIn({ nonce: raw });
 
     if (!response.data?.idToken) {
       throw new Error('Google Sign-In failed: no ID token received');
