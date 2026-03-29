@@ -114,10 +114,10 @@ function isInQuietHours(prefs: NotificationPrefs): boolean {
   const now = new Date();
   const currentMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
 
-  const [startH, startM] = prefs.quiet_hours_start.split(':').map(Number);
-  const [endH, endM] = prefs.quiet_hours_end.split(':').map(Number);
-  const startMinutes = startH * 60 + startM;
-  const endMinutes = endH * 60 + endM;
+  const startParts = prefs.quiet_hours_start.split(':').map(Number);
+  const endParts = prefs.quiet_hours_end.split(':').map(Number);
+  const startMinutes = (startParts[0] ?? 0) * 60 + (startParts[1] ?? 0);
+  const endMinutes = (endParts[0] ?? 0) * 60 + (endParts[1] ?? 0);
 
   if (startMinutes <= endMinutes) {
     return currentMinutes >= startMinutes && currentMinutes < endMinutes;

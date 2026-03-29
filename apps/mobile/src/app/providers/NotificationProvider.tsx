@@ -3,14 +3,18 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
-import { Alert, Linking, Platform } from 'react-native';
-import messaging, { type FirebaseMessagingTypes } from '@react-native-firebase/messaging';
+import { Alert, Linking, NativeModules, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthProvider';
 import { getSupabase } from '~/shared/api/client';
+
+type MessagingModule = typeof import('@react-native-firebase/messaging').default;
+
+const FIREBASE_AVAILABLE = NativeModules.RNFBAppModule != null;
 
 interface NotificationContextValue {
   fcmToken: string | null;
@@ -25,6 +29,16 @@ const NotificationContext = createContext<NotificationContextValue>({
 });
 
 export const useNotifications = () => useContext(NotificationContext);
+
+function tryLoadMessaging(): MessagingModule | null {
+  if (!FIREBASE_AVAILABLE) {
+    console.warn('[Notifications] Firebase native module not linked — skipping');
+    return null;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  return require('@react-native-firebase/messaging').default as MessagingModule;
+}
 
 async function registerToken(token: string, userId: string): Promise<void> {
   const supabase = getSupabase();
@@ -58,52 +72,73 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const { user, isAuthenticated } = useAuth();
   const [fcmToken, setFcmToken] = useState<string | null>(null);
   const [permissionGranted, setPermissionGranted] = useState(false);
+  const messagingRef = useRef<MessagingModule | null>(null);
+
+  useEffect(() => {
+    messagingRef.current = tryLoadMessaging();
+  }, []);
 
   const requestPermission = useCallback(async (): Promise<boolean> => {
-    const authStatus = await messaging().requestPermission();
-    const granted =
-      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    const msg = messagingRef.current;
 
-    setPermissionGranted(granted);
-
-    if (!granted) {
+    if (!msg) {
       Alert.alert(t('permission_denied_title'), t('permission_denied_message'), [
         { text: t('permission_denied_cancel'), style: 'cancel' },
         { text: t('permission_denied_settings'), onPress: () => void Linking.openSettings() },
       ]);
+      return false;
     }
 
-    return granted;
+    try {
+      const authStatus = await msg().requestPermission();
+      const granted =
+        authStatus === msg.AuthorizationStatus.AUTHORIZED ||
+        authStatus === msg.AuthorizationStatus.PROVISIONAL;
+
+      setPermissionGranted(granted);
+
+      if (!granted) {
+        Alert.alert(t('permission_denied_title'), t('permission_denied_message'), [
+          { text: t('permission_denied_cancel'), style: 'cancel' },
+          { text: t('permission_denied_settings'), onPress: () => void Linking.openSettings() },
+        ]);
+      }
+
+      return granted;
+    } catch (err) {
+      console.warn('[Notifications] Permission request failed:', err);
+      return false;
+    }
   }, [t]);
 
   useEffect(() => {
-    if (!isAuthenticated || !user) return;
+    const msg = messagingRef.current;
+    if (!isAuthenticated || !user || !msg) return;
 
     let tokenRefreshUnsubscribe: (() => void) | undefined;
 
     const init = async () => {
-      const authStatus = await messaging().hasPermission();
-      const hasPermission =
-        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-      setPermissionGranted(hasPermission);
-
-      if (!hasPermission) return;
-
       try {
-        const token = await messaging().getToken();
+        const authStatus = await msg().hasPermission();
+        const hasPermission =
+          authStatus === msg.AuthorizationStatus.AUTHORIZED ||
+          authStatus === msg.AuthorizationStatus.PROVISIONAL;
+
+        setPermissionGranted(hasPermission);
+
+        if (!hasPermission) return;
+
+        const token = await msg().getToken();
         setFcmToken(token);
         await registerToken(token, user.id);
-      } catch (err) {
-        console.warn('[Notifications] Failed to get FCM token:', err);
-      }
 
-      tokenRefreshUnsubscribe = messaging().onTokenRefresh(async (newToken) => {
-        setFcmToken(newToken);
-        await registerToken(newToken, user.id);
-      });
+        tokenRefreshUnsubscribe = msg().onTokenRefresh(async (newToken) => {
+          setFcmToken(newToken);
+          await registerToken(newToken, user.id);
+        });
+      } catch (err) {
+        console.warn('[Notifications] Init failed:', err);
+      }
     };
 
     void init();
@@ -114,16 +149,22 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   }, [isAuthenticated, user]);
 
   useEffect(() => {
-    const unsubscribe = messaging().onMessage(
-      async (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
+    const msg = messagingRef.current;
+    if (!msg) return;
+
+    try {
+      const unsubscribe = msg().onMessage(async (remoteMessage) => {
         const { notification } = remoteMessage;
         if (notification) {
           Alert.alert(notification.title ?? '', notification.body ?? '');
         }
-      },
-    );
+      });
 
-    return unsubscribe;
+      return unsubscribe;
+    } catch (err) {
+      console.warn('[Notifications] onMessage setup failed:', err);
+      return undefined;
+    }
   }, []);
 
   useEffect(() => {
