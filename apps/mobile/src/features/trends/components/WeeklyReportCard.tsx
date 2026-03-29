@@ -8,6 +8,7 @@ import type { WeeklyReport } from '../hooks/useTrendData';
 interface WeeklyReportCardProps {
   report: WeeklyReport;
   targetKcal: number;
+  dqiScore?: number;
 }
 
 const AdherenceBar = ({ label, pct, color }: { label: string; pct: number; color: string }) => (
@@ -36,7 +37,7 @@ const AdherenceBar = ({ label, pct, color }: { label: string; pct: number; color
   </View>
 );
 
-export const WeeklyReportCard = ({ report, targetKcal }: WeeklyReportCardProps) => {
+export const WeeklyReportCard = ({ report, targetKcal, dqiScore }: WeeklyReportCardProps) => {
   const { t } = useTranslation('trends');
 
   const isOnTrack = report.adherencePct >= 70;
@@ -93,6 +94,14 @@ export const WeeklyReportCard = ({ report, targetKcal }: WeeklyReportCardProps) 
           unit={t('days_unit')}
           highlight={report.daysTracked >= 5}
         />
+        {dqiScore != null && (
+          <StatBox
+            label={t('dqi_label')}
+            value={`${dqiScore}`}
+            unit="/100"
+            highlight={dqiScore >= 70}
+          />
+        )}
       </View>
 
       <View style={{ gap: spacing.sm }}>

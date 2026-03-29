@@ -521,14 +521,14 @@
 
 ### 2.6 DQI-I Diet Quality Scoring (Week 15)
 
-- [ ] Implement DQI-I scoring algorithm:
-  - [ ] Variety component
-  - [ ] Adequacy component (fruit, vegetable, grain, fiber, protein, minerals)
-  - [ ] Moderation component (total fat, saturated fat, cholesterol, sodium)
-  - [ ] Overall balance
-- [ ] Calculate weekly DQI-I score from meal data
-- [ ] Display on dashboard and progress screens
-- [ ] Include in weekly report narrative
+- [x] Implement DQI-I scoring algorithm (`features/trends/lib/dqi-scoring.ts`):
+  - [x] Variety component (food group diversity + protein source diversity, 0–20 pts)
+  - [x] Adequacy component (fiber, protein, fruit/veg/grain frequency, 0–40 pts)
+  - [x] Moderation component (total fat %, sugar %, sodium, NOVA-4 proportion, 0–30 pts)
+  - [x] Overall balance (macronutrient ratio + meal regularity, 0–10 pts)
+- [x] Calculate weekly DQI-I score from meal data (`useWeeklyDQI` hook with USDA food category joins)
+- [x] Display on dashboard (`DQIDashboardTile`) and progress/trends screen (`DQIScoreCard` with ring chart + component breakdown bars)
+- [x] Include in weekly report (`WeeklyReportCard` DQI stat box)
 
 ### 2.7 Push Notification / Nudge System (Week 16)
 

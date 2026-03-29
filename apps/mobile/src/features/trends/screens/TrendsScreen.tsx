@@ -15,6 +15,7 @@ import { CalorieChart } from '../components/CalorieChart';
 import { WeeklyReportCard } from '../components/WeeklyReportCard';
 import { DQIScoreCard } from '../components/DQIScoreCard';
 import { useDailyAggregates, useWeightTrend, computeWeeklyReport } from '../hooks/useTrendData';
+import { useWeeklyDQI } from '../hooks/useWeeklyDQI';
 import { useUserTargets } from '~/features/dashboard/hooks/useUserTargets';
 import type { RootStackParamList } from '~/app/navigation/types';
 
@@ -31,6 +32,7 @@ export const TrendsScreen = () => {
   const { data: aggregates, isLoading: agLoading } = useDailyAggregates(30);
   const { data: weightData, isLoading: wLoading } = useWeightTrend(30);
   const { data: targets } = useUserTargets();
+  const { data: dqiResult } = useWeeklyDQI();
 
   const weeklyReport = useMemo(() => {
     if (!aggregates || !targets) return null;
@@ -100,7 +102,11 @@ export const TrendsScreen = () => {
             <>
               {/* DQI Score */}
               <BentoTile index={0} style={{ marginBottom: spacing.lg }}>
-                <DQIScoreCard />
+                <DQIScoreCard
+                  score={dqiResult?.score}
+                  change={dqiResult?.change}
+                  hasEnoughData={dqiResult?.hasEnoughData}
+                />
               </BentoTile>
 
               {/* Weight Trend */}
@@ -121,7 +127,11 @@ export const TrendsScreen = () => {
               {/* Weekly Report */}
               {weeklyReport && targets && (
                 <BentoTile index={3} style={{ marginBottom: spacing.lg }}>
-                  <WeeklyReportCard report={weeklyReport} targetKcal={targets.targetKcal} />
+                  <WeeklyReportCard
+                    report={weeklyReport}
+                    targetKcal={targets.targetKcal}
+                    dqiScore={dqiResult?.hasEnoughData ? dqiResult.score.total : undefined}
+                  />
                 </BentoTile>
               )}
 
@@ -212,7 +222,11 @@ export const TrendsScreen = () => {
               </BentoTile>
               {weeklyReport && (
                 <BentoTile index={2} style={{ marginBottom: spacing.lg }}>
-                  <WeeklyReportCard report={weeklyReport} targetKcal={targets.targetKcal} />
+                  <WeeklyReportCard
+                    report={weeklyReport}
+                    targetKcal={targets.targetKcal}
+                    dqiScore={dqiResult?.hasEnoughData ? dqiResult.score.total : undefined}
+                  />
                 </BentoTile>
               )}
             </>

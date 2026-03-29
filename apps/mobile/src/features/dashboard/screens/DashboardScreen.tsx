@@ -13,6 +13,7 @@ import { BentoTile } from '~/shared/components/BentoTile';
 import { colors, spacing, typography, radii } from '~/shared/theme/tokens';
 import { useDailySummary } from '../hooks/useDailySummary';
 import { useUserTargets } from '../hooks/useUserTargets';
+import { DQIDashboardTile } from '../components/DQIDashboardTile';
 import { CalorieBudgetTile } from '../components/CalorieBudgetTile';
 import { MacroSummaryTile } from '../components/MacroSummaryTile';
 import { RecentMealsTile } from '../components/RecentMealsTile';
@@ -162,6 +163,8 @@ export const DashboardScreen = () => {
             {t('tiles.weightLost', { lbs: '—' })}
           </Text>
         </BentoTile>
+        {/* Diet Quality */}
+        <DQIDashboardTile index={6} />
       </ScrollView>
     </View>
   );

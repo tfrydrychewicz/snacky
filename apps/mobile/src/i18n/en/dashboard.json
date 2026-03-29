@@ -24,6 +24,13 @@
   "tiles.weightTrend": "Weight Trend",
   "tiles.weightLost": "You've lost {{lbs}} lbs this month. Keep it up!",
 
+  "tiles.dqi_title": "Diet Quality",
+  "tiles.dqi_subtitle": "Weekly DQI-I score",
+  "tiles.dqi_no_data": "Track 3+ days to see your score",
+  "tiles.dqi_variety": "Var",
+  "tiles.dqi_adequacy": "Adq",
+  "tiles.dqi_moderation": "Mod",
+
   "ai_preview": "Based on your protein intake, I recommend a Greek yogurt snack with almonds for this afternoon.",
   "ai_ask": "Ask anything...",
   "ai_name": "Snacky AI"

@@ -24,6 +24,13 @@
   "tiles.weightTrend": "Trend wagi",
   "tiles.weightLost": "Schudłeś {{lbs}} funtów w tym miesiącu. Tak trzymaj!",
 
+  "tiles.dqi_title": "Jakość diety",
+  "tiles.dqi_subtitle": "Tygodniowy wynik DQI-I",
+  "tiles.dqi_no_data": "Śledź 3+ dni, aby zobaczyć wynik",
+  "tiles.dqi_variety": "Różn",
+  "tiles.dqi_adequacy": "Adkw",
+  "tiles.dqi_moderation": "Umi",
+
   "ai_preview": "Na podstawie spożycia białka polecam jogurt grecki z migdałami na popołudnie.",
   "ai_ask": "Zapytaj o cokolwiek...",
   "ai_name": "Snacky AI"
