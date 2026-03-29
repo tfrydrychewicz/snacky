@@ -3,7 +3,6 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -15,7 +14,32 @@ import { getSupabase } from '~/shared/api/client';
 
 type MessagingModule = typeof FirebaseMessaging;
 
-const FIREBASE_AVAILABLE = NativeModules.RNFBAppModule != null;
+let _messaging: MessagingModule | null | undefined;
+
+/**
+ * Lazily resolves Firebase Messaging. Returns null when Firebase is not
+ * configured (e.g. no GoogleService-Info.plist). The result is cached so the
+ * probing only happens once.
+ */
+function getMessaging(): MessagingModule | null {
+  if (_messaging !== undefined) return _messaging;
+
+  if (NativeModules.RNFBAppModule == null) {
+    _messaging = null;
+    return null;
+  }
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-member-access
+    const mod = require('@react-native-firebase/messaging').default as MessagingModule;
+    mod().getToken;
+    _messaging = mod;
+  } catch {
+    _messaging = null;
+  }
+
+  return _messaging;
+}
 
 interface NotificationContextValue {
   fcmToken: string | null;
@@ -30,16 +54,6 @@ const NotificationContext = createContext<NotificationContextValue>({
 });
 
 export const useNotifications = () => useContext(NotificationContext);
-
-function tryLoadMessaging(): MessagingModule | null {
-  if (!FIREBASE_AVAILABLE) {
-    console.warn('[Notifications] Firebase native module not linked — skipping');
-    return null;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-member-access
-  return require('@react-native-firebase/messaging').default as MessagingModule;
-}
 
 async function registerToken(token: string, userId: string): Promise<void> {
   const supabase = getSupabase();
@@ -73,14 +87,9 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const { user, isAuthenticated } = useAuth();
   const [fcmToken, setFcmToken] = useState<string | null>(null);
   const [permissionGranted, setPermissionGranted] = useState(false);
-  const messagingRef = useRef<MessagingModule | null>(null);
-
-  useEffect(() => {
-    messagingRef.current = tryLoadMessaging();
-  }, []);
 
   const requestPermission = useCallback(async (): Promise<boolean> => {
-    const msg = messagingRef.current;
+    const msg = getMessaging();
 
     if (!msg) {
       Alert.alert(t('permission_denied_title'), t('permission_denied_message'), [
@@ -113,7 +122,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   }, [t]);
 
   useEffect(() => {
-    const msg = messagingRef.current;
+    const msg = getMessaging();
     if (!isAuthenticated || !user || !msg) return;
 
     let tokenRefreshUnsubscribe: (() => void) | undefined;
@@ -150,7 +159,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   }, [isAuthenticated, user]);
 
   useEffect(() => {
-    const msg = messagingRef.current;
+    const msg = getMessaging();
     if (!msg) return;
 
     try {
