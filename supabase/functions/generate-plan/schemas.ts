@@ -32,6 +32,7 @@ export interface UserProfile {
   cuisine_preferences: string[];
   date_of_birth: string | null;
   biological_sex: string | null;
+  locale: string;
 }
 
 export interface CandidateFood {
@@ -108,6 +109,49 @@ export interface PlannedMeal {
   total_carbs_g: number;
   total_fat_g: number;
   micronutrients: MicronutrientTotals;
+  recipe_name?: string;
+  recipe_instructions?: string;
+  prep_time_min?: number;
+  presentation_tips?: string;
+}
+
+export interface GeneratedRecipe {
+  slot: string;
+  recipe_name: string;
+  recipe_instructions: string;
+  prep_time_min: number;
+  presentation_tips: string;
+}
+
+export interface ShoppingListItem {
+  name: string;
+  total_g: number;
+  display_qty: string;
+  category: ShoppingCategory;
+  usda_fdc_ids: number[];
+}
+
+export type ShoppingCategory =
+  | 'produce'
+  | 'meat_seafood'
+  | 'dairy_eggs'
+  | 'grains_bread'
+  | 'pantry'
+  | 'oils_condiments'
+  | 'frozen'
+  | 'other';
+
+export interface AllergenFlag {
+  meal_day: number;
+  meal_slot: string;
+  allergen: string;
+  found_in: string;
+}
+
+export interface ValidationResult {
+  allergen_flags: AllergenFlag[];
+  nutrition_drift_pct: number;
+  passed: boolean;
 }
 
 export interface SolverResult {
@@ -127,6 +171,8 @@ export interface PlanResponse {
   duration_days: number;
   meals_per_day: number;
   meals: PlannedMeal[];
+  shopping_list: ShoppingListItem[];
+  validation: ValidationResult;
   solver_metadata: {
     method: string;
     solver_time_ms: number;

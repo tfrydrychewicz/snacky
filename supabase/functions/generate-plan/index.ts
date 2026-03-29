@@ -6,6 +6,8 @@ import { createLogger } from '../_shared/logger.ts';
 import { PlanRequestSchema } from './schemas.ts';
 import { fetchUserProfile, fetchCandidateFoods } from './candidates.ts';
 import { solve } from './solver.ts';
+import { generateRecipes } from './recipe-generator.ts';
+import { validatePlan, generateShoppingList } from './validator.ts';
 import { storePlan } from './store.ts';
 
 const log = createLogger('generate-plan');
@@ -73,7 +75,25 @@ Deno.serve(async (req) => {
       unique_ingredients: solverResult.unique_ingredients,
     });
 
-    // 4. Store plan in database
+    // 4. Generate recipes via LLM
+    log.info('Generating recipes', { user_id: userId });
+    const enrichedMeals = await generateRecipes(
+      solverResult.meals,
+      profile,
+      request,
+      serviceSupabase,
+    );
+    solverResult.meals = enrichedMeals;
+
+    // 5. Validate plan (allergens, nutrition drift)
+    log.info('Validating plan', { user_id: userId });
+    const validation = validatePlan(solverResult.meals, profile, request);
+
+    // 6. Generate shopping list
+    log.info('Generating shopping list', { user_id: userId });
+    const shoppingList = generateShoppingList(solverResult.meals);
+
+    // 7. Store plan in database
     log.info('Storing plan', { user_id: userId });
     const planResponse = await storePlan(
       serviceSupabase,
@@ -81,6 +101,8 @@ Deno.serve(async (req) => {
       request,
       profile,
       solverResult,
+      shoppingList,
+      validation,
     );
 
     const totalTimeMs = Math.round(performance.now() - startTime);

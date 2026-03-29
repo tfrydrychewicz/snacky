@@ -26,7 +26,7 @@ export async function fetchUserProfile(
   const { data, error } = await supabase
     .from('user_profiles')
     .select(
-      'target_kcal, target_protein_g, target_carbs_g, target_fat_g, allergies, dietary_restrictions, cooking_skill, cuisine_preferences, date_of_birth, biological_sex',
+      'target_kcal, target_protein_g, target_carbs_g, target_fat_g, allergies, dietary_restrictions, cooking_skill, cuisine_preferences, date_of_birth, biological_sex, locale',
     )
     .eq('user_id', userId)
     .single();
@@ -48,6 +48,7 @@ export async function fetchUserProfile(
     cuisine_preferences: (p.cuisine_preferences as string[]) ?? [],
     date_of_birth: (p.date_of_birth as string) ?? null,
     biological_sex: (p.biological_sex as string) ?? null,
+    locale: (p.locale as string) ?? 'en',
   };
 }
 

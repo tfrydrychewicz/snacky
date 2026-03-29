@@ -584,17 +584,17 @@
 
 ### 3.2 LLM Recipe Generation (Week 18–19)
 
-- [ ] Implement recipe generation pipeline:
-  - [ ] Input: ingredient list + gram amounts from MILP output
-  - [ ] Inject user context: cuisine preferences, cooking skill, taste profile (from comment embeddings)
-  - [ ] Call GPT-5.4 via LangChain with RAG context
-  - [ ] Output: recipe name, instructions, prep time, presentation suggestions
+- [x] Implement recipe generation pipeline — `recipe-generator.ts` with OpenAI GPT-4.1 (direct API, no LangChain):
+  - [x] Input: ingredient list + gram amounts from MILP output
+  - [x] Inject user context: cuisine preferences, cooking skill, taste profile (RAG via `match_embeddings` on `user_comments` namespace)
+  - [x] Call GPT-4.1 with JSON response format, concurrent day batching (max 7 parallel)
+  - [x] Output: recipe name, instructions, prep time, presentation suggestions
 - [x] Fuzzy logic layer for flexibility margins — native TypeScript `fuzzy.ts` integrated into solver (macro scoring, portion sizing, calorie correction, micronutrient repair urgency)
-- [ ] Validate generated plans:
-  - [ ] Verify no allergen leakage
-  - [ ] Re-calculate exact nutrition from recipe ingredients
-  - [ ] Generate aggregated shopping list
-- [ ] Store complete plan in `diet_plans` + `diet_plan_meals` tables
+- [x] Validate generated plans — `validator.ts`:
+  - [x] Verify no allergen leakage (synonym expansion for 10 major allergen groups)
+  - [x] Re-calculate exact nutrition drift from solver targets
+  - [x] Generate aggregated shopping list (categorized: produce, meat, dairy, grains, pantry, oils, frozen)
+- [x] Store complete plan in `diet_plans` + `diet_plan_meals` tables — recipe fields populated, `shopping_list` + `validation` JSONB columns added via migration
 
 ### 3.3 Diet Plan UI (Week 19–21)
 

@@ -1,5 +1,12 @@
 import type { SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.0';
-import type { SolverResult, PlanRequest, UserProfile, PlanResponse } from './schemas.ts';
+import type {
+  SolverResult,
+  PlanRequest,
+  UserProfile,
+  PlanResponse,
+  ShoppingListItem,
+  ValidationResult,
+} from './schemas.ts';
 import { FOOD_COL_TO_RDA_KEY } from './rda.ts';
 
 export async function storePlan(
@@ -8,6 +15,8 @@ export async function storePlan(
   request: PlanRequest,
   profile: UserProfile,
   result: SolverResult,
+  shoppingList: ShoppingListItem[],
+  validation: ValidationResult,
 ): Promise<PlanResponse> {
   const startDate = new Date();
   const endDate = new Date(startDate);
@@ -58,6 +67,8 @@ export async function storePlan(
         fat_g: profile.target_fat_g,
       },
       solver_metadata: solverMeta,
+      shopping_list: shoppingList,
+      validation,
     })
     .select('id')
     .single();
@@ -73,9 +84,9 @@ export async function storePlan(
     diet_plan_id: planId,
     day_number: meal.day_number,
     meal_slot: meal.meal_slot,
-    recipe_name: buildRecipeName(meal.foods.map((f) => f.food.description)),
-    recipe_instructions: null,
-    prep_time_min: null,
+    recipe_name: meal.recipe_name ?? buildRecipeName(meal.foods.map((f) => f.food.description)),
+    recipe_instructions: meal.recipe_instructions ?? null,
+    prep_time_min: meal.prep_time_min ?? null,
     ingredients: meal.foods.map((f) => {
       const scale = f.portion_g / 100;
       const micros: Record<string, number> = {};
@@ -125,6 +136,8 @@ export async function storePlan(
     duration_days: request.duration_days,
     meals_per_day: request.meals_per_day,
     meals: result.meals,
+    shopping_list: shoppingList,
+    validation,
     solver_metadata: solverMeta,
   };
 }
