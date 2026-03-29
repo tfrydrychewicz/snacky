@@ -43,6 +43,7 @@
     "i18next": "^26.0.0",
     "intl-pluralrules": "^2.0.1",
     "invariant": "^2.2.4",
+    "js-sha256": "^0.11.1",
     "lucide-react-native": "^1.7.0",
     "nativewind": "^4.x",
     "react": "19.2.3",
