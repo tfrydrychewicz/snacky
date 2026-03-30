@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { ChevronLeft, Check, Circle } from 'lucide-react-native';
+import { ChevronLeft, Check } from 'lucide-react-native';
 import type { RootStackParamList } from '~/app/navigation/types';
 import { colors, spacing, typography, radii, elevation } from '~/shared/theme/tokens';
 import { usePlanById } from '../hooks/useActivePlan';

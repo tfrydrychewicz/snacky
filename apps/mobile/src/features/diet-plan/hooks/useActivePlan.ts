@@ -5,7 +5,7 @@ import type { DietPlan, DietPlanWithMeals, PlanMeal } from '../types';
 async function fetchActivePlan(): Promise<DietPlanWithMeals | null> {
   const supabase = getSupabase();
 
-  const { data: plan, error } = await supabase
+  const result = await supabase
     .from('diet_plans')
     .select('*')
     .eq('status', 'active')
@@ -13,14 +13,14 @@ async function fetchActivePlan(): Promise<DietPlanWithMeals | null> {
     .limit(1)
     .maybeSingle();
 
-  if (error) {
-    console.error('[ActivePlan] Fetch error:', error.message);
-    throw new Error(error.message);
+  if (result.error) {
+    console.error('[ActivePlan] Fetch error:', result.error.message);
+    throw new Error(result.error.message);
   }
 
-  if (!plan) return null;
+  if (!result.data) return null;
 
-  const typedPlan = plan as unknown as DietPlan;
+  const typedPlan = result.data as unknown as DietPlan;
 
   const { data: meals, error: mealError } = await supabase
     .from('diet_plan_meals')
@@ -43,15 +43,11 @@ async function fetchActivePlan(): Promise<DietPlanWithMeals | null> {
 async function fetchPlanById(planId: string): Promise<DietPlanWithMeals | null> {
   const supabase = getSupabase();
 
-  const { data: plan, error } = await supabase
-    .from('diet_plans')
-    .select('*')
-    .eq('id', planId)
-    .single();
+  const result = await supabase.from('diet_plans').select('*').eq('id', planId).single();
 
-  if (error || !plan) return null;
+  if (result.error || !result.data) return null;
 
-  const typedPlan = plan as unknown as DietPlan;
+  const typedPlan = result.data as unknown as DietPlan;
 
   const { data: meals, error: mealError } = await supabase
     .from('diet_plan_meals')

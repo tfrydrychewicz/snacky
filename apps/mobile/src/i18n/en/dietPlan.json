@@ -55,7 +55,8 @@
     "stepFetchProfile": "Loading your profile…",
     "stepGenerateChunk": "Generating days {{start}}–{{end}}…",
     "stepOptimize": "Optimizing portions…",
-    "stepFinalize": "Finalizing your plan…"
+    "stepFinalize": "Finalizing your plan…",
+    "planNotFound": "Plan not found"
   },
   "slots": {
     "breakfast": "Breakfast",
@@ -82,6 +83,7 @@
     "carbs": "Carbs",
     "fat": "Fat",
     "generatingPhoto": "Generating photo…",
+    "notFound": "Meal not found",
     "back": "Back"
   },
   "shopping": {

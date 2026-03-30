@@ -1,4 +1,5 @@
 import type { MealScanResult, MealType } from '@snacky/shared-types';
+import type { PlanConfig } from '~/features/diet-plan/types';
 
 export type RootStackParamList = {
   Auth: undefined;
@@ -14,7 +15,7 @@ export type RootStackParamList = {
   MeasurementInput: { quickWeight?: boolean } | undefined;
   MeasurementList: undefined;
   PlanWizard: undefined;
-  PlanCalendar: { planId?: string; config?: import('~/features/diet-plan/types').PlanConfig };
+  PlanCalendar: { planId?: string; config?: PlanConfig };
   RecipeDetail: { planId: string; mealId: string };
   ShoppingList: { planId: string };
 };

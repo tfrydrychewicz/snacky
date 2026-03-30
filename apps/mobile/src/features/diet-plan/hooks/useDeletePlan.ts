@@ -17,7 +17,7 @@ export const useDeletePlan = () => {
   return useMutation({
     mutationFn: deletePlan,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['diet-plan'] });
+      void queryClient.invalidateQueries({ queryKey: ['diet-plan'] });
     },
   });
 };

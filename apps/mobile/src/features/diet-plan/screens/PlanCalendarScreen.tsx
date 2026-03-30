@@ -59,6 +59,7 @@ export const PlanCalendarScreen = () => {
       generationStarted.current = true;
       void workflow.generate(config);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config]);
 
   // Fallback: if neither route param nor MMKV had a planId, check DB for a 'generating' plan
@@ -89,6 +90,7 @@ export const PlanCalendarScreen = () => {
         workflow.setError(progress.runError ?? t('calendar.generationError'));
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [progress?.isTerminal, progress?.runStatus]);
 
   const plan = savedPlan ?? null;
@@ -184,7 +186,9 @@ export const PlanCalendarScreen = () => {
           justifyContent: 'center',
         }}
       >
-        <Text style={{ ...typography.bodyLg, color: colors.onSurfaceVariant }}>Plan not found</Text>
+        <Text style={{ ...typography.bodyLg, color: colors.onSurfaceVariant }}>
+          {t('calendar.planNotFound')}
+        </Text>
       </View>
     );
   }

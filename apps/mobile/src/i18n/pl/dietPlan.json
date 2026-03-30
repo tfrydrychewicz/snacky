@@ -55,7 +55,8 @@
     "stepFetchProfile": "Ładowanie profilu…",
     "stepGenerateChunk": "Generowanie dni {{start}}–{{end}}…",
     "stepOptimize": "Optymalizacja porcji…",
-    "stepFinalize": "Finalizacja planu…"
+    "stepFinalize": "Finalizacja planu…",
+    "planNotFound": "Nie znaleziono planu"
   },
   "slots": {
     "breakfast": "Śniadanie",
@@ -82,6 +83,7 @@
     "carbs": "Węglowodany",
     "fat": "Tłuszcz",
     "generatingPhoto": "Generowanie zdjęcia…",
+    "notFound": "Nie znaleziono posiłku",
     "back": "Wróć"
   },
   "shopping": {

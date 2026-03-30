@@ -16,7 +16,6 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { ChevronLeft, Clock, Flame, ImageIcon } from 'lucide-react-native';
 import type { RootStackParamList } from '~/app/navigation/types';
 import { colors, spacing, typography, radii, elevation } from '~/shared/theme/tokens';
-import { MacroBar } from '~/shared/components/MacroBar';
 import { usePlanById } from '../hooks/useActivePlan';
 import { usePlanMealImage } from '../hooks/usePlanMealImage';
 
@@ -54,6 +53,9 @@ export const RecipeDetailScreen = () => {
     return plan?.meals.find((m) => m.id === mealId) ?? null;
   }, [plan, mealId]);
 
+  const { data: imageSignedUrl } = usePlanMealImage(meal?.id ?? null, meal?.image_url ?? null);
+  const imageHeight = Math.round(SCREEN_WIDTH * 0.65);
+
   if (isLoading) {
     return (
       <View
@@ -79,15 +81,15 @@ export const RecipeDetailScreen = () => {
           justifyContent: 'center',
         }}
       >
-        <Text style={{ ...typography.bodyLg, color: colors.onSurfaceVariant }}>Meal not found</Text>
+        <Text style={{ ...typography.bodyLg, color: colors.onSurfaceVariant }}>
+          {t('recipe.notFound')}
+        </Text>
       </View>
     );
   }
 
   const slotLabel = t(`slots.${meal.meal_slot}`, { defaultValue: meal.meal_slot });
   const instructions = parseInstructions(meal.recipe_instructions ?? '');
-  const { data: imageSignedUrl } = usePlanMealImage(meal.id, meal.image_url);
-  const imageHeight = Math.round(SCREEN_WIDTH * 0.65);
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface }}>

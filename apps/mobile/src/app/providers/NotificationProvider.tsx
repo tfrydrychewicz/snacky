@@ -32,7 +32,7 @@ function getMessaging(): MessagingModule | null {
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-member-access
     const mod = require('@react-native-firebase/messaging').default as MessagingModule;
-    mod().getToken;
+    void mod().getToken;
     _messaging = mod;
   } catch {
     _messaging = null;
