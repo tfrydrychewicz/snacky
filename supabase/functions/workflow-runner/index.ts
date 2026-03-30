@@ -23,10 +23,25 @@ Deno.serve(async (req) => {
     });
   }
 
-  // Authenticate — only service_role key is accepted
+  // Authenticate — only service_role JWTs are accepted.
+  // We verify the JWT payload rather than doing a string comparison,
+  // because pg_net sends the legacy JWT while the env var may use the
+  // new sb_secret format on hosted Supabase.
   const authHeader = req.headers.get('Authorization');
-  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-  if (!authHeader || !serviceKey || authHeader !== `Bearer ${serviceKey}`) {
+  if (!authHeader?.startsWith('Bearer ')) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  const token = authHeader.slice(7);
+  try {
+    const payloadB64 = token.split('.')[1];
+    if (!payloadB64) throw new Error('malformed token');
+    const payload = JSON.parse(atob(payloadB64)) as { role?: string };
+    if (payload.role !== 'service_role') throw new Error('not service_role');
+  } catch {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
