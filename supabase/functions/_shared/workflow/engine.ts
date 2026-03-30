@@ -21,6 +21,7 @@ import type {
   QueueMessage,
   QueueEventMessage,
   QueueResumeMessage,
+  QueueWatchdogMessage,
   RunStatus,
 } from './types.ts';
 import { WorkflowPaused } from './types.ts';
@@ -55,6 +56,8 @@ export class WorkflowEngine {
       await this.handleEvent(msg);
     } else if (msg.type === 'resume') {
       await this.handleResume(msg);
+    } else if (msg.type === 'watchdog') {
+      await this.handleWatchdog(msg);
     } else {
       log.warn('Unknown message type', { message: msg });
     }
@@ -206,6 +209,10 @@ export class WorkflowEngine {
       })
       .eq('id', runId);
 
+    // Schedule a delayed watchdog: if this invocation is killed, the
+    // watchdog message fires after 60s and triggers stall recovery.
+    await this.supabase.rpc('workflow_send_watchdog', { p_run_id: runId });
+
     // Load completed steps for replay
     const { data: steps } = await this.supabase
       .from('workflow_steps')
@@ -331,6 +338,73 @@ export class WorkflowEngine {
   // ────────────────────────────────────────────────────────────
   // Helpers
   // ────────────────────────────────────────────────────────────
+
+  // ────────────────────────────────────────────────────────────
+  // Watchdog handling — check if a run is stalled and recover
+  // ────────────────────────────────────────────────────────────
+
+  private async handleWatchdog(msg: QueueWatchdogMessage): Promise<void> {
+    const { data: run } = await this.supabase
+      .from('workflow_runs')
+      .select('id, status, updated_at, attempt, max_retries, workflow_id')
+      .eq('id', msg.run_id)
+      .single();
+
+    if (!run) {
+      log.debug('Watchdog: run not found (may have been deleted)', { run_id: msg.run_id });
+      return;
+    }
+
+    const typedRun = run as unknown as WorkflowRunRow;
+
+    if (typedRun.status !== 'running') {
+      log.debug('Watchdog: run not in running state, no action needed', {
+        run_id: msg.run_id,
+        status: typedRun.status,
+      });
+      return;
+    }
+
+    const stalledForMs = Date.now() - new Date(typedRun.updated_at).getTime();
+    const STALL_THRESHOLD_MS = 45_000;
+
+    if (stalledForMs < STALL_THRESHOLD_MS) {
+      log.debug('Watchdog: run still active', {
+        run_id: msg.run_id,
+        stalled_for_ms: stalledForMs,
+      });
+      return;
+    }
+
+    // Run is stalled — recover or fail permanently
+    if (typedRun.attempt >= typedRun.max_retries) {
+      log.warn('Watchdog: run exhausted all retries, marking failed', {
+        run_id: msg.run_id,
+        attempt: typedRun.attempt,
+        max_retries: typedRun.max_retries,
+      });
+      await this.failRun(msg.run_id, 'Stalled and exhausted all retry attempts');
+      return;
+    }
+
+    log.info('Watchdog: recovering stalled run', {
+      run_id: msg.run_id,
+      workflow_id: typedRun.workflow_id,
+      stalled_for_ms: stalledForMs,
+      attempt: typedRun.attempt,
+      max_retries: typedRun.max_retries,
+    });
+
+    await this.supabase
+      .from('workflow_runs')
+      .update({ status: 'pending' as RunStatus })
+      .eq('id', msg.run_id);
+
+    await this.supabase.rpc('workflow_send_resume', {
+      p_run_id: msg.run_id,
+      p_reason: 'stall_recovery',
+    });
+  }
 
   private async failRun(runId: string, error: string): Promise<void> {
     await this.supabase

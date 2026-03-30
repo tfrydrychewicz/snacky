@@ -88,6 +88,16 @@ export class StepExecutor implements StepTools {
       { onConflict: 'run_id,step_id' },
     );
 
+    // Periodic heartbeat every 15s so the watchdog can use a tight
+    // stall timeout (~45s) instead of waiting minutes.
+    const heartbeatTimer = setInterval(() => {
+      this.supabase
+        .from('workflow_runs')
+        .update({ status: 'running' })
+        .eq('id', this.runId)
+        .then(() => {}, () => {});
+    }, 15_000);
+
     const t0 = performance.now();
     try {
       const result = await fn();
@@ -157,6 +167,8 @@ export class StepExecutor implements StepTools {
         duration_ms: durationMs,
       });
       throw err;
+    } finally {
+      clearInterval(heartbeatTimer);
     }
   }
 

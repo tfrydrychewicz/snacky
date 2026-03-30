@@ -160,12 +160,17 @@ export interface QueueEventMessage {
 export interface QueueResumeMessage {
   type: 'resume';
   run_id: string;
-  reason: 'sleep_complete' | 'event_received' | 'wait_timeout' | 'retry';
+  reason: 'sleep_complete' | 'event_received' | 'wait_timeout' | 'retry' | 'stall_recovery';
   step?: string;
   event_id?: string;
 }
 
-export type QueueMessage = QueueEventMessage | QueueResumeMessage;
+export interface QueueWatchdogMessage {
+  type: 'watchdog';
+  run_id: string;
+}
+
+export type QueueMessage = QueueEventMessage | QueueResumeMessage | QueueWatchdogMessage;
 
 // ── Internal control-flow signals ───────────────────────────
 
