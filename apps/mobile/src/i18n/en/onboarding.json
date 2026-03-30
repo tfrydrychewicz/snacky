@@ -15,7 +15,21 @@
     "male": "Male",
     "female": "Female",
     "height": "Height (cm)",
-    "weight": "Current Weight (kg)"
+    "weight": "Current Weight (kg)",
+    "country": "Country",
+    "countryPlaceholder": "Select your country",
+    "countries": {
+      "PL": "Poland", "US": "United States", "GB": "United Kingdom", "DE": "Germany",
+      "FR": "France", "IT": "Italy", "ES": "Spain", "NL": "Netherlands",
+      "SE": "Sweden", "NO": "Norway", "DK": "Denmark", "FI": "Finland",
+      "AT": "Austria", "CH": "Switzerland", "BE": "Belgium", "PT": "Portugal",
+      "IE": "Ireland", "CZ": "Czech Republic", "SK": "Slovakia", "HU": "Hungary",
+      "RO": "Romania", "BG": "Bulgaria", "HR": "Croatia", "GR": "Greece",
+      "UA": "Ukraine", "CA": "Canada", "AU": "Australia", "NZ": "New Zealand",
+      "JP": "Japan", "KR": "South Korea", "IN": "India", "MX": "Mexico",
+      "BR": "Brazil", "AR": "Argentina", "ZA": "South Africa", "IL": "Israel",
+      "TR": "Turkey", "AE": "UAE", "SA": "Saudi Arabia", "SG": "Singapore"
+    }
   },
 
   "goal": {

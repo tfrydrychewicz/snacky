@@ -1,9 +1,11 @@
-import React from 'react';
-import { View, Text, TextInput, Pressable } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Controller } from 'react-hook-form';
+import * as RNLocalize from 'react-native-localize';
 import type { StepFormProps } from './types';
 import { StepContainer } from './StepContainer';
+import { countryOptions } from '../schemas/onboarding';
 import { colors, spacing, typography, radii } from '~/shared/theme/tokens';
 
 type BiometricsStepProps = StepFormProps;
@@ -48,8 +50,18 @@ const NumberInput = ({
 
 export const BiometricsStep = ({ form }: BiometricsStepProps) => {
   const { t } = useTranslation('onboarding');
-  const { control, watch } = form;
+  const { control, watch, setValue, getValues } = form;
   const selectedSex = watch('biologicalSex');
+  const selectedCountry = watch('country');
+
+  useEffect(() => {
+    if (getValues('country')) return;
+    const locales = RNLocalize.getLocales();
+    const deviceCountry = locales[0]?.countryCode;
+    if (deviceCountry && (countryOptions as readonly string[]).includes(deviceCountry)) {
+      setValue('country', deviceCountry, { shouldValidate: true });
+    }
+  }, [setValue, getValues]);
 
   return (
     <StepContainer
@@ -144,6 +156,48 @@ export const BiometricsStep = ({ form }: BiometricsStepProps) => {
             name="weightKg"
             render={({ field: { onChange, value } }) => (
               <NumberInput value={value} onChange={onChange} />
+            )}
+          />
+        </View>
+
+        <View>
+          <FieldLabel text={t('biometrics.country')} />
+          <Controller
+            control={control}
+            name="country"
+            render={({ field: { onChange } }) => (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ gap: spacing.xs, paddingRight: spacing.md }}
+              >
+                {countryOptions.map((code) => (
+                  <Pressable
+                    key={code}
+                    onPress={() => onChange(code)}
+                    style={({ pressed }) => ({
+                      paddingVertical: spacing.sm,
+                      paddingHorizontal: spacing.md,
+                      borderRadius: radii.sm,
+                      borderWidth: 1.5,
+                      borderColor: selectedCountry === code ? colors.primary : colors.outlineVariant,
+                      backgroundColor:
+                        selectedCountry === code ? colors.primaryFixed : colors.surfaceContainerLowest,
+                      opacity: pressed ? 0.7 : 1,
+                    })}
+                  >
+                    <Text
+                      style={{
+                        ...typography.labelMd,
+                        color:
+                          selectedCountry === code ? colors.onPrimaryContainer : colors.onSurfaceVariant,
+                      }}
+                    >
+                      {t(`biometrics.countries.${code}`)}
+                    </Text>
+                  </Pressable>
+                ))}
+              </ScrollView>
             )}
           />
         </View>

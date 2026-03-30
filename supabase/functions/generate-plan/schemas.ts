@@ -1,5 +1,9 @@
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
+// ---------------------------------------------------------------------------
+// Request
+// ---------------------------------------------------------------------------
+
 export const MealSlotSchema = z.enum([
   'breakfast',
   'lunch',
@@ -17,8 +21,13 @@ export const PlanRequestSchema = z.object({
   max_prep_time_min: z.number().int().positive().optional(),
   budget_weekly: z.number().positive().optional(),
   cooking_time_pref: z.enum(['quick', 'moderate', 'elaborate']).default('moderate'),
+  meal_budget_pct: z.number().int().min(50).max(100).default(85),
 });
 export type PlanRequest = z.infer<typeof PlanRequestSchema>;
+
+// ---------------------------------------------------------------------------
+// User profile (fetched from DB for plan generation)
+// ---------------------------------------------------------------------------
 
 export interface UserProfile {
   user_id: string;
@@ -33,102 +42,115 @@ export interface UserProfile {
   date_of_birth: string | null;
   biological_sex: string | null;
   locale: string;
+  location: string | null;
 }
 
-export interface CandidateFood {
+// ---------------------------------------------------------------------------
+// Pass 1: Recipe generation (no nutrition data)
+// ---------------------------------------------------------------------------
+
+export const Pass1IngredientSchema = z.object({
+  name: z.string(),
+  name_en: z.string().optional().default(''),
+  amount_g: z.number().positive(),
+});
+export type Pass1Ingredient = z.infer<typeof Pass1IngredientSchema>;
+
+export const Pass1MealSchema = z.object({
+  slot: z.string(),
+  recipe_name: z.string(),
+  recipe_instructions: z.string(),
+  prep_time_min: z.number().int().nonnegative(),
+  presentation_tips: z.string().optional().default(''),
+  ingredients: z.array(Pass1IngredientSchema).min(1),
+});
+export type Pass1Meal = z.infer<typeof Pass1MealSchema>;
+
+export const Pass1DaySchema = z.object({
+  day_number: z.number().int().positive(),
+  meals: z.array(Pass1MealSchema).min(1),
+});
+
+export const Pass1ResponseSchema = z.object({
+  days: z.array(Pass1DaySchema).min(1),
+});
+export type Pass1Response = z.infer<typeof Pass1ResponseSchema>;
+
+// ---------------------------------------------------------------------------
+// Pass 2: Portion optimization (mini model adjusts amounts)
+// ---------------------------------------------------------------------------
+
+export const Pass2IngredientSchema = z.object({
+  name_en: z.string(),
+  amount_g: z.number().positive(),
+});
+
+export const Pass2MealSchema = z.object({
+  slot: z.string(),
+  ingredients: z.array(Pass2IngredientSchema).min(1),
+});
+
+export const Pass2DaySchema = z.object({
+  day_number: z.number().int().positive(),
+  meals: z.array(Pass2MealSchema).min(1),
+});
+
+export const Pass2ResponseSchema = z.object({
+  days: z.array(Pass2DaySchema).min(1),
+});
+export type Pass2Response = z.infer<typeof Pass2ResponseSchema>;
+
+// ---------------------------------------------------------------------------
+// USDA lookup result
+// ---------------------------------------------------------------------------
+
+export interface USDAFood {
   fdc_id: number;
   description: string;
-  food_category: string | null;
   calories_per_100g: number;
   protein_per_100g: number;
   carbs_per_100g: number;
   fat_per_100g: number;
-  fiber_per_100g: number | null;
-  sugar_per_100g: number | null;
-  sodium_per_100g: number | null;
-  saturated_fat_per_100g: number | null;
-  serving_size_g: number | null;
-  // Vitamins
-  vitamin_a_ug_per_100g: number | null;
-  vitamin_c_mg_per_100g: number | null;
-  vitamin_d_ug_per_100g: number | null;
-  vitamin_e_mg_per_100g: number | null;
-  vitamin_k_ug_per_100g: number | null;
-  thiamin_mg_per_100g: number | null;
-  riboflavin_mg_per_100g: number | null;
-  niacin_mg_per_100g: number | null;
-  vitamin_b6_mg_per_100g: number | null;
-  folate_ug_per_100g: number | null;
-  vitamin_b12_ug_per_100g: number | null;
-  choline_mg_per_100g: number | null;
-  // Minerals
-  calcium_mg_per_100g: number | null;
-  iron_mg_per_100g: number | null;
-  magnesium_mg_per_100g: number | null;
-  phosphorus_mg_per_100g: number | null;
-  potassium_mg_per_100g: number | null;
-  zinc_mg_per_100g: number | null;
-  copper_mg_per_100g: number | null;
-  selenium_ug_per_100g: number | null;
 }
 
-export interface MicronutrientTotals {
-  vitamin_a_ug: number;
-  vitamin_c_mg: number;
-  vitamin_d_ug: number;
-  vitamin_e_mg: number;
-  vitamin_k_ug: number;
-  thiamin_mg: number;
-  riboflavin_mg: number;
-  niacin_mg: number;
-  vitamin_b6_mg: number;
-  folate_ug: number;
-  vitamin_b12_ug: number;
-  choline_mg: number;
-  calcium_mg: number;
-  iron_mg: number;
-  magnesium_mg: number;
-  phosphorus_mg: number;
-  potassium_mg: number;
-  zinc_mg: number;
-  copper_mg: number;
-  selenium_ug: number;
+// ---------------------------------------------------------------------------
+// Final validated meal (after USDA nutrition + portion optimization)
+// ---------------------------------------------------------------------------
+
+export interface ValidatedIngredient {
+  name: string;
+  amount_g: number;
+  calories: number;
+  protein_g: number;
+  carbs_g: number;
+  fat_g: number;
+  usda_fdc_id: number | null;
+  usda_validated: boolean;
 }
 
-export interface SlotAssignment {
-  food: CandidateFood;
-  portion_g: number;
-}
-
-export interface PlannedMeal {
+export interface ValidatedMeal {
   day_number: number;
-  meal_slot: MealSlot;
-  foods: SlotAssignment[];
-  total_calories: number;
-  total_protein_g: number;
-  total_carbs_g: number;
-  total_fat_g: number;
-  micronutrients: MicronutrientTotals;
-  recipe_name?: string;
-  recipe_instructions?: string;
-  prep_time_min?: number;
-  presentation_tips?: string;
-}
-
-export interface GeneratedRecipe {
-  slot: string;
+  meal_slot: string;
   recipe_name: string;
   recipe_instructions: string;
   prep_time_min: number;
   presentation_tips: string;
+  ingredients: ValidatedIngredient[];
+  total_calories: number;
+  total_protein_g: number;
+  total_carbs_g: number;
+  total_fat_g: number;
 }
+
+// ---------------------------------------------------------------------------
+// Shopping list
+// ---------------------------------------------------------------------------
 
 export interface ShoppingListItem {
   name: string;
   total_g: number;
   display_qty: string;
   category: ShoppingCategory;
-  usda_fdc_ids: number[];
 }
 
 export type ShoppingCategory =
@@ -141,27 +163,19 @@ export type ShoppingCategory =
   | 'frozen'
   | 'other';
 
-export interface AllergenFlag {
-  meal_day: number;
-  meal_slot: string;
-  allergen: string;
-  found_in: string;
-}
+// ---------------------------------------------------------------------------
+// Validation
+// ---------------------------------------------------------------------------
 
 export interface ValidationResult {
-  allergen_flags: AllergenFlag[];
   nutrition_drift_pct: number;
+  usda_match_rate: number;
   passed: boolean;
 }
 
-export interface SolverResult {
-  meals: PlannedMeal[];
-  objective_value: number;
-  solver_time_ms: number;
-  method: 'heuristic' | 'milp';
-  iterations: number;
-  unique_ingredients: number;
-}
+// ---------------------------------------------------------------------------
+// API response
+// ---------------------------------------------------------------------------
 
 export interface PlanResponse {
   plan_id: string;
@@ -170,14 +184,12 @@ export interface PlanResponse {
   end_date: string;
   duration_days: number;
   meals_per_day: number;
-  meals: PlannedMeal[];
+  meals: ValidatedMeal[];
   shopping_list: ShoppingListItem[];
   validation: ValidationResult;
-  solver_metadata: {
-    method: string;
-    solver_time_ms: number;
-    objective_value: number;
-    iterations: number;
-    unique_ingredients: number;
+  generation_metadata: {
+    model: string;
+    generation_time_ms: number;
+    chunks_generated: number;
   };
 }

@@ -1,1 +1,104 @@
-{}
+{
+  "tile": {
+    "title": "Plan diety",
+    "noPlan": "Stwórz spersonalizowany plan",
+    "activePlan": "Plan na {{days}} dni aktywny",
+    "viewPlan": "Zobacz plan",
+    "createPlan": "Stwórz plan",
+    "generating": "Generowanie planu…",
+    "viewProgress": "Zobacz postęp"
+  },
+  "wizard": {
+    "title": "Tworzenie planu diety",
+    "duration": "Czas trwania",
+    "durationOptions": {
+      "7": "1 tydzień",
+      "14": "2 tygodnie",
+      "30": "1 miesiąc"
+    },
+    "mealsPerDay": "Posiłki dziennie",
+    "excluded": "Wykluczone składniki",
+    "excludedPlaceholder": "Wpisz aby dodać…",
+    "excludedHint": "Uzupełnione na podstawie Twoich alergii",
+    "cuisines": "Preferencje kuchni",
+    "cuisinePlaceholder": "np. Śródziemnomorska, Azjatycka",
+    "cookingTime": "Czas gotowania",
+    "cookingOptions": {
+      "quick": "Szybko",
+      "moderate": "Umiarkowanie",
+      "elaborate": "Rozbudowane"
+    },
+    "mealBudget": "Budżet kaloryczny posiłków",
+    "mealBudgetHint": "Resztę zostaw na napoje i nieplanowane przekąski",
+    "mealBudgetValue": "{{budget}} kcal z {{total}} kcal ({{pct}}%)",
+    "generate": "Generuj plan",
+    "generating": "Generowanie planu…",
+    "generatingHint": "To może potrwać minutę. Tworzymy przepisy specjalnie dla Ciebie.",
+    "error": "Nie udało się wygenerować planu. Spróbuj ponownie.",
+    "back": "Wróć"
+  },
+  "calendar": {
+    "title": "Twój plan",
+    "day": "Dzień {{n}}",
+    "today": "Dzisiaj",
+    "shopping": "Lista zakupów",
+    "back": "Wróć",
+    "deletePlan": "Usuń plan",
+    "deleteConfirmTitle": "Usunąć ten plan?",
+    "deleteConfirmMessage": "Plan i wszystkie przepisy zostaną trwale usunięte. Tej operacji nie można cofnąć.",
+    "deleteConfirmCancel": "Anuluj",
+    "deleteConfirmDelete": "Usuń",
+    "generatingDay": "Generowanie przepisów…",
+    "generatingPlan": "Generowanie planu… {{done}}/{{total}} dni",
+    "generationError": "Coś poszło nie tak. Wróć i spróbuj ponownie.",
+    "noMeals": "Brak posiłków na ten dzień",
+    "stepFetchProfile": "Ładowanie profilu…",
+    "stepGenerateChunk": "Generowanie dni {{start}}–{{end}}…",
+    "stepOptimize": "Optymalizacja porcji…",
+    "stepFinalize": "Finalizacja planu…"
+  },
+  "slots": {
+    "breakfast": "Śniadanie",
+    "lunch": "Obiad",
+    "dinner": "Kolacja",
+    "snack_1": "Przekąska",
+    "snack_2": "Przekąska 2"
+  },
+  "mealCard": {
+    "prepTime": "{{min}} min",
+    "kcal": "{{n}} kcal",
+    "noRecipe": "Przepis w przygotowaniu…"
+  },
+  "recipe": {
+    "title": "Przepis",
+    "ingredients": "Składniki",
+    "instructions": "Instrukcje",
+    "nutrition": "Wartości odżywcze",
+    "prepTime": "Czas przygotowania",
+    "minutes": "{{n}} min",
+    "presentation": "Wskazówki serwowania",
+    "calories": "Kalorie",
+    "protein": "Białko",
+    "carbs": "Węglowodany",
+    "fat": "Tłuszcz",
+    "generatingPhoto": "Generowanie zdjęcia…",
+    "back": "Wróć"
+  },
+  "shopping": {
+    "title": "Lista zakupów",
+    "categories": {
+      "produce": "Warzywa i owoce",
+      "meat_seafood": "Mięso i ryby",
+      "dairy_eggs": "Nabiał i jaja",
+      "grains_bread": "Zboża i pieczywo",
+      "pantry": "Spiżarnia",
+      "oils_condiments": "Oleje i przyprawy",
+      "frozen": "Mrożonki",
+      "other": "Inne"
+    },
+    "items_one": "{{count}} pozycja",
+    "items_few": "{{count}} pozycje",
+    "items_many": "{{count}} pozycji",
+    "back": "Wróć"
+  }
+}

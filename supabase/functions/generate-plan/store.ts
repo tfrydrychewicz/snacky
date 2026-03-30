@@ -1,29 +1,32 @@
 import type { SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.0';
 import type {
-  SolverResult,
   PlanRequest,
   UserProfile,
-  PlanResponse,
+  ValidatedMeal,
   ShoppingListItem,
   ValidationResult,
 } from './schemas.ts';
-import { FOOD_COL_TO_RDA_KEY } from './rda.ts';
 
-export async function storePlan(
+interface GenerationMeta {
+  model: string;
+  generation_time_ms: number;
+  chunks_generated: number;
+}
+
+/**
+ * Creates the plan row with status='generating' so the client can
+ * start polling for meals immediately via the returned planId.
+ * Does NOT archive existing active plans — that happens in finalizePlan.
+ */
+export async function createPlanRow(
   supabase: SupabaseClient,
   userId: string,
   request: PlanRequest,
   profile: UserProfile,
-  result: SolverResult,
-  shoppingList: ShoppingListItem[],
-  validation: ValidationResult,
-): Promise<PlanResponse> {
+): Promise<string> {
   const startDate = new Date();
   const endDate = new Date(startDate);
   endDate.setDate(endDate.getDate() + request.duration_days - 1);
-
-  const startDateStr = startDate.toISOString().slice(0, 10);
-  const endDateStr = endDate.toISOString().slice(0, 10);
 
   const config = {
     duration_days: request.duration_days,
@@ -34,30 +37,14 @@ export async function storePlan(
     cooking_time_pref: request.cooking_time_pref,
   };
 
-  const solverMeta = {
-    method: result.method,
-    solver_time_ms: result.solver_time_ms,
-    objective_value: result.objective_value,
-    iterations: result.iterations,
-    unique_ingredients: result.unique_ingredients,
-  };
-
-  // Deactivate any existing active plans
-  await supabase
-    .from('diet_plans')
-    .update({ status: 'archived', updated_at: new Date().toISOString() })
-    .eq('user_id', userId)
-    .eq('status', 'active');
-
-  // Insert new plan
-  const { data: plan, error: planError } = await supabase
+  const { data: plan, error } = await supabase
     .from('diet_plans')
     .insert({
       user_id: userId,
       name: `${request.duration_days}-Day Plan`,
-      status: 'active',
-      start_date: startDateStr,
-      end_date: endDateStr,
+      status: 'generating',
+      start_date: startDate.toISOString().slice(0, 10),
+      end_date: endDate.toISOString().slice(0, 10),
       meals_per_day: request.meals_per_day,
       config,
       target_kcal: profile.target_kcal,
@@ -66,94 +53,178 @@ export async function storePlan(
         carbs_g: profile.target_carbs_g,
         fat_g: profile.target_fat_g,
       },
-      solver_metadata: solverMeta,
-      shopping_list: shoppingList,
-      validation,
     })
     .select('id')
     .single();
 
-  if (planError || !plan) {
-    throw new Error(`Failed to create diet plan: ${planError?.message ?? 'no data'}`);
+  if (error || !plan) {
+    throw new Error(`Failed to create diet plan: ${error?.message ?? 'no data'}`);
   }
 
-  const planId = (plan as { id: string }).id;
+  return (plan as { id: string }).id;
+}
 
-  // Insert plan meals in batches
-  const mealRows = result.meals.map((meal, idx) => ({
+/**
+ * Inserts a batch of meals (one chunk) into diet_plan_meals.
+ * Called after each 2-day chunk is USDA-enriched so the client
+ * can see meals appear progressively via polling.
+ */
+export async function insertChunkMeals(
+  supabase: SupabaseClient,
+  planId: string,
+  meals: ValidatedMeal[],
+  sortOffset: number,
+): Promise<void> {
+  const mealRows = meals.map((meal, idx) => ({
     diet_plan_id: planId,
     day_number: meal.day_number,
     meal_slot: meal.meal_slot,
-    recipe_name: meal.recipe_name ?? buildRecipeName(meal.foods.map((f) => f.food.description)),
-    recipe_instructions: meal.recipe_instructions ?? null,
-    prep_time_min: meal.prep_time_min ?? null,
-    ingredients: meal.foods.map((f) => {
-      const scale = f.portion_g / 100;
-      const micros: Record<string, number> = {};
-      for (const [col, key] of Object.entries(FOOD_COL_TO_RDA_KEY)) {
-        const val = (f.food as unknown as Record<string, number | null>)[col];
-        if (val != null) {
-          micros[key] = Math.round(val * scale * 100) / 100;
-        }
-      }
-      return {
-        name: f.food.description,
-        amount_g: f.portion_g,
-        usda_fdc_id: f.food.fdc_id,
-        calories: Math.round((f.food.calories_per_100g ?? 0) * scale),
-        protein_g: Math.round((f.food.protein_per_100g ?? 0) * scale * 10) / 10,
-        carbs_g: Math.round((f.food.carbs_per_100g ?? 0) * scale * 10) / 10,
-        fat_g: Math.round((f.food.fat_per_100g ?? 0) * scale * 10) / 10,
-        micronutrients: micros,
-      };
-    }),
+    recipe_name: meal.recipe_name,
+    recipe_instructions: meal.recipe_instructions,
+    prep_time_min: meal.prep_time_min,
+    ingredients: meal.ingredients.map((ing) => ({
+      name: ing.name,
+      amount_g: ing.amount_g,
+      usda_fdc_id: ing.usda_fdc_id,
+      calories: ing.calories,
+      protein_g: ing.protein_g,
+      carbs_g: ing.carbs_g,
+      fat_g: ing.fat_g,
+    })),
     calories: meal.total_calories,
     protein_g: meal.total_protein_g,
     carbs_g: meal.total_carbs_g,
     fat_g: meal.total_fat_g,
-    micronutrients: meal.micronutrients,
+    micronutrients: null,
+    image_url: null,
+    sort_order: sortOffset + idx,
+  }));
+
+  const { error } = await supabase
+    .from('diet_plan_meals')
+    .insert(mealRows);
+
+  if (error) {
+    throw new Error(`Failed to insert chunk meals: ${error.message}`);
+  }
+}
+
+/**
+ * Replaces pre-optimization meals with Pass 2 results,
+ * archives any existing active plans, and sets this plan to 'active'.
+ */
+export async function finalizePlan(
+  supabase: SupabaseClient,
+  userId: string,
+  planId: string,
+  finalMeals: ValidatedMeal[],
+  shoppingList: ShoppingListItem[],
+  validation: ValidationResult,
+  meta: GenerationMeta,
+): Promise<void> {
+  await supabase
+    .from('diet_plan_meals')
+    .delete()
+    .eq('diet_plan_id', planId);
+
+  const mealRows = finalMeals.map((meal, idx) => ({
+    diet_plan_id: planId,
+    day_number: meal.day_number,
+    meal_slot: meal.meal_slot,
+    recipe_name: meal.recipe_name,
+    recipe_instructions: meal.recipe_instructions,
+    prep_time_min: meal.prep_time_min,
+    ingredients: meal.ingredients.map((ing) => ({
+      name: ing.name,
+      amount_g: ing.amount_g,
+      usda_fdc_id: ing.usda_fdc_id,
+      calories: ing.calories,
+      protein_g: ing.protein_g,
+      carbs_g: ing.carbs_g,
+      fat_g: ing.fat_g,
+    })),
+    calories: meal.total_calories,
+    protein_g: meal.total_protein_g,
+    carbs_g: meal.total_carbs_g,
+    fat_g: meal.total_fat_g,
+    micronutrients: null,
     image_url: null,
     sort_order: idx,
   }));
 
-  const BATCH_SIZE = 50;
-  for (let i = 0; i < mealRows.length; i += BATCH_SIZE) {
-    const batch = mealRows.slice(i, i + BATCH_SIZE);
-    const { error: mealError } = await supabase
+  const BATCH = 50;
+  for (let i = 0; i < mealRows.length; i += BATCH) {
+    const batch = mealRows.slice(i, i + BATCH);
+    const { error } = await supabase
       .from('diet_plan_meals')
       .insert(batch);
-
-    if (mealError) {
-      throw new Error(`Failed to insert plan meals: ${mealError.message}`);
+    if (error) {
+      throw new Error(`Failed to insert final meals: ${error.message}`);
     }
   }
 
-  return {
-    plan_id: planId,
-    status: 'active',
-    start_date: startDateStr,
-    end_date: endDateStr,
-    duration_days: request.duration_days,
-    meals_per_day: request.meals_per_day,
-    meals: result.meals,
-    shopping_list: shoppingList,
-    validation,
-    solver_metadata: solverMeta,
-  };
+  await archiveAndActivate(supabase, userId, planId, shoppingList, validation, meta);
 }
 
-function buildRecipeName(foodNames: string[]): string {
-  if (foodNames.length === 0) return 'Empty meal';
-  if (foodNames.length === 1) return foodNames[0];
+/**
+ * Lightweight finalize — meals are already optimized and in DB.
+ * Archives old active plans, sets this plan to 'active' with metadata.
+ */
+export async function finalizePlanMetadata(
+  supabase: SupabaseClient,
+  userId: string,
+  planId: string,
+  shoppingList: ShoppingListItem[],
+  validation: ValidationResult,
+  meta: GenerationMeta,
+): Promise<void> {
+  await archiveAndActivate(supabase, userId, planId, shoppingList, validation, meta);
+}
 
-  const shortened = foodNames.map((name) => {
-    const parts = name.split(',');
-    return parts[0].trim();
-  });
+/**
+ * Update a single meal's image_url after async image generation.
+ */
+export async function updateMealImageUrl(
+  supabase: SupabaseClient,
+  mealId: string,
+  imageUrl: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from('diet_plan_meals')
+    .update({ image_url: imageUrl })
+    .eq('id', mealId);
 
-  if (shortened.length <= 3) {
-    return shortened.join(' with ');
+  if (error) {
+    throw new Error(`Failed to update meal image: ${error.message}`);
   }
+}
 
-  return `${shortened.slice(0, 2).join(' with ')} and ${shortened.length - 2} more`;
+async function archiveAndActivate(
+  supabase: SupabaseClient,
+  userId: string,
+  planId: string,
+  shoppingList: ShoppingListItem[],
+  validation: ValidationResult,
+  meta: GenerationMeta,
+): Promise<void> {
+  await supabase
+    .from('diet_plans')
+    .update({ status: 'archived', updated_at: new Date().toISOString() })
+    .eq('user_id', userId)
+    .eq('status', 'active');
+
+  const { error: updateError } = await supabase
+    .from('diet_plans')
+    .update({
+      status: 'active',
+      solver_metadata: { ...meta, method: 'llm' },
+      shopping_list: shoppingList,
+      validation,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', planId);
+
+  if (updateError) {
+    throw new Error(`Failed to finalize plan: ${updateError.message}`);
+  }
 }

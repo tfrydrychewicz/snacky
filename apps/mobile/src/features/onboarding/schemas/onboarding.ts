@@ -62,11 +62,19 @@ export const eatingTriggerOptions = [
   'reward',
 ] as const;
 
+export const countryOptions = [
+  'PL', 'US', 'GB', 'DE', 'FR', 'IT', 'ES', 'NL', 'SE', 'NO',
+  'DK', 'FI', 'AT', 'CH', 'BE', 'PT', 'IE', 'CZ', 'SK', 'HU',
+  'RO', 'BG', 'HR', 'GR', 'UA', 'CA', 'AU', 'NZ', 'JP', 'KR',
+  'IN', 'MX', 'BR', 'AR', 'ZA', 'IL', 'TR', 'AE', 'SA', 'SG',
+] as const;
+
 export const biometricsSchema = z.object({
   dateOfBirth: z.string().min(1),
   biologicalSex: z.enum(biologicalSexOptions),
   heightCm: z.number().min(100).max(250),
   weightKg: z.number().min(30).max(300),
+  country: z.string().length(2),
 });
 
 export const goalSchema = z.object({
@@ -129,6 +137,7 @@ export const DEFAULT_VALUES: OnboardingFormData = {
   biologicalSex: 'male',
   heightCm: 170,
   weightKg: 70,
+  country: '',
   goalType: 'maintain',
   goalWeightKg: 70,
   goalTimelineWeeks: 12,

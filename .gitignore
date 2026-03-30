@@ -75,3 +75,5 @@ GoogleService-Info.plist
 
 # Design reference (screenshots)
 design-reference/**/*.png
+
+.usda-cache/

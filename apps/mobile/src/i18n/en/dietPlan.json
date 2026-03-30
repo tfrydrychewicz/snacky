@@ -1,1 +1,103 @@
-{}
+{
+  "tile": {
+    "title": "Diet Plan",
+    "noPlan": "Create a personalized plan",
+    "activePlan": "{{days}}-day plan active",
+    "viewPlan": "View Plan",
+    "createPlan": "Create Plan",
+    "generating": "Generating your plan…",
+    "viewProgress": "View Progress"
+  },
+  "wizard": {
+    "title": "Create Diet Plan",
+    "duration": "Duration",
+    "durationOptions": {
+      "7": "1 week",
+      "14": "2 weeks",
+      "30": "1 month"
+    },
+    "mealsPerDay": "Meals per day",
+    "excluded": "Excluded ingredients",
+    "excludedPlaceholder": "Type to add…",
+    "excludedHint": "Pre-filled from your allergies",
+    "cuisines": "Cuisine preferences",
+    "cuisinePlaceholder": "e.g. Mediterranean, Asian",
+    "cookingTime": "Cooking time",
+    "cookingOptions": {
+      "quick": "Quick",
+      "moderate": "Moderate",
+      "elaborate": "Elaborate"
+    },
+    "mealBudget": "Meal calorie budget",
+    "mealBudgetHint": "Reserve the rest for drinks and unplanned snacks",
+    "mealBudgetValue": "{{budget}} kcal of {{total}} kcal ({{pct}}%)",
+    "generate": "Generate Plan",
+    "generating": "Generating your plan…",
+    "generatingHint": "This may take a minute. We're crafting recipes just for you.",
+    "error": "Failed to generate plan. Please try again.",
+    "back": "Back"
+  },
+  "calendar": {
+    "title": "Your Plan",
+    "day": "Day {{n}}",
+    "today": "Today",
+    "shopping": "Shopping List",
+    "back": "Back",
+    "deletePlan": "Delete Plan",
+    "deleteConfirmTitle": "Delete this plan?",
+    "deleteConfirmMessage": "This will permanently remove the plan and all its recipes. This action cannot be undone.",
+    "deleteConfirmCancel": "Cancel",
+    "deleteConfirmDelete": "Delete",
+    "generatingDay": "Generating recipes…",
+    "generatingPlan": "Generating plan… {{done}}/{{total}} days",
+    "generationError": "Something went wrong. Go back and try again.",
+    "noMeals": "No meals for this day",
+    "stepFetchProfile": "Loading your profile…",
+    "stepGenerateChunk": "Generating days {{start}}–{{end}}…",
+    "stepOptimize": "Optimizing portions…",
+    "stepFinalize": "Finalizing your plan…"
+  },
+  "slots": {
+    "breakfast": "Breakfast",
+    "lunch": "Lunch",
+    "dinner": "Dinner",
+    "snack_1": "Snack",
+    "snack_2": "Snack 2"
+  },
+  "mealCard": {
+    "prepTime": "{{min}} min",
+    "kcal": "{{n}} kcal",
+    "noRecipe": "Recipe pending…"
+  },
+  "recipe": {
+    "title": "Recipe",
+    "ingredients": "Ingredients",
+    "instructions": "Instructions",
+    "nutrition": "Nutrition",
+    "prepTime": "Prep time",
+    "minutes": "{{n}} min",
+    "presentation": "Serving tips",
+    "calories": "Calories",
+    "protein": "Protein",
+    "carbs": "Carbs",
+    "fat": "Fat",
+    "generatingPhoto": "Generating photo…",
+    "back": "Back"
+  },
+  "shopping": {
+    "title": "Shopping List",
+    "categories": {
+      "produce": "Produce",
+      "meat_seafood": "Meat & Seafood",
+      "dairy_eggs": "Dairy & Eggs",
+      "grains_bread": "Grains & Bread",
+      "pantry": "Pantry",
+      "oils_condiments": "Oils & Condiments",
+      "frozen": "Frozen",
+      "other": "Other"
+    },
+    "items_one": "{{count}} item",
+    "items_other": "{{count}} items",
+    "back": "Back"
+  }
+}

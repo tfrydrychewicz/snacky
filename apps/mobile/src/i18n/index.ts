@@ -80,7 +80,7 @@ const resources = {
   },
 } as const;
 
-const getDeviceLocale = (): SupportedLocale => {
+export const getDeviceLocale = (): SupportedLocale => {
   const locales = RNLocalize.getLocales();
   const deviceLang = locales[0]?.languageCode;
 

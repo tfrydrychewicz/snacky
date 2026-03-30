@@ -76,6 +76,16 @@ const TEMPLATES: Record<string, Record<string, { title: string; body: string }>>
       body: 'Wykorzystałeś większość dziennego budżetu. Rozważ lżejszą kolację.',
     },
   },
+  plan_ready: {
+    en: {
+      title: 'Your diet plan is ready! 🎉',
+      body: 'Your personalized meal plan has been generated. Open the app to see it.',
+    },
+    pl: {
+      title: 'Twój plan diety jest gotowy! 🎉',
+      body: 'Twój spersonalizowany plan posiłków został wygenerowany. Otwórz aplikację, aby go zobaczyć.',
+    },
+  },
   weekly_report: {
     en: {
       title: 'Your weekly report is ready 📊',

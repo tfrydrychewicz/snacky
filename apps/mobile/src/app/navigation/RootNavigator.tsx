@@ -16,6 +16,10 @@ import { MealPhotoGalleryScreen } from '~/features/meals/screens/MealPhotoGaller
 import { MealPhotoDetailScreen } from '~/features/meals/screens/MealPhotoDetailScreen';
 import { MeasurementInputScreen } from '~/features/progress/screens/MeasurementInputScreen';
 import { MeasurementListScreen } from '~/features/progress/screens/MeasurementListScreen';
+import { PlanConfigWizardScreen } from '~/features/diet-plan/screens/PlanConfigWizardScreen';
+import { PlanCalendarScreen } from '~/features/diet-plan/screens/PlanCalendarScreen';
+import { RecipeDetailScreen } from '~/features/diet-plan/screens/RecipeDetailScreen';
+import { ShoppingListScreen } from '~/features/diet-plan/screens/ShoppingListScreen';
 import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -100,6 +104,26 @@ export const RootNavigator = () => {
             <Stack.Screen
               name="MeasurementList"
               component={MeasurementListScreen}
+              options={{ animation: 'slide_from_right' }}
+            />
+            <Stack.Screen
+              name="PlanWizard"
+              component={PlanConfigWizardScreen}
+              options={{ animation: 'slide_from_bottom' }}
+            />
+            <Stack.Screen
+              name="PlanCalendar"
+              component={PlanCalendarScreen}
+              options={{ animation: 'slide_from_right' }}
+            />
+            <Stack.Screen
+              name="RecipeDetail"
+              component={RecipeDetailScreen}
+              options={{ animation: 'slide_from_right' }}
+            />
+            <Stack.Screen
+              name="ShoppingList"
+              component={ShoppingListScreen}
               options={{ animation: 'slide_from_right' }}
             />
           </>

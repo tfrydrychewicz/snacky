@@ -13,6 +13,10 @@ export type RootStackParamList = {
   MealPhotoDetail: { mealId: string; imageKey: string; imageKeys?: string[] };
   MeasurementInput: { quickWeight?: boolean } | undefined;
   MeasurementList: undefined;
+  PlanWizard: undefined;
+  PlanCalendar: { planId?: string; config?: import('~/features/diet-plan/types').PlanConfig };
+  RecipeDetail: { planId: string; mealId: string };
+  ShoppingList: { planId: string };
 };
 
 export type AuthStackParamList = {

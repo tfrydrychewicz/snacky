@@ -598,32 +598,34 @@
 
 ### 3.3 Diet Plan UI (Week 19–21)
 
-- [ ] Create `PlanConfigWizard.tsx` — plan creation wizard:
-  - [ ] Duration picker (1 week / 2 weeks / 1 month / custom)
-  - [ ] Meals per day selector (3 / 4 / 5 / custom)
-  - [ ] Excluded ingredients (pre-filled from allergies + user additions)
-  - [ ] Cuisine preferences
-  - [ ] Budget constraint (optional)
-  - [ ] Cooking time preference (quick / moderate / elaborate)
-  - [ ] "Generate Plan" button with loading state
-- [ ] Create `PlanCalendar.tsx`:
-  - [ ] Interactive calendar view with daily meal cards
-  - [ ] Swipe between days
-- [ ] Create `MealSlotCard.tsx`:
-  - [ ] Recipe photo, name, prep time, calorie summary
-  - [ ] Tap → navigate to recipe detail
-  - [ ] Swap button → AI suggests alternatives matching nutrient slot
-- [ ] Create `RecipeDetail.tsx`:
-  - [ ] Full recipe with ingredients, instructions, nutritional breakdown
-  - [ ] Prep time, difficulty level
-- [ ] Implement meal swapping:
+- [x] Create `PlanConfigWizardScreen.tsx` — plan creation wizard:
+  - [x] Duration picker (1 week / 2 weeks / 1 month)
+  - [x] Meals per day selector (3 / 4 / 5)
+  - [x] Excluded ingredients (tag input with add/remove)
+  - [x] Cuisine preferences (tag input)
+  - [x] Cooking time preference (quick / moderate / elaborate) chip selector
+  - [x] "Generate Plan" button with loading state + generating hint
+- [x] Create `PlanCalendarScreen.tsx`:
+  - [x] Horizontal scrollable day selector with weekday labels + today highlight
+  - [x] FlatList of `MealSlotCard` components for selected day
+- [x] Create `MealSlotCard.tsx`:
+  - [x] Recipe name, slot label, prep time, calorie + macro pills (P/C/F)
+  - [x] Tap → navigate to recipe detail
+  - [ ] Swap button → AI suggests alternatives matching nutrient slot (deferred to 3.4)
+- [x] Create `RecipeDetailScreen.tsx`:
+  - [x] Full recipe with ingredients list, step-by-step instructions, nutritional breakdown bars
+  - [x] Prep time, calorie + macro visual breakdown
+- [ ] Implement meal swapping (deferred to 3.4):
   - [ ] Request alternative meal for slot → server generates options
   - [ ] User selects replacement → plan updated
-- [ ] Create `ShoppingList.tsx`:
-  - [ ] Aggregated ingredient list for selected days
-  - [ ] Grouped by category (produce, protein, dairy, etc.)
-  - [ ] Checkable items
-- [ ] Add diet plan translation keys to `en/dietPlan.json` and `pl/dietPlan.json`
+- [x] Create `ShoppingListScreen.tsx`:
+  - [x] Aggregated ingredient list from plan's `shopping_list` JSONB
+  - [x] Grouped by 8 categories (produce, meat/seafood, dairy/eggs, grains, pantry, oils, frozen, other)
+  - [x] Checkable items with strikethrough + progress counter
+- [x] Add diet plan translation keys to `en/dietPlan.json` and `pl/dietPlan.json` — full coverage for wizard, calendar, slots, recipe, shopping
+- [x] Add `DietPlanTile` to Dashboard — shows active plan status or "Create Plan" CTA
+- [x] Navigation: 4 new routes (PlanWizard, PlanCalendar, RecipeDetail, ShoppingList) in `RootStackParamList`
+- [x] API hooks: `useGeneratePlan` (TanStack mutation → edge function), `useActivePlan` / `usePlanById` (TanStack queries)
 
 ### 3.4 Plan Adherence Tracking (Week 21–22)
 
@@ -645,7 +647,7 @@
   - [ ] After each logged meal, recalculate remaining daily allocation
   - [ ] If user exceeds macro budget, trigger AI suggestion
 - [ ] Create proactive chat notification:
-  - [ ] "You're 400 kcal over on carbs. A grilled salmon with steamed broccoli tonight would balance your day."
+  - [ ] e.g. "You're 400 kcal over on carbs. A grilled salmon with steamed broccoli tonight would balance your day."
   - [ ] Suggestion rendered as push notification + chat message
 - [ ] Implement end-of-day summary notification with DQI-I score
 

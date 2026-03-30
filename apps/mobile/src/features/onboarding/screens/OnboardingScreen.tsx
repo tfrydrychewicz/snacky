@@ -9,6 +9,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { getSupabase } from '~/shared/api/client';
 import { useAuth } from '~/app/providers/AuthProvider';
+import { getDeviceLocale } from '~/i18n';
 import { colors, spacing, typography, radii, elevation } from '~/shared/theme/tokens';
 import { calculateTDEE, calculateMacros } from '../utils/tdee';
 import {
@@ -120,6 +121,8 @@ export const OnboardingScreen = () => {
           target_protein_g: macros.proteinG,
           target_carbs_g: macros.carbsG,
           target_fat_g: macros.fatG,
+          locale: getDeviceLocale(),
+          location: data.country || null,
           onboarding_completed_at: new Date().toISOString(),
         })
         .eq('user_id', user.id);

@@ -10,7 +10,11 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "isolatedModules": true,
-    "lib": ["ESNext", "DOM"]
+    "lib": ["ESNext", "DOM"],
+    "baseUrl": ".",
+    "paths": {
+      "https://esm.sh/@supabase/supabase-js@*": ["../../node_modules/@supabase/supabase-js"]
+    }
   },
   "include": ["deno.d.ts", "./**/*.ts"],
   "exclude": ["node_modules"]

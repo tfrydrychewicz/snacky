@@ -11,7 +11,9 @@ import type { Session, User } from '@supabase/supabase-js';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import * as Keychain from 'react-native-keychain';
 import Config from 'react-native-config';
+import * as RNLocalize from 'react-native-localize';
 import { getSupabase } from '~/shared/api/client';
+import { getDeviceLocale } from '~/i18n';
 
 const KEYCHAIN_SERVICE = 'com.snacky.auth';
 
@@ -107,6 +109,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       let onboarded = false;
       if (session?.user) {
         onboarded = await checkOnboardingStatus(session.user.id);
+
+        const deviceCountry = RNLocalize.getLocales()[0]?.countryCode ?? null;
+        void getSupabase()
+          .from('user_profiles')
+          .update({ locale: getDeviceLocale(), location: deviceCountry })
+          .eq('user_id', session.user.id);
       }
       setState({
         session,

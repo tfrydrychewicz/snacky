@@ -18,7 +18,7 @@ import { CalorieBudgetTile } from '../components/CalorieBudgetTile';
 import { MacroSummaryTile } from '../components/MacroSummaryTile';
 import { RecentMealsTile } from '../components/RecentMealsTile';
 import { QuickActionsTile } from '../components/QuickActionsTile';
-import { AIChatPreviewTile } from '../components/AIChatPreviewTile';
+import { DietPlanTile } from '~/features/diet-plan/components/DietPlanTile';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -109,8 +109,12 @@ export const DashboardScreen = () => {
           index={1}
         />
 
-        {/* AI Chat Preview */}
-        <AIChatPreviewTile index={2} />
+        {/* Diet Plan */}
+        <DietPlanTile
+          onCreatePlan={() => navigation.navigate('PlanWizard')}
+          onViewPlan={(planId) => navigation.navigate('PlanCalendar', { planId })}
+          index={2}
+        />
 
         {/* Daily Macros */}
         <MacroSummaryTile
