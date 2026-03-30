@@ -69,6 +69,13 @@ export class StepExecutor implements StepTools {
 
     log.info('Step executing', { step_id: stepId, run_id: this.runId, trace_id: this.traceId });
 
+    // Heartbeat: touch workflow_runs.updated_at so the stall-recovery
+    // watchdog knows this run is still actively executing.
+    await this.supabase
+      .from('workflow_runs')
+      .update({ status: 'running' })
+      .eq('id', this.runId);
+
     // Upsert a "running" row
     await this.supabase.from('workflow_steps').upsert(
       {

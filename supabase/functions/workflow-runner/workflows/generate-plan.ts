@@ -254,7 +254,7 @@ const NOTIFICATION_TEMPLATES: Record<string, { title: string; body: string }> = 
 export const generatePlanWorkflow: WorkflowDefinition<GeneratePlanPayload> = {
   id: 'generate-diet-plan',
   triggers: ['diet-plan/requested'],
-  retries: 2,
+  retries: 8,
 
   fn: async ({ event, step }) => {
     const { user_id, config, plan_id: planId } = event.payload;
