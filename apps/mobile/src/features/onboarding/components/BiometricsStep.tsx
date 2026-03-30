@@ -180,9 +180,12 @@ export const BiometricsStep = ({ form }: BiometricsStepProps) => {
                       paddingHorizontal: spacing.md,
                       borderRadius: radii.sm,
                       borderWidth: 1.5,
-                      borderColor: selectedCountry === code ? colors.primary : colors.outlineVariant,
+                      borderColor:
+                        selectedCountry === code ? colors.primary : colors.outlineVariant,
                       backgroundColor:
-                        selectedCountry === code ? colors.primaryFixed : colors.surfaceContainerLowest,
+                        selectedCountry === code
+                          ? colors.primaryFixed
+                          : colors.surfaceContainerLowest,
                       opacity: pressed ? 0.7 : 1,
                     })}
                   >
@@ -190,7 +193,9 @@ export const BiometricsStep = ({ form }: BiometricsStepProps) => {
                       style={{
                         ...typography.labelMd,
                         color:
-                          selectedCountry === code ? colors.onPrimaryContainer : colors.onSurfaceVariant,
+                          selectedCountry === code
+                            ? colors.onPrimaryContainer
+                            : colors.onSurfaceVariant,
                       }}
                     >
                       {t(`biometrics.countries.${code}`)}

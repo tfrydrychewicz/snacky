@@ -4,13 +4,7 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 // Request
 // ---------------------------------------------------------------------------
 
-export const MealSlotSchema = z.enum([
-  'breakfast',
-  'lunch',
-  'dinner',
-  'snack_1',
-  'snack_2',
-]);
+export const MealSlotSchema = z.enum(['breakfast', 'lunch', 'dinner', 'snack_1', 'snack_2']);
 export type MealSlot = z.infer<typeof MealSlotSchema>;
 
 export const PlanRequestSchema = z.object({

@@ -99,10 +99,7 @@ export interface StepTools {
   sendEvent: (stepId: string, event: WorkflowEvent) => Promise<void>;
 
   /** Spawn a child workflow and wait for its result. */
-  invoke: <T = unknown>(
-    stepId: string,
-    opts: InvokeOpts,
-  ) => Promise<T>;
+  invoke: <T = unknown>(stepId: string, opts: InvokeOpts) => Promise<T>;
 
   /**
    * Run multiple tasks concurrently with an optional concurrency limit.
@@ -143,10 +140,7 @@ export type WorkflowFn<TEvent = Record<string, unknown>, TResult = unknown> = (
   ctx: WorkflowContext<TEvent>,
 ) => Promise<TResult>;
 
-export interface WorkflowDefinition<
-  TEvent = Record<string, unknown>,
-  TResult = unknown,
-> {
+export interface WorkflowDefinition<TEvent = Record<string, unknown>, TResult = unknown> {
   id: string;
   triggers: string[];
   retries?: number;

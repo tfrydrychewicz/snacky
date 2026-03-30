@@ -10,9 +10,7 @@ import { generatePlanWorkflow } from './workflows/generate-plan.ts';
 
 const log = createLogger('workflow-runner');
 
-const ALL_WORKFLOWS = [
-  generatePlanWorkflow,
-];
+const ALL_WORKFLOWS = [generatePlanWorkflow];
 
 Deno.serve(async (req) => {
   const corsResponse = handleCors(req);
@@ -37,7 +35,7 @@ Deno.serve(async (req) => {
 
   let msg: QueueMessage;
   try {
-    msg = await req.json() as QueueMessage;
+    msg = (await req.json()) as QueueMessage;
   } catch {
     return new Response(JSON.stringify({ error: 'Invalid JSON' }), {
       status: 400,

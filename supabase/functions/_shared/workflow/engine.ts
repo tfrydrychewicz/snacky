@@ -99,12 +99,15 @@ export class WorkflowEngine {
       if (error) {
         if (error.code === '23505') {
           log.info('Duplicate event, run already exists — skipping', {
-            event_id: msg.event_id, workflow_id: wf.id,
+            event_id: msg.event_id,
+            workflow_id: wf.id,
           });
           continue;
         }
         log.error('Failed to create workflow run', {
-          workflow_id: wf.id, event_name: msg.event_name, error: error.message,
+          workflow_id: wf.id,
+          event_name: msg.event_name,
+          error: error.message,
         });
         continue;
       }
@@ -113,7 +116,9 @@ export class WorkflowEngine {
 
       const typedRun = run as { id: string; trace_id: string };
       log.info('Workflow run created', {
-        run_id: typedRun.id, workflow_id: wf.id, trace_id: typedRun.trace_id,
+        run_id: typedRun.id,
+        workflow_id: wf.id,
+        trace_id: typedRun.trace_id,
       });
 
       await this.executeRun(typedRun.id, wf);
@@ -152,15 +157,21 @@ export class WorkflowEngine {
 
     if (!wfDef) {
       log.error('Resume: workflow definition not found', {
-        run_id: msg.run_id, workflow_id: typedRun.workflow_id,
+        run_id: msg.run_id,
+        workflow_id: typedRun.workflow_id,
       });
-      await this.failRun(msg.run_id, `Workflow definition "${typedRun.workflow_id}" not registered`);
+      await this.failRun(
+        msg.run_id,
+        `Workflow definition "${typedRun.workflow_id}" not registered`,
+      );
       return;
     }
 
     log.info('Resuming workflow', {
-      run_id: msg.run_id, workflow_id: typedRun.workflow_id,
-      reason: msg.reason, trace_id: typedRun.trace_id,
+      run_id: msg.run_id,
+      workflow_id: typedRun.workflow_id,
+      reason: msg.reason,
+      trace_id: typedRun.trace_id,
     });
 
     await this.executeRun(msg.run_id, wfDef);
@@ -170,10 +181,7 @@ export class WorkflowEngine {
   // Core execution loop
   // ────────────────────────────────────────────────────────────
 
-  private async executeRun(
-    runId: string,
-    wfDef: WorkflowDefinition,
-  ): Promise<void> {
+  private async executeRun(runId: string, wfDef: WorkflowDefinition): Promise<void> {
     // Load the run
     const { data: run, error: runError } = await this.supabase
       .from('workflow_runs')
@@ -207,12 +215,7 @@ export class WorkflowEngine {
 
     const completedSteps = (steps ?? []) as unknown as WorkflowStepRow[];
 
-    const stepExecutor = new StepExecutor(
-      this.supabase,
-      runId,
-      typedRun.trace_id,
-      completedSteps,
-    );
+    const stepExecutor = new StepExecutor(this.supabase, runId, typedRun.trace_id, completedSteps);
 
     const triggerEvent = typedRun.trigger_event as {
       name: string;
@@ -244,7 +247,9 @@ export class WorkflowEngine {
         .eq('id', runId);
 
       log.info('Workflow completed', {
-        run_id: runId, workflow_id: wfDef.id, trace_id: typedRun.trace_id,
+        run_id: runId,
+        workflow_id: wfDef.id,
+        trace_id: typedRun.trace_id,
       });
 
       // If this is a child workflow, emit a completion event for the parent
@@ -258,18 +263,20 @@ export class WorkflowEngine {
     } catch (err) {
       if (err instanceof WorkflowPaused) {
         const pauseStatus: RunStatus =
-          err.reason === 'sleep' ? 'sleeping' :
-          err.reason === 'wait_for_event' ? 'waiting_for_event' :
-          'waiting_for_event'; // invoke also waits
+          err.reason === 'sleep'
+            ? 'sleeping'
+            : err.reason === 'wait_for_event'
+              ? 'waiting_for_event'
+              : 'waiting_for_event'; // invoke also waits
 
-        await this.supabase
-          .from('workflow_runs')
-          .update({ status: pauseStatus })
-          .eq('id', runId);
+        await this.supabase.from('workflow_runs').update({ status: pauseStatus }).eq('id', runId);
 
         log.info('Workflow paused', {
-          run_id: runId, workflow_id: wfDef.id, trace_id: typedRun.trace_id,
-          reason: err.reason, step_id: err.stepId,
+          run_id: runId,
+          workflow_id: wfDef.id,
+          trace_id: typedRun.trace_id,
+          reason: err.reason,
+          step_id: err.stepId,
         });
         return;
       }
@@ -281,8 +288,12 @@ export class WorkflowEngine {
 
       if (attempt < maxRetries) {
         log.warn('Workflow failed, scheduling retry', {
-          run_id: runId, workflow_id: wfDef.id, trace_id: typedRun.trace_id,
-          attempt, max_retries: maxRetries, error: errMsg,
+          run_id: runId,
+          workflow_id: wfDef.id,
+          trace_id: typedRun.trace_id,
+          attempt,
+          max_retries: maxRetries,
+          error: errMsg,
         });
 
         await this.supabase
@@ -298,8 +309,11 @@ export class WorkflowEngine {
         });
       } else {
         log.error('Workflow failed permanently', {
-          run_id: runId, workflow_id: wfDef.id, trace_id: typedRun.trace_id,
-          attempt, error: errMsg,
+          run_id: runId,
+          workflow_id: wfDef.id,
+          trace_id: typedRun.trace_id,
+          attempt,
+          error: errMsg,
         });
 
         await this.supabase

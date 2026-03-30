@@ -29,7 +29,8 @@ type Route = RouteProp<RootStackParamList, 'PlanCalendar'>;
 
 const POLL_INTERVAL_MS = 3000;
 
-function getStepLabel(stepId: string | null, t: (key: string, opts?: Record<string, unknown>) => string): string {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getStepLabel(stepId: string | null, t: (...args: any[]) => string): string {
   if (!stepId) return t('calendar.generatingDay');
   if (stepId === 'fetch-profile') return t('calendar.stepFetchProfile');
   const chunkMatch = stepId.match(/chunk-(\d+)-(\d+)/);
@@ -62,9 +63,8 @@ export const PlanCalendarScreen = () => {
 
   // Fallback: if neither route param nor MMKV had a planId, check DB for a 'generating' plan
   const { data: generatingPlan } = useGeneratingPlan();
-  const fallbackPlanId = !config && !routePlanId && !workflow.planId
-    ? generatingPlan?.planId ?? null
-    : null;
+  const fallbackPlanId =
+    !config && !routePlanId && !workflow.planId ? (generatingPlan?.planId ?? null) : null;
 
   const resolvedPlanId = routePlanId ?? workflow.planId ?? fallbackPlanId;
 
@@ -73,10 +73,9 @@ export const PlanCalendarScreen = () => {
 
   // Poll plan data (meals) while generating
   const isWorkflowActive = progress ? !progress.isTerminal : workflow.isGenerating;
-  const { data: savedPlan, isLoading: isSavedPlanLoading } = usePlanById(
-    resolvedPlanId ?? '',
-    { refetchInterval: isWorkflowActive ? POLL_INTERVAL_MS : false },
-  );
+  const { data: savedPlan, isLoading: isSavedPlanLoading } = usePlanById(resolvedPlanId ?? '', {
+    refetchInterval: isWorkflowActive ? POLL_INTERVAL_MS : false,
+  });
 
   // Generation is active until plan status leaves 'generating'
   const isGenerating = isWorkflowActive || savedPlan?.status === 'generating';
@@ -144,29 +143,32 @@ export const PlanCalendarScreen = () => {
 
   const handleDelete = useCallback(() => {
     if (!resolvedPlanId) return;
-    Alert.alert(
-      t('calendar.deleteConfirmTitle'),
-      t('calendar.deleteConfirmMessage'),
-      [
-        { text: t('calendar.deleteConfirmCancel'), style: 'cancel' },
-        {
-          text: t('calendar.deleteConfirmDelete'),
-          style: 'destructive',
-          onPress: () => {
-            deletePlan.mutate(resolvedPlanId, {
-              onSuccess: () => navigation.goBack(),
-            });
-          },
+    Alert.alert(t('calendar.deleteConfirmTitle'), t('calendar.deleteConfirmMessage'), [
+      { text: t('calendar.deleteConfirmCancel'), style: 'cancel' },
+      {
+        text: t('calendar.deleteConfirmDelete'),
+        style: 'destructive',
+        onPress: () => {
+          deletePlan.mutate(resolvedPlanId, {
+            onSuccess: () => navigation.goBack(),
+          });
         },
-      ],
-    );
+      },
+    ]);
   }, [t, deletePlan, resolvedPlanId, navigation]);
 
   const isLoading = !config && !fallbackPlanId && !workflow.planId && isSavedPlanLoading;
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: colors.surface,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
@@ -174,16 +176,20 @@ export const PlanCalendarScreen = () => {
 
   if (!config && !fallbackPlanId && !workflow.planId && !plan) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ ...typography.bodyLg, color: colors.onSurfaceVariant }}>
-          Plan not found
-        </Text>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: colors.surface,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Text style={{ ...typography.bodyLg, color: colors.onSurfaceVariant }}>Plan not found</Text>
       </View>
     );
   }
 
-  const isDayGenerated = (day: number) =>
-    isGenerating ? generatedDays.has(day) : true;
+  const isDayGenerated = (day: number) => (isGenerating ? generatedDays.has(day) : true);
 
   const canInteract = !!resolvedPlanId && !isGenerating;
 
@@ -310,9 +316,11 @@ export const PlanCalendarScreen = () => {
                       color: isSelected ? colors.onPrimary : colors.outline,
                     }}
                   >
-                    {isToday ? t('calendar.today') : dayDate
-                      ? dayDate.toLocaleDateString(undefined, { weekday: 'short' })
-                      : ''}
+                    {isToday
+                      ? t('calendar.today')
+                      : dayDate
+                        ? dayDate.toLocaleDateString(undefined, { weekday: 'short' })
+                        : ''}
                   </Text>
                   <Text
                     style={{
@@ -336,13 +344,12 @@ export const PlanCalendarScreen = () => {
         keyExtractor={(item) => item.id}
         renderItem={({ item, index }) => (
           <Animated.View
-            entering={FadeInDown.delay(index * 60).duration(300).springify()}
+            entering={FadeInDown.delay(index * 60)
+              .duration(300)
+              .springify()}
             style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.sm }}
           >
-            <MealSlotCard
-              meal={item}
-              onPress={() => handleMealPress(item)}
-            />
+            <MealSlotCard meal={item} onPress={() => handleMealPress(item)} />
           </Animated.View>
         )}
         contentContainerStyle={{ paddingBottom: insets.bottom + 80 }}
@@ -353,7 +360,14 @@ export const PlanCalendarScreen = () => {
               {t('calendar.day', { n: selectedDay })}
             </Text>
             {isGenerating && !isDayGenerated(selectedDay) && (
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginTop: spacing.sm }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: spacing.sm,
+                  marginTop: spacing.sm,
+                }}
+              >
                 <ActivityIndicator size="small" color={colors.primary} />
                 <Text style={{ ...typography.bodyMd, color: colors.onSurfaceVariant }}>
                   {t('calendar.generatingDay')}

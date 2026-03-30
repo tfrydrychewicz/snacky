@@ -33,13 +33,17 @@ export const DietPlanTile = ({ onCreatePlan, onViewPlan, index = 0 }: DietPlanTi
 
   // MMKV gives an instant answer while DB query loads; once resolved, DB is source of truth
   const generatingPlanId = isCheckingGeneration
-    ? persistedGeneration?.planId ?? null
-    : generatingPlan?.planId ?? null;
+    ? (persistedGeneration?.planId ?? null)
+    : (generatingPlan?.planId ?? null);
   const isGenerating = generatingPlanId != null;
   const hasActivePlan = plan != null;
 
   return (
-    <Animated.View entering={FadeInDown.delay(index * 50).duration(350).springify()}>
+    <Animated.View
+      entering={FadeInDown.delay(index * 50)
+        .duration(350)
+        .springify()}
+    >
       <Pressable
         onPress={() => {
           if (isGenerating) {
@@ -154,11 +158,13 @@ export const DietPlanTile = ({ onCreatePlan, onViewPlan, index = 0 }: DietPlanTi
           </Text>
           <ChevronRight
             size={14}
-            color={isGenerating
-              ? colors.tertiaryContainer
-              : hasActivePlan
-                ? colors.primaryContainer
-                : colors.onPrimary}
+            color={
+              isGenerating
+                ? colors.tertiaryContainer
+                : hasActivePlan
+                  ? colors.primaryContainer
+                  : colors.onPrimary
+            }
           />
         </View>
       </Pressable>

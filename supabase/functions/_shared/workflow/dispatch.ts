@@ -75,7 +75,8 @@ export async function dispatchEventDirect(
   } catch (err) {
     // Non-fatal — the pg_cron poller will pick it up
     log.warn('Direct dispatch via pg_net failed (non-fatal)', {
-      event_id: row.id, error: err instanceof Error ? err.message : String(err),
+      event_id: row.id,
+      error: err instanceof Error ? err.message : String(err),
     });
   }
 

@@ -27,11 +27,20 @@ export function parseDuration(d: string): number {
   if (!match) throw new Error(`Invalid duration: "${d}"`);
   const n = parseFloat(match[1]);
   switch (match[2].toLowerCase()) {
-    case 's': case 'sec': return n * 1_000;
-    case 'm': case 'min': return n * 60_000;
-    case 'h': case 'hr':  return n * 3_600_000;
-    case 'd': case 'day': return n * 86_400_000;
-    default: throw new Error(`Unknown unit in duration: "${d}"`);
+    case 's':
+    case 'sec':
+      return n * 1_000;
+    case 'm':
+    case 'min':
+      return n * 60_000;
+    case 'h':
+    case 'hr':
+      return n * 3_600_000;
+    case 'd':
+    case 'day':
+      return n * 86_400_000;
+    default:
+      throw new Error(`Unknown unit in duration: "${d}"`);
   }
 }
 
@@ -44,15 +53,17 @@ export class StepExecutor implements StepTools {
     private traceId: string,
     completedSteps: WorkflowStepRow[],
   ) {
-    this.completedSteps = new Map(
-      completedSteps.map((s) => [s.step_id, s]),
-    );
+    this.completedSteps = new Map(completedSteps.map((s) => [s.step_id, s]));
   }
 
   async run<T>(stepId: string, fn: () => Promise<T>): Promise<T> {
     const cached = this.completedSteps.get(stepId);
     if (cached?.status === 'completed') {
-      log.debug('Step replayed from cache', { step_id: stepId, run_id: this.runId, trace_id: this.traceId });
+      log.debug('Step replayed from cache', {
+        step_id: stepId,
+        run_id: this.runId,
+        trace_id: this.traceId,
+      });
       return cached.output as T;
     }
 
@@ -108,7 +119,10 @@ export class StepExecutor implements StepTools {
       });
 
       log.info('Step completed', {
-        step_id: stepId, run_id: this.runId, trace_id: this.traceId, duration_ms: durationMs,
+        step_id: stepId,
+        run_id: this.runId,
+        trace_id: this.traceId,
+        duration_ms: durationMs,
       });
 
       return result;
@@ -129,8 +143,11 @@ export class StepExecutor implements StepTools {
       );
 
       log.error('Step failed', {
-        step_id: stepId, run_id: this.runId, trace_id: this.traceId,
-        error: errMsg, duration_ms: durationMs,
+        step_id: stepId,
+        run_id: this.runId,
+        trace_id: this.traceId,
+        error: errMsg,
+        duration_ms: durationMs,
       });
       throw err;
     }
@@ -147,8 +164,11 @@ export class StepExecutor implements StepTools {
     const sleepUntil = new Date(Date.now() + ms).toISOString();
 
     log.info('Step sleeping', {
-      step_id: stepId, run_id: this.runId, trace_id: this.traceId,
-      duration, sleep_until: sleepUntil,
+      step_id: stepId,
+      run_id: this.runId,
+      trace_id: this.traceId,
+      duration,
+      sleep_until: sleepUntil,
     });
 
     await this.supabase.from('workflow_steps').upsert(
@@ -180,8 +200,11 @@ export class StepExecutor implements StepTools {
     const waitTimeout = new Date(Date.now() + timeoutMs).toISOString();
 
     log.info('Step waiting for event', {
-      step_id: stepId, run_id: this.runId, trace_id: this.traceId,
-      event: opts.event, timeout: opts.timeout,
+      step_id: stepId,
+      run_id: this.runId,
+      trace_id: this.traceId,
+      event: opts.event,
+      timeout: opts.timeout,
     });
 
     await this.supabase.from('workflow_steps').upsert(
@@ -208,7 +231,9 @@ export class StepExecutor implements StepTools {
     }
 
     log.info('Step sending event', {
-      step_id: stepId, run_id: this.runId, trace_id: this.traceId,
+      step_id: stepId,
+      run_id: this.runId,
+      trace_id: this.traceId,
       event_name: event.name,
     });
 
@@ -233,13 +258,22 @@ export class StepExecutor implements StepTools {
     );
 
     this.completedSteps.set(stepId, {
-      id: '', run_id: this.runId, step_id: stepId,
-      status: 'completed', output: null, error: null,
-      attempt: 1, max_retries: 3,
-      sleep_until: null, wait_event_name: null,
-      wait_timeout: null, wait_match: null,
-      started_at: null, completed_at: new Date().toISOString(),
-      duration_ms: 0, created_at: '',
+      id: '',
+      run_id: this.runId,
+      step_id: stepId,
+      status: 'completed',
+      output: null,
+      error: null,
+      attempt: 1,
+      max_retries: 3,
+      sleep_until: null,
+      wait_event_name: null,
+      wait_timeout: null,
+      wait_match: null,
+      started_at: null,
+      completed_at: new Date().toISOString(),
+      duration_ms: 0,
+      created_at: '',
     });
   }
 
@@ -251,7 +285,9 @@ export class StepExecutor implements StepTools {
     }
 
     log.info('Step invoking child workflow', {
-      step_id: stepId, run_id: this.runId, trace_id: this.traceId,
+      step_id: stepId,
+      run_id: this.runId,
+      trace_id: this.traceId,
       child_workflow: opts.workflowId,
     });
 
@@ -305,8 +341,11 @@ export class StepExecutor implements StepTools {
     const concurrency = opts?.concurrency ?? tasks.length;
 
     log.info('Parallel group starting', {
-      group_id: groupId, run_id: this.runId, trace_id: this.traceId,
-      task_count: tasks.length, concurrency,
+      group_id: groupId,
+      run_id: this.runId,
+      trace_id: this.traceId,
+      task_count: tasks.length,
+      concurrency,
     });
 
     const indexed = tasks.map((task, i) => ({
@@ -320,7 +359,9 @@ export class StepExecutor implements StepTools {
     );
 
     log.info('Parallel group partitioned', {
-      group_id: groupId, cached: indexed.length - pending.length, pending: pending.length,
+      group_id: groupId,
+      cached: indexed.length - pending.length,
+      pending: pending.length,
     });
 
     // Execute pending tasks with concurrency limit
@@ -353,7 +394,9 @@ export class StepExecutor implements StepTools {
     }
 
     log.info('Parallel group completed', {
-      group_id: groupId, run_id: this.runId, task_count: tasks.length,
+      group_id: groupId,
+      run_id: this.runId,
+      task_count: tasks.length,
     });
 
     return results;

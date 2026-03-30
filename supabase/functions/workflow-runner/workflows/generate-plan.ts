@@ -28,7 +28,13 @@ import {
   type ValidatedMeal,
   type USDAFood,
 } from '../../generate-plan/schemas.ts';
-import { buildRecipePrompt, buildPortionPrompt, buildDaySummary, buildParallelHint, getMealTargets } from '../../generate-plan/prompt-builder.ts';
+import {
+  buildRecipePrompt,
+  buildPortionPrompt,
+  buildDaySummary,
+  buildParallelHint,
+  getMealTargets,
+} from '../../generate-plan/prompt-builder.ts';
 import type { RecipePromptOpts } from '../../generate-plan/prompt-builder.ts';
 import {
   enrichWithUSDA,
@@ -38,7 +44,11 @@ import {
   scalePortionsPerMeal,
 } from '../../generate-plan/nutrition-validator.ts';
 import { generateShoppingList } from '../../generate-plan/shopping-list.ts';
-import { insertChunkMeals, finalizePlanMetadata, updateMealImageUrl } from '../../generate-plan/store.ts';
+import {
+  insertChunkMeals,
+  finalizePlanMetadata,
+  updateMealImageUrl,
+} from '../../generate-plan/store.ts';
 import { generateAndUploadMealImage } from '../../generate-plan/image-generator.ts';
 
 const log = createLogger('wf-generate-plan');
@@ -214,7 +224,11 @@ function extractPlanObject(parsed: unknown): unknown {
     }
     if (Array.isArray(val) && val.length > 0) {
       const first = val[0];
-      if (typeof first === 'object' && first !== null && 'meals' in (first as Record<string, unknown>)) {
+      if (
+        typeof first === 'object' &&
+        first !== null &&
+        'meals' in (first as Record<string, unknown>)
+      ) {
         return { days: val };
       }
     }
@@ -225,8 +239,14 @@ function extractPlanObject(parsed: unknown): unknown {
 // ── Notification helper ─────────────────────────────────────
 
 const NOTIFICATION_TEMPLATES: Record<string, { title: string; body: string }> = {
-  en: { title: 'Your diet plan is ready!', body: 'Your personalized meal plan has been generated. Open the app to see it.' },
-  pl: { title: 'Twój plan diety jest gotowy!', body: 'Twój spersonalizowany plan posiłków został wygenerowany. Otwórz aplikację, aby go zobaczyć.' },
+  en: {
+    title: 'Your diet plan is ready!',
+    body: 'Your personalized meal plan has been generated. Open the app to see it.',
+  },
+  pl: {
+    title: 'Twój plan diety jest gotowy!',
+    body: 'Twój spersonalizowany plan posiłków został wygenerowany. Otwórz aplikację, aby go zobaczyć.',
+  },
 };
 
 // ── The Workflow Definition ─────────────────────────────────
@@ -253,8 +273,8 @@ export const generatePlanWorkflow: WorkflowDefinition<GeneratePlanPayload> = {
         .from('user_profiles')
         .select(
           'user_id, target_kcal, target_protein_g, target_carbs_g, target_fat_g, ' +
-          'allergies, dietary_restrictions, cooking_skill, cuisine_preferences, ' +
-          'date_of_birth, biological_sex, locale, location',
+            'allergies, dietary_restrictions, cooking_skill, cuisine_preferences, ' +
+            'date_of_birth, biological_sex, locale, location',
         )
         .eq('user_id', user_id)
         .single();
@@ -304,9 +324,8 @@ export const generatePlanWorkflow: WorkflowDefinition<GeneratePlanPayload> = {
 
     for (let batchIdx = 0; batchIdx < batches.length; batchIdx++) {
       const batch = batches[batchIdx]!;
-      const previousSummary = previousRecipeNames.length > 0
-        ? buildDaySummary(previousRecipeNames)
-        : undefined;
+      const previousSummary =
+        previousRecipeNames.length > 0 ? buildDaySummary(previousRecipeNames) : undefined;
 
       // Compute sort offsets before parallel execution (each chunk
       // in the batch needs its own offset based on prior batches)
@@ -319,9 +338,7 @@ export const generatePlanWorkflow: WorkflowDefinition<GeneratePlanPayload> = {
 
       // Build per-chunk variation hints so parallel siblings diverge
       const batchHints: string[] = batch.map((chunk, j) => {
-        const siblingRanges = batch
-          .filter((_, k) => k !== j)
-          .map((s) => `${s.start}–${s.end}`);
+        const siblingRanges = batch.filter((_, k) => k !== j).map((s) => `${s.start}–${s.end}`);
         return buildParallelHint(j, batch.length, siblingRanges);
       });
 
@@ -334,17 +351,17 @@ export const generatePlanWorkflow: WorkflowDefinition<GeneratePlanPayload> = {
             const chunkDays = chunk.end - chunk.start + 1;
 
             // Pass 1: generate recipes
-            const pass1 = await callRecipeModel(
-              profile, request, chunk.start, chunk.end, apiKey,
-              {
-                previousDaySummary: previousSummary,
-                parallelHint: batchHints[j],
-              },
-            );
+            const pass1 = await callRecipeModel(profile, request, chunk.start, chunk.end, apiKey, {
+              previousDaySummary: previousSummary,
+              parallelHint: batchHints[j],
+            });
 
             // Enrich with USDA nutritional data
-            const { meals: enrichedMeals, usdaCache, ingredientEnMap } =
-              await enrichWithUSDA(pass1, supabase);
+            const {
+              meals: enrichedMeals,
+              usdaCache,
+              ingredientEnMap,
+            } = await enrichWithUSDA(pass1, supabase);
 
             // Pass 2: portion optimization per chunk
             let finalChunkMeals = enrichedMeals;
@@ -361,11 +378,19 @@ export const generatePlanWorkflow: WorkflowDefinition<GeneratePlanPayload> = {
               const usdaCacheObj: USDACache = Object.fromEntries(usdaCache);
               const enMapObj: IngredientEnMap = Object.fromEntries(ingredientEnMap);
               const adjustedAmounts = await callPortionModel(
-                enrichedMeals, usdaCacheObj, enMapObj, profile, apiKey, mealTargets,
+                enrichedMeals,
+                usdaCacheObj,
+                enMapObj,
+                profile,
+                apiKey,
+                mealTargets,
               );
               if (adjustedAmounts) {
                 finalChunkMeals = recomputeNutrition(
-                  enrichedMeals, adjustedAmounts, usdaCache, ingredientEnMap,
+                  enrichedMeals,
+                  adjustedAmounts,
+                  usdaCache,
+                  ingredientEnMap,
                 );
               }
 
@@ -380,9 +405,17 @@ export const generatePlanWorkflow: WorkflowDefinition<GeneratePlanPayload> = {
               // Fallback: per-meal proportional scaling
               if (driftAfterLLM > DRIFT_THRESHOLD) {
                 finalChunkMeals = scalePortionsPerMeal(
-                  finalChunkMeals, usdaCache, ingredientEnMap, mealTargets,
+                  finalChunkMeals,
+                  usdaCache,
+                  ingredientEnMap,
+                  mealTargets,
                 );
-                const driftAfterScale = computeDrift(finalChunkMeals, profile, chunkDays, budgetPct);
+                const driftAfterScale = computeDrift(
+                  finalChunkMeals,
+                  profile,
+                  chunkDays,
+                  budgetPct,
+                );
                 log.info('Per-meal proportional scaling applied as fallback', {
                   chunk: `${chunk.start}-${chunk.end}`,
                   drift_after_scale: Math.round(driftAfterScale * 10) / 10,
@@ -394,7 +427,8 @@ export const generatePlanWorkflow: WorkflowDefinition<GeneratePlanPayload> = {
             await insertChunkMeals(supabase, planId, finalChunkMeals, sortOffset);
 
             const matched = finalChunkMeals.reduce(
-              (s, m) => s + m.ingredients.filter((i) => i.usda_validated).length, 0,
+              (s, m) => s + m.ingredients.filter((i) => i.usda_validated).length,
+              0,
             );
             const total = finalChunkMeals.reduce((s, m) => s + m.ingredients.length, 0);
 
@@ -422,9 +456,11 @@ export const generatePlanWorkflow: WorkflowDefinition<GeneratePlanPayload> = {
           dayGroups.set(meal.day_number, list);
         }
         for (const names of dayGroups.values()) {
-          if (!previousRecipeNames.some((prev) =>
-            prev.length === names.length && prev.every((n, i) => n === names[i]),
-          )) {
+          if (
+            !previousRecipeNames.some(
+              (prev) => prev.length === names.length && prev.every((n, i) => n === names[i]),
+            )
+          ) {
             previousRecipeNames.push(names);
           }
         }
@@ -441,9 +477,8 @@ export const generatePlanWorkflow: WorkflowDefinition<GeneratePlanPayload> = {
       totalIngredients += c.total;
     }
 
-    const matchRate = totalIngredients > 0
-      ? Math.round((totalMatched / totalIngredients) * 1000) / 10
-      : 0;
+    const matchRate =
+      totalIngredients > 0 ? Math.round((totalMatched / totalIngredients) * 1000) / 10 : 0;
 
     // ── Finalize the plan (meals are already optimized and in DB) ──
     await step.run('finalize-plan', async () => {
@@ -451,10 +486,11 @@ export const generatePlanWorkflow: WorkflowDefinition<GeneratePlanPayload> = {
       const validation = buildValidation(finalDrift, matchRate);
       const shoppingList = generateShoppingList(allMeals);
 
-      await finalizePlanMetadata(
-        supabase, user_id, planId, shoppingList, validation,
-        { model: RECIPE_MODEL, generation_time_ms: 0, chunks_generated: chunks.length },
-      );
+      await finalizePlanMetadata(supabase, user_id, planId, shoppingList, validation, {
+        model: RECIPE_MODEL,
+        generation_time_ms: 0,
+        chunks_generated: chunks.length,
+      });
 
       return { planId, validation };
     });
@@ -492,7 +528,8 @@ export const generatePlanWorkflow: WorkflowDefinition<GeneratePlanPayload> = {
         return { sent: true };
       } catch (err) {
         log.warn('Notification send failed (non-fatal)', {
-          user_id, error: err instanceof Error ? err.message : String(err),
+          user_id,
+          error: err instanceof Error ? err.message : String(err),
         });
         return { sent: false };
       }

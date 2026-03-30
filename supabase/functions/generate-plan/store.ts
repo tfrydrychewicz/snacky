@@ -100,9 +100,7 @@ export async function insertChunkMeals(
     sort_order: sortOffset + idx,
   }));
 
-  const { error } = await supabase
-    .from('diet_plan_meals')
-    .insert(mealRows);
+  const { error } = await supabase.from('diet_plan_meals').insert(mealRows);
 
   if (error) {
     throw new Error(`Failed to insert chunk meals: ${error.message}`);
@@ -122,10 +120,7 @@ export async function finalizePlan(
   validation: ValidationResult,
   meta: GenerationMeta,
 ): Promise<void> {
-  await supabase
-    .from('diet_plan_meals')
-    .delete()
-    .eq('diet_plan_id', planId);
+  await supabase.from('diet_plan_meals').delete().eq('diet_plan_id', planId);
 
   const mealRows = finalMeals.map((meal, idx) => ({
     diet_plan_id: planId,
@@ -155,9 +150,7 @@ export async function finalizePlan(
   const BATCH = 50;
   for (let i = 0; i < mealRows.length; i += BATCH) {
     const batch = mealRows.slice(i, i + BATCH);
-    const { error } = await supabase
-      .from('diet_plan_meals')
-      .insert(batch);
+    const { error } = await supabase.from('diet_plan_meals').insert(batch);
     if (error) {
       throw new Error(`Failed to insert final meals: ${error.message}`);
     }

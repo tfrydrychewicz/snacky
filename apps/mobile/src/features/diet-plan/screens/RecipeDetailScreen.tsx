@@ -1,5 +1,13 @@
 import React, { useMemo } from 'react';
-import { View, Text, ScrollView, Pressable, ActivityIndicator, Image, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  ActivityIndicator,
+  Image,
+  Dimensions,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -48,7 +56,14 @@ export const RecipeDetailScreen = () => {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: colors.surface,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
@@ -56,10 +71,15 @@ export const RecipeDetailScreen = () => {
 
   if (!meal) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ ...typography.bodyLg, color: colors.onSurfaceVariant }}>
-          Meal not found
-        </Text>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: colors.surface,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Text style={{ ...typography.bodyLg, color: colors.onSurfaceVariant }}>Meal not found</Text>
       </View>
     );
   }
@@ -98,7 +118,13 @@ export const RecipeDetailScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         {/* Hero image */}
-        <View style={{ width: SCREEN_WIDTH, height: imageHeight, backgroundColor: colors.surfaceContainerHigh }}>
+        <View
+          style={{
+            width: SCREEN_WIDTH,
+            height: imageHeight,
+            backgroundColor: colors.surfaceContainerHigh,
+          }}
+        >
           {imageSignedUrl ? (
             <Image
               source={{ uri: imageSignedUrl }}
@@ -106,7 +132,9 @@ export const RecipeDetailScreen = () => {
               resizeMode="cover"
             />
           ) : (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.sm }}>
+            <View
+              style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.sm }}
+            >
               <ActivityIndicator size="small" color={colors.outline} />
               <ImageIcon size={28} color={colors.outlineVariant} />
               <Text style={{ ...typography.labelMd, color: colors.outlineVariant }}>
@@ -117,7 +145,10 @@ export const RecipeDetailScreen = () => {
         </View>
 
         {/* Title block */}
-        <Animated.View entering={FadeInDown.delay(0).duration(300).springify()} style={{ paddingHorizontal: spacing.lg }}>
+        <Animated.View
+          entering={FadeInDown.delay(0).duration(300).springify()}
+          style={{ paddingHorizontal: spacing.lg }}
+        >
           <Text style={{ ...typography.labelLg, color: colors.primary, marginBottom: 4 }}>
             {slotLabel}
           </Text>
@@ -151,7 +182,10 @@ export const RecipeDetailScreen = () => {
         </Animated.View>
 
         {/* Nutrition card */}
-        <Animated.View entering={FadeInDown.delay(60).duration(300).springify()} style={{ paddingHorizontal: spacing.lg }}>
+        <Animated.View
+          entering={FadeInDown.delay(60).duration(300).springify()}
+          style={{ paddingHorizontal: spacing.lg }}
+        >
           <View
             style={{
               backgroundColor: colors.surfaceContainerLowest,
@@ -160,33 +194,40 @@ export const RecipeDetailScreen = () => {
               ...elevation.ambient,
             }}
           >
-            <Text style={{ ...typography.titleMd, color: colors.onSurface, marginBottom: spacing.md }}>
+            <Text
+              style={{ ...typography.titleMd, color: colors.onSurface, marginBottom: spacing.md }}
+            >
               {t('recipe.nutrition')}
             </Text>
             <NutrientRow
               label={t('recipe.protein')}
               value={`${Math.round(meal.protein_g)}g`}
               color={colors.macro.protein}
-              pct={meal.protein_g * 4 / Math.max(meal.calories, 1)}
+              pct={(meal.protein_g * 4) / Math.max(meal.calories, 1)}
             />
             <NutrientRow
               label={t('recipe.carbs')}
               value={`${Math.round(meal.carbs_g)}g`}
               color={colors.macro.carbs}
-              pct={meal.carbs_g * 4 / Math.max(meal.calories, 1)}
+              pct={(meal.carbs_g * 4) / Math.max(meal.calories, 1)}
             />
             <NutrientRow
               label={t('recipe.fat')}
               value={`${Math.round(meal.fat_g)}g`}
               color={colors.macro.fat}
-              pct={meal.fat_g * 9 / Math.max(meal.calories, 1)}
+              pct={(meal.fat_g * 9) / Math.max(meal.calories, 1)}
             />
           </View>
         </Animated.View>
 
         {/* Ingredients */}
-        <Animated.View entering={FadeInDown.delay(120).duration(300).springify()} style={{ paddingHorizontal: spacing.lg }}>
-          <Text style={{ ...typography.titleLg, color: colors.onSurface, marginBottom: spacing.sm }}>
+        <Animated.View
+          entering={FadeInDown.delay(120).duration(300).springify()}
+          style={{ paddingHorizontal: spacing.lg }}
+        >
+          <Text
+            style={{ ...typography.titleLg, color: colors.onSurface, marginBottom: spacing.sm }}
+          >
             {t('recipe.ingredients')}
           </Text>
           {meal.ingredients.map((ing, i) => (
@@ -207,7 +248,13 @@ export const RecipeDetailScreen = () => {
               >
                 {ing.name}
               </Text>
-              <Text style={{ ...typography.labelLg, color: colors.onSurfaceVariant, marginLeft: spacing.sm }}>
+              <Text
+                style={{
+                  ...typography.labelLg,
+                  color: colors.onSurfaceVariant,
+                  marginLeft: spacing.sm,
+                }}
+              >
                 {Math.round(ing.amount_g)}g
               </Text>
             </View>
@@ -216,8 +263,13 @@ export const RecipeDetailScreen = () => {
 
         {/* Instructions */}
         {instructions.length > 0 && (
-          <Animated.View entering={FadeInDown.delay(180).duration(300).springify()} style={{ paddingHorizontal: spacing.lg }}>
-            <Text style={{ ...typography.titleLg, color: colors.onSurface, marginBottom: spacing.sm }}>
+          <Animated.View
+            entering={FadeInDown.delay(180).duration(300).springify()}
+            style={{ paddingHorizontal: spacing.lg }}
+          >
+            <Text
+              style={{ ...typography.titleLg, color: colors.onSurface, marginBottom: spacing.sm }}
+            >
               {t('recipe.instructions')}
             </Text>
             {instructions.map((step, i) => (
@@ -240,9 +292,7 @@ export const RecipeDetailScreen = () => {
                     marginTop: 2,
                   }}
                 >
-                  <Text style={{ ...typography.labelMd, color: colors.primary }}>
-                    {i + 1}
-                  </Text>
+                  <Text style={{ ...typography.labelMd, color: colors.primary }}>{i + 1}</Text>
                 </View>
                 <Text
                   style={{

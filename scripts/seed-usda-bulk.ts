@@ -186,8 +186,12 @@ async function main() {
     const rows = foods.map((f) => toRow(f, ds.source));
 
     // Filter out foods without calorie data
-    const withCalories = rows.filter((r) => r['calories_per_100g'] != null && (r['calories_per_100g'] as number) > 0);
-    console.log(`  ${withCalories.length} foods with calorie data (${rows.length - withCalories.length} skipped)`);
+    const withCalories = rows.filter(
+      (r) => r['calories_per_100g'] != null && (r['calories_per_100g'] as number) > 0,
+    );
+    console.log(
+      `  ${withCalories.length} foods with calorie data (${rows.length - withCalories.length} skipped)`,
+    );
 
     // Upsert in batches
     for (let i = 0; i < withCalories.length; i += BATCH_SIZE) {

@@ -57,17 +57,22 @@ export const ShoppingListScreen = () => {
       groups.set(cat, existing);
     }
 
-    return CATEGORY_ORDER
-      .filter((cat) => groups.has(cat))
-      .map((cat) => ({
-        category: cat,
-        items: groups.get(cat)!.sort((a, b) => a.name.localeCompare(b.name)),
-      }));
+    return CATEGORY_ORDER.filter((cat) => groups.has(cat)).map((cat) => ({
+      category: cat,
+      items: groups.get(cat)!.sort((a, b) => a.name.localeCompare(b.name)),
+    }));
   }, [plan]);
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: colors.surface,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
@@ -116,7 +121,9 @@ export const ShoppingListScreen = () => {
         {groupedItems.map(({ category, items }, gi) => (
           <Animated.View
             key={category}
-            entering={FadeInDown.delay(gi * 60).duration(300).springify()}
+            entering={FadeInDown.delay(gi * 60)
+              .duration(300)
+              .springify()}
           >
             {/* Category header */}
             <View
@@ -206,7 +213,14 @@ export const ShoppingListScreen = () => {
         ))}
 
         {groupedItems.length === 0 && (
-          <Text style={{ ...typography.bodyLg, color: colors.onSurfaceVariant, textAlign: 'center', marginTop: spacing.xl }}>
+          <Text
+            style={{
+              ...typography.bodyLg,
+              color: colors.onSurfaceVariant,
+              textAlign: 'center',
+              marginTop: spacing.xl,
+            }}
+          >
             No shopping list available
           </Text>
         )}

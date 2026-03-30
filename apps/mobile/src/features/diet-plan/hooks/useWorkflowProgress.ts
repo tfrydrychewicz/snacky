@@ -42,9 +42,7 @@ async function fetchWorkflowProgress(planId: string): Promise<WorkflowProgress |
   if (runError || !runs || runs.length === 0) return null;
 
   const typedRuns = runs as unknown as WorkflowRunRow[];
-  const run = typedRuns.find(
-    (r) => r.trigger_event?.payload?.plan_id === planId,
-  );
+  const run = typedRuns.find((r) => r.trigger_event?.payload?.plan_id === planId);
 
   if (!run) return null;
 
@@ -57,13 +55,12 @@ async function fetchWorkflowProgress(planId: string): Promise<WorkflowProgress |
   if (stepError) return null;
 
   const typedSteps = (steps ?? []) as unknown as WorkflowStep[];
-  const completedSteps = typedSteps
-    .filter((s) => s.status === 'completed')
-    .map((s) => s.step_id);
+  const completedSteps = typedSteps.filter((s) => s.status === 'completed').map((s) => s.step_id);
 
-  const currentStep = typedSteps.find(
-    (s) => s.status === 'running' || s.status === 'sleeping' || s.status === 'waiting_for_event',
-  )?.step_id ?? null;
+  const currentStep =
+    typedSteps.find(
+      (s) => s.status === 'running' || s.status === 'sleeping' || s.status === 'waiting_for_event',
+    )?.step_id ?? null;
 
   const isTerminal = TERMINAL_STATUSES.includes(run.status);
 

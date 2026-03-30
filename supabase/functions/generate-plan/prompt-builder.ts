@@ -13,16 +13,46 @@ const LOCALE_LABELS: Record<string, string> = {
 };
 
 const COUNTRY_LABELS: Record<string, string> = {
-  PL: 'Poland', US: 'United States', GB: 'United Kingdom', DE: 'Germany',
-  FR: 'France', IT: 'Italy', ES: 'Spain', NL: 'Netherlands',
-  SE: 'Sweden', NO: 'Norway', DK: 'Denmark', FI: 'Finland',
-  AT: 'Austria', CH: 'Switzerland', BE: 'Belgium', PT: 'Portugal',
-  IE: 'Ireland', CZ: 'Czech Republic', SK: 'Slovakia', HU: 'Hungary',
-  RO: 'Romania', BG: 'Bulgaria', HR: 'Croatia', GR: 'Greece',
-  UA: 'Ukraine', CA: 'Canada', AU: 'Australia', NZ: 'New Zealand',
-  JP: 'Japan', KR: 'South Korea', IN: 'India', MX: 'Mexico',
-  BR: 'Brazil', AR: 'Argentina', ZA: 'South Africa', IL: 'Israel',
-  TR: 'Turkey', AE: 'UAE', SA: 'Saudi Arabia', SG: 'Singapore',
+  PL: 'Poland',
+  US: 'United States',
+  GB: 'United Kingdom',
+  DE: 'Germany',
+  FR: 'France',
+  IT: 'Italy',
+  ES: 'Spain',
+  NL: 'Netherlands',
+  SE: 'Sweden',
+  NO: 'Norway',
+  DK: 'Denmark',
+  FI: 'Finland',
+  AT: 'Austria',
+  CH: 'Switzerland',
+  BE: 'Belgium',
+  PT: 'Portugal',
+  IE: 'Ireland',
+  CZ: 'Czech Republic',
+  SK: 'Slovakia',
+  HU: 'Hungary',
+  RO: 'Romania',
+  BG: 'Bulgaria',
+  HR: 'Croatia',
+  GR: 'Greece',
+  UA: 'Ukraine',
+  CA: 'Canada',
+  AU: 'Australia',
+  NZ: 'New Zealand',
+  JP: 'Japan',
+  KR: 'South Korea',
+  IN: 'India',
+  MX: 'Mexico',
+  BR: 'Brazil',
+  AR: 'Argentina',
+  ZA: 'South Africa',
+  IL: 'Israel',
+  TR: 'Turkey',
+  AE: 'UAE',
+  SA: 'Saudi Arabia',
+  SG: 'Singapore',
 };
 
 const COOKING_SKILL_LABELS: Record<string, string> = {
@@ -48,9 +78,9 @@ export interface PromptPair {
 
 const MEAL_CALORIE_DISTRIBUTION: Record<number, Record<string, number>> = {
   2: { breakfast: 0.45, dinner: 0.55 },
-  3: { breakfast: 0.30, lunch: 0.40, dinner: 0.30 },
+  3: { breakfast: 0.3, lunch: 0.4, dinner: 0.3 },
   4: { breakfast: 0.25, lunch: 0.35, dinner: 0.25, snack_1: 0.15 },
-  5: { breakfast: 0.25, lunch: 0.30, dinner: 0.25, snack_1: 0.10, snack_2: 0.10 },
+  5: { breakfast: 0.25, lunch: 0.3, dinner: 0.25, snack_1: 0.1, snack_2: 0.1 },
 };
 
 /**
@@ -63,7 +93,7 @@ export function getMealTargets(
   targetKcal: number,
   budgetPct: number,
 ): Record<string, number> {
-  const budgetKcal = Math.round(targetKcal * budgetPct / 100);
+  const budgetKcal = Math.round((targetKcal * budgetPct) / 100);
   const dist = MEAL_CALORIE_DISTRIBUTION[mealsPerDay] ?? MEAL_CALORIE_DISTRIBUTION[3]!;
   const result: Record<string, number> = {};
   for (const [slot, pct] of Object.entries(dist)) {
@@ -90,9 +120,7 @@ export function buildRecipePrompt(
   opts?: RecipePromptOpts,
 ): PromptPair {
   const lang = LOCALE_LABELS[profile.locale] ?? 'English';
-  const country = profile.location
-    ? COUNTRY_LABELS[profile.location] ?? profile.location
-    : null;
+  const country = profile.location ? (COUNTRY_LABELS[profile.location] ?? profile.location) : null;
   const isNonEnglish = profile.locale !== 'en';
 
   const system = [
@@ -104,16 +132,18 @@ export function buildRecipePrompt(
     'You create delicious, practical meal plans using real recipes that people actually cook.',
     'Every meal must be a coherent dish where ingredients complement each other.',
     'You always respond with valid JSON — no markdown fences, no commentary.',
-  ].filter(Boolean).join('\n');
+  ]
+    .filter(Boolean)
+    .join('\n');
 
   const constraints: string[] = [];
 
   const budgetPct = request.meal_budget_pct ?? 85;
   const mealTargets = getMealTargets(request.meals_per_day, profile.target_kcal, budgetPct);
-  const budgetKcal = Math.round(profile.target_kcal * budgetPct / 100);
-  const budgetPro = Math.round(profile.target_protein_g * budgetPct / 100);
-  const budgetCarbs = Math.round(profile.target_carbs_g * budgetPct / 100);
-  const budgetFat = Math.round(profile.target_fat_g * budgetPct / 100);
+  const budgetKcal = Math.round((profile.target_kcal * budgetPct) / 100);
+  const budgetPro = Math.round((profile.target_protein_g * budgetPct) / 100);
+  const budgetCarbs = Math.round((profile.target_carbs_g * budgetPct) / 100);
+  const budgetFat = Math.round((profile.target_fat_g * budgetPct) / 100);
 
   const perMealLine = Object.entries(mealTargets)
     .map(([slot, kcal]) => `${slot} ~${kcal} kcal`)
@@ -140,15 +170,18 @@ export function buildRecipePrompt(
     constraints.push(`EXCLUDED INGREDIENTS: ${request.excluded_ingredients.join(', ')}`);
   }
 
-  const cuisines = request.cuisine_preferences.length > 0
-    ? request.cuisine_preferences
-    : profile.cuisine_preferences;
+  const cuisines =
+    request.cuisine_preferences.length > 0
+      ? request.cuisine_preferences
+      : profile.cuisine_preferences;
   if (cuisines.length > 0) {
     constraints.push(`PREFERRED CUISINES: ${cuisines.join(', ')}`);
   }
 
   if (country) {
-    constraints.push(`USER LOCATION: ${country} — use ingredients commonly available in local supermarkets`);
+    constraints.push(
+      `USER LOCATION: ${country} — use ingredients commonly available in local supermarkets`,
+    );
   }
 
   const skill = COOKING_SKILL_LABELS[profile.cooking_skill ?? 'intermediate'] ?? 'intermediate';
@@ -205,7 +238,9 @@ export function buildRecipePrompt(
     '    }',
     '  ]',
     '}',
-  ].filter(Boolean).join('\n');
+  ]
+    .filter(Boolean)
+    .join('\n');
 
   return { system, user };
 }
@@ -247,7 +282,10 @@ export function buildPortionPrompt(
   const daySummaries: DayNutritionSummary[] = [];
 
   for (const [dayNum, dayMeals] of [...mealsByDay.entries()].sort((a, b) => a[0] - b[0])) {
-    let dayCal = 0, dayPro = 0, dayCarb = 0, dayFat = 0;
+    let dayCal = 0,
+      dayPro = 0,
+      dayCarb = 0,
+      dayFat = 0;
     const mealSummaries: DayNutritionSummary['meals'] = [];
 
     for (const meal of dayMeals) {
@@ -256,7 +294,12 @@ export function buildPortionPrompt(
         const enName = ingredientEnMap.get(ing.name.toLowerCase().trim()) ?? ing.name;
         const usda = usdaCache.get(enName.toLowerCase());
         const per100 = usda
-          ? { calories: usda.calories_per_100g, protein_g: usda.protein_per_100g, carbs_g: usda.carbs_per_100g, fat_g: usda.fat_per_100g }
+          ? {
+              calories: usda.calories_per_100g,
+              protein_g: usda.protein_per_100g,
+              carbs_g: usda.carbs_per_100g,
+              fat_g: usda.fat_per_100g,
+            }
           : { calories: 0, protein_g: 0, carbs_g: 0, fat_g: 0 };
         const scale = ing.amount_g / 100;
         const current = {
@@ -277,14 +320,23 @@ export function buildPortionPrompt(
     daySummaries.push({
       day_number: dayNum,
       meals: mealSummaries,
-      day_totals: { calories: round(dayCal), protein_g: round(dayPro, 1), carbs_g: round(dayCarb, 1), fat_g: round(dayFat, 1) },
+      day_totals: {
+        calories: round(dayCal),
+        protein_g: round(dayPro, 1),
+        carbs_g: round(dayCarb, 1),
+        fat_g: round(dayFat, 1),
+      },
     });
   }
 
-  const system = 'You are a nutrition calculator. You adjust ingredient gram amounts so daily macro totals match targets. You respond with valid JSON only.';
+  const system =
+    'You are a nutrition calculator. You adjust ingredient gram amounts so daily macro totals match targets. You respond with valid JSON only.';
 
   const perMealLine = mealTargets
-    ? '\nPER-MEAL CALORIE TARGETS: ' + Object.entries(mealTargets).map(([s, k]) => `${s} ~${k} kcal`).join(', ')
+    ? '\nPER-MEAL CALORIE TARGETS: ' +
+      Object.entries(mealTargets)
+        .map(([s, k]) => `${s} ~${k} kcal`)
+        .join(', ')
     : '';
 
   const dailyBudget = mealTargets
@@ -292,7 +344,7 @@ export function buildPortionPrompt(
     : profile.target_kcal;
 
   const user = [
-    'Adjust the amount_g for each ingredient so each day\'s totals are within ±10% of the targets.',
+    "Adjust the amount_g for each ingredient so each day's totals are within ±10% of the targets.",
     'Each meal should individually hit its per-meal calorie target — do NOT over-concentrate calories in one meal.',
     '',
     `DAILY TARGETS: ${dailyBudget} kcal, ${profile.target_protein_g}g protein, ${profile.target_carbs_g}g carbs, ${profile.target_fat_g}g fat`,
@@ -310,7 +362,9 @@ export function buildPortionPrompt(
     '',
     'Respond with ONLY this JSON:',
     '{ "days": [ { "day_number": <int>, "meals": [ { "slot": "<slot>", "ingredients": [ { "name_en": "<name>", "amount_g": <adjusted> } ] } ] } ] }',
-  ].filter(Boolean).join('\n');
+  ]
+    .filter(Boolean)
+    .join('\n');
 
   return { system, user };
 }
@@ -321,11 +375,16 @@ export function buildPortionPrompt(
 
 function buildSlotNames(mealsPerDay: number): string[] {
   switch (mealsPerDay) {
-    case 2: return ['breakfast', 'dinner'];
-    case 3: return ['breakfast', 'lunch', 'dinner'];
-    case 4: return ['breakfast', 'lunch', 'dinner', 'snack_1'];
-    case 5: return ['breakfast', 'lunch', 'dinner', 'snack_1', 'snack_2'];
-    default: return ['breakfast', 'lunch', 'dinner'];
+    case 2:
+      return ['breakfast', 'dinner'];
+    case 3:
+      return ['breakfast', 'lunch', 'dinner'];
+    case 4:
+      return ['breakfast', 'lunch', 'dinner', 'snack_1'];
+    case 5:
+      return ['breakfast', 'lunch', 'dinner', 'snack_1', 'snack_2'];
+    default:
+      return ['breakfast', 'lunch', 'dinner'];
   }
 }
 
@@ -361,9 +420,7 @@ export function buildParallelHint(
 }
 
 export function buildDaySummary(dayRecipeNames: string[][]): string {
-  return dayRecipeNames
-    .map((names, i) => `Day ${i + 1}: ${names.join(', ')}`)
-    .join('; ');
+  return dayRecipeNames.map((names, i) => `Day ${i + 1}: ${names.join(', ')}`).join('; ');
 }
 
 function round(n: number, decimals = 0): number {

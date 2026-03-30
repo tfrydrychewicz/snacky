@@ -4,10 +4,7 @@ import { getSupabase } from '~/shared/api/client';
 async function deletePlan(planId: string): Promise<void> {
   const supabase = getSupabase();
 
-  const { error } = await supabase
-    .from('diet_plans')
-    .delete()
-    .eq('id', planId);
+  const { error } = await supabase.from('diet_plans').delete().eq('id', planId);
 
   if (error) {
     throw new Error(error.message);

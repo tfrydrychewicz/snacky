@@ -70,16 +70,24 @@ Deno.serve(async (req) => {
   // Dispatch to the durable workflow engine — returns immediately
   let eventRow;
   try {
-    eventRow = await dispatchEventDirect(serviceSupabase, {
-      name: 'diet-plan/requested',
-      payload: { user_id: userId, config: request, plan_id: planId },
-      user_id: userId,
-    }, {
-      source: 'generate-plan',
-      idempotencyKey: `plan-${planId}`,
-    });
+    eventRow = await dispatchEventDirect(
+      serviceSupabase,
+      {
+        name: 'diet-plan/requested',
+        payload: { user_id: userId, config: request, plan_id: planId },
+        user_id: userId,
+      },
+      {
+        source: 'generate-plan',
+        idempotencyKey: `plan-${planId}`,
+      },
+    );
   } catch (err) {
-    log.error('Failed to dispatch workflow event', { user_id: userId, plan_id: planId, error: String(err) });
+    log.error('Failed to dispatch workflow event', {
+      user_id: userId,
+      plan_id: planId,
+      error: String(err),
+    });
     await serviceSupabase
       .from('diet_plans')
       .update({ status: 'failed', updated_at: new Date().toISOString() })
@@ -108,8 +116,8 @@ async function fetchUserProfile(
     .from('user_profiles')
     .select(
       'user_id, target_kcal, target_protein_g, target_carbs_g, target_fat_g, ' +
-      'allergies, dietary_restrictions, cooking_skill, cuisine_preferences, ' +
-      'date_of_birth, biological_sex, locale, location',
+        'allergies, dietary_restrictions, cooking_skill, cuisine_preferences, ' +
+        'date_of_birth, biological_sex, locale, location',
     )
     .eq('user_id', userId)
     .single();

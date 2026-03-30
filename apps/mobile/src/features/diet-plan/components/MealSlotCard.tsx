@@ -79,15 +79,7 @@ export const MealSlotCard = ({ meal, onPress }: MealSlotCardProps) => {
   );
 };
 
-const MacroPill = ({
-  label,
-  value,
-  color,
-}: {
-  label: string;
-  value: number;
-  color: string;
-}) => (
+const MacroPill = ({ label, value, color }: { label: string; value: number; color: string }) => (
   <View
     style={{
       backgroundColor: `${color}18`,
@@ -97,7 +89,8 @@ const MacroPill = ({
     }}
   >
     <Text style={{ ...typography.labelSm, color }}>
-      {label}{Math.round(value)}
+      {label}
+      {Math.round(value)}
     </Text>
   </View>
 );

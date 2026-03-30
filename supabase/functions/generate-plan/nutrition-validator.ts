@@ -17,17 +17,17 @@ const log = createLogger('nutrition-validator');
 // ---------------------------------------------------------------------------
 
 const INGREDIENT_ALIASES: Record<string, string> = {
-  'skyr': 'yogurt plain nonfat',
+  skyr: 'yogurt plain nonfat',
   'natural skyr': 'yogurt plain nonfat',
   'plain skyr': 'yogurt plain nonfat',
   'skyr plain': 'yogurt plain nonfat',
-  'quark': 'cheese cottage lowfat',
+  quark: 'cheese cottage lowfat',
   'lean quark': 'cheese cottage lowfat',
   'quark lean': 'cheese cottage lowfat',
   'lean cottage cheese': 'cheese cottage lowfat',
   'cottage cheese lean': 'cheese cottage lowfat',
   'low fat cottage cheese': 'cheese cottage lowfat',
-  'seitan': 'wheat gluten vital',
+  seitan: 'wheat gluten vital',
   'jasmine rice': 'rice white long grain regular raw',
   'jasmine rice dry': 'rice white long grain regular raw',
   'white jasmine rice': 'rice white long grain regular raw',
@@ -39,8 +39,8 @@ const INGREDIENT_ALIASES: Record<string, string> = {
   'brown rice dry': 'rice brown long grain raw',
   'oat flakes': 'oats regular',
   'rolled oats': 'oats regular',
-  'oats': 'oats regular',
-  'passata': 'tomato puree canned',
+  oats: 'oats regular',
+  passata: 'tomato puree canned',
   'tomato passata': 'tomato puree canned',
   'rapeseed oil': 'oil canola',
   'canola oil': 'oil canola',
@@ -52,17 +52,17 @@ const INGREDIENT_ALIASES: Record<string, string> = {
   'light coconut milk': 'coconut milk canned',
   'egg whites': 'egg white raw fresh',
   'egg white': 'egg white raw fresh',
-  'lime': 'limes raw',
-  'chives': 'chives raw',
-  'kefir': 'kefir lowfat milk',
-  'buttermilk': 'buttermilk lowfat',
+  lime: 'limes raw',
+  chives: 'chives raw',
+  kefir: 'kefir lowfat milk',
+  buttermilk: 'buttermilk lowfat',
   'buckwheat groats': 'buckwheat',
-  'bulgur': 'bulgur dry',
-  'millet': 'millet raw',
-  'couscous': 'couscous dry',
-  'halloumi': 'cheese feta',
-  'tempeh': 'tempeh',
-  'edamame': 'edamame frozen prepared',
+  bulgur: 'bulgur dry',
+  millet: 'millet raw',
+  couscous: 'couscous dry',
+  halloumi: 'cheese feta',
+  tempeh: 'tempeh',
+  edamame: 'edamame frozen prepared',
   'curry paste': 'spices curry powder',
   'red curry paste': 'spices curry powder',
   'oat flour': 'flour oat',
@@ -79,13 +79,13 @@ const INGREDIENT_ALIASES: Record<string, string> = {
   'cocktail tomatoes': 'tomatoes red ripe raw',
   'red onion': 'onions raw',
   'yellow onion': 'onions raw',
-  'onion': 'onions raw',
+  onion: 'onions raw',
   'red bell pepper': 'peppers sweet red raw',
   'bell pepper': 'peppers sweet red raw',
   'green bell pepper': 'peppers sweet green raw',
   'smoked paprika': 'spices paprika',
   'ground cumin': 'spices cumin seed',
-  'cinnamon': 'spices cinnamon ground',
+  cinnamon: 'spices cinnamon ground',
   'ground cinnamon': 'spices cinnamon ground',
   'ground turmeric': 'spices turmeric ground',
   'ground ginger': 'spices ginger ground',
@@ -104,18 +104,18 @@ const INGREDIENT_ALIASES: Record<string, string> = {
   'canned red beans': 'beans kidney red canned drained',
   'red kidney beans canned': 'beans kidney red canned drained',
   'baking powder': 'leavening agents baking powder',
-  'salt': 'salt table',
+  salt: 'salt table',
   'low fat cottage cheese': 'cheese cottage lowfat',
   'low-fat cottage cheese': 'cheese cottage lowfat',
   'curd cheese': 'cheese cottage lowfat',
   'farmers cheese': 'cheese cottage lowfat',
   'low fat quark': 'cheese cottage lowfat',
   'low-fat quark': 'cheese cottage lowfat',
-  'paneer': 'cheese ricotta whole milk',
+  paneer: 'cheese ricotta whole milk',
   'paneer cheese': 'cheese ricotta whole milk',
   'paneer light': 'cheese ricotta part skim milk',
-  'egg': 'egg whole raw fresh',
-  'eggs': 'egg whole raw fresh',
+  egg: 'egg whole raw fresh',
+  eggs: 'egg whole raw fresh',
   'whole egg': 'egg whole raw fresh',
   'whole eggs': 'egg whole raw fresh',
   'cooked red lentils': 'lentils mature seeds cooked boiled',
@@ -124,14 +124,14 @@ const INGREDIENT_ALIASES: Record<string, string> = {
   'cooked chickpeas': 'chickpeas mature seeds cooked boiled',
   'canned chickpeas': 'chickpeas mature seeds canned drained',
   'cooked quinoa': 'quinoa cooked',
-  'milk': 'milk whole milkfat',
+  milk: 'milk whole milkfat',
   'whole milk': 'milk whole milkfat',
   'low fat milk': 'milk lowfat fluid milkfat',
   '1.5% milk': 'milk lowfat fluid milkfat',
   '2% milk': 'milk reduced fat fluid milkfat',
   'skim milk': 'milk nonfat fluid',
   'soy sauce': 'soy sauce made from soy wheat',
-  'parmesan': 'cheese parmesan hard',
+  parmesan: 'cheese parmesan hard',
   'parmesan cheese': 'cheese parmesan hard',
   'kidney beans': 'beans kidney red mature seeds canned',
   'canned kidney beans drained': 'beans kidney red mature seeds canned drained',
@@ -141,10 +141,10 @@ const INGREDIENT_ALIASES: Record<string, string> = {
   'frozen berries': 'strawberries frozen unsweetened',
   'frozen raspberries': 'raspberries raw',
   'raspberries frozen': 'raspberries raw',
-  'spinach': 'spinach raw',
+  spinach: 'spinach raw',
   'firm tofu': 'tofu firm prepared calcium sulfate magnesium',
   'natural tofu': 'tofu firm prepared calcium sulfate magnesium',
-  'corn': 'corn sweet yellow raw',
+  corn: 'corn sweet yellow raw',
   'sweet corn': 'corn sweet yellow raw',
   'peanut butter': 'peanut butter smooth style',
   'peanut butter smooth': 'peanut butter smooth style',
@@ -155,8 +155,8 @@ const INGREDIENT_ALIASES: Record<string, string> = {
   'high-protein natural yogurt': 'yogurt greek plain nonfat',
   'greek yogurt': 'yogurt greek plain nonfat',
   'greek yogurt plain': 'yogurt greek plain nonfat',
-  'potatoes': 'potatoes white flesh and skin raw',
-  'potato': 'potatoes white flesh and skin raw',
+  potatoes: 'potatoes white flesh and skin raw',
+  potato: 'potatoes white flesh and skin raw',
 };
 
 const USDA_SELECT =
@@ -522,7 +522,10 @@ export function recomputeNutrition(
 
       const usda = usdaCache.get(enName.toLowerCase()) ?? usdaCache.get(localKey);
 
-      let cal = 0, pro = 0, carb = 0, fat = 0;
+      let cal = 0,
+        pro = 0,
+        carb = 0,
+        fat = 0;
       if (usda) {
         const scale = newAmount / 100;
         cal = round(usda.calories_per_100g * scale);
@@ -556,7 +559,9 @@ export function recomputeNutrition(
     };
   });
 
-  console.log(`[recomputeNutrition] ${totalAdjusted} ingredients adjusted, ${totalKept} kept original, ${mealsWithNoAdjustments}/${meals.length} meals had no matching adjustments`);
+  console.log(
+    `[recomputeNutrition] ${totalAdjusted} ingredients adjusted, ${totalKept} kept original, ${mealsWithNoAdjustments}/${meals.length} meals had no matching adjustments`,
+  );
 
   return result;
 }
@@ -590,7 +595,10 @@ export function scalePortionsToTarget(
     const scaleFactor = Math.min(Math.max(targetKcal / dayCal, 0.3), 2.5);
 
     for (const meal of dayMeals) {
-      let mealCal = 0, mealPro = 0, mealCarb = 0, mealFat = 0;
+      let mealCal = 0,
+        mealPro = 0,
+        mealCarb = 0,
+        mealFat = 0;
 
       const ingredients: ValidatedIngredient[] = meal.ingredients.map((ing) => {
         const newAmount = round(ing.amount_g * scaleFactor);
@@ -600,7 +608,10 @@ export function scalePortionsToTarget(
         const enName = ingredientEnMap.get(localKey) ?? ing.name;
         const usda = usdaCache.get(enName.toLowerCase()) ?? usdaCache.get(localKey);
 
-        let cal = 0, pro = 0, carb = 0, fat = 0;
+        let cal = 0,
+          pro = 0,
+          carb = 0,
+          fat = 0;
         if (usda) {
           const scale = clamped / 100;
           cal = round(usda.calories_per_100g * scale);
@@ -614,7 +625,14 @@ export function scalePortionsToTarget(
         mealCarb += carb;
         mealFat += fat;
 
-        return { ...ing, amount_g: clamped, calories: cal, protein_g: pro, carbs_g: carb, fat_g: fat };
+        return {
+          ...ing,
+          amount_g: clamped,
+          calories: cal,
+          protein_g: pro,
+          carbs_g: carb,
+          fat_g: fat,
+        };
       });
 
       scaled.push({
@@ -648,7 +666,10 @@ export function scalePortionsPerMeal(
     const scaleFactor = Math.min(Math.max(slotTarget / meal.total_calories, 0.3), 2.5);
     if (Math.abs(scaleFactor - 1) < 0.05) return meal;
 
-    let mealCal = 0, mealPro = 0, mealCarb = 0, mealFat = 0;
+    let mealCal = 0,
+      mealPro = 0,
+      mealCarb = 0,
+      mealFat = 0;
 
     const ingredients: ValidatedIngredient[] = meal.ingredients.map((ing) => {
       const newAmount = round(ing.amount_g * scaleFactor);
@@ -658,7 +679,10 @@ export function scalePortionsPerMeal(
       const enName = ingredientEnMap.get(localKey) ?? ing.name;
       const usda = usdaCache.get(enName.toLowerCase()) ?? usdaCache.get(localKey);
 
-      let cal = 0, pro = 0, carb = 0, fat = 0;
+      let cal = 0,
+        pro = 0,
+        carb = 0,
+        fat = 0;
       if (usda) {
         const scale = clamped / 100;
         cal = round(usda.calories_per_100g * scale);
@@ -672,7 +696,14 @@ export function scalePortionsPerMeal(
       mealCarb += carb;
       mealFat += fat;
 
-      return { ...ing, amount_g: clamped, calories: cal, protein_g: pro, carbs_g: carb, fat_g: fat };
+      return {
+        ...ing,
+        amount_g: clamped,
+        calories: cal,
+        protein_g: pro,
+        carbs_g: carb,
+        fat_g: fat,
+      };
     });
 
     return {
@@ -717,10 +748,7 @@ export function computeDrift(
   return round(Math.max(...drifts), 1);
 }
 
-export function buildValidation(
-  driftPct: number,
-  matchRate: number,
-): ValidationResult {
+export function buildValidation(driftPct: number, matchRate: number): ValidationResult {
   return {
     nutrition_drift_pct: driftPct,
     usda_match_rate: matchRate,
@@ -739,5 +767,5 @@ function round(n: number, decimals = 0): number {
 
 function pctDiff(actual: number, expected: number): number {
   if (expected === 0) return 0;
-  return Math.abs(actual - expected) / expected * 100;
+  return (Math.abs(actual - expected) / expected) * 100;
 }

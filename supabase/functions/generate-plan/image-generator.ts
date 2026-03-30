@@ -56,10 +56,7 @@ export async function generateAndUploadMealImage(
   }
 }
 
-async function callImageModel(
-  input: MealImageInput,
-  apiKey: string,
-): Promise<Uint8Array | null> {
+async function callImageModel(input: MealImageInput, apiKey: string): Promise<Uint8Array | null> {
   const ingredientList = input.ingredients.slice(0, 8).join(', ');
 
   const prompt = [

@@ -82,7 +82,7 @@ import { myWorkflow } from './workflows/my-workflow.ts';
 
 const ALL_WORKFLOWS = [
   generatePlanWorkflow,
-  myWorkflow,  // ← add here
+  myWorkflow, // ← add here
 ];
 ```
 
@@ -130,6 +130,7 @@ const user = await step.run('fetch-user', async () => {
 ```
 
 **Constraints:**
+
 - `stepId` must be unique within a workflow run
 - `fn` must return a JSON-serializable value (stored in JSONB)
 - If `fn` throws, the step is marked `failed` and the error propagates
@@ -153,7 +154,7 @@ Pause until a matching event arrives or a timeout expires.
 const result = await step.waitForEvent('wait-for-approval', {
   event: 'approval/completed',
   timeout: '24h',
-  match: { request_id: requestId },  // optional payload filter
+  match: { request_id: requestId }, // optional payload filter
 });
 
 if (result.timed_out) {
@@ -199,13 +200,13 @@ const childResult = await step.invoke('run-sub-process', {
 
 Query these views to monitor workflow health:
 
-| View | Description |
-|---|---|
-| `v_workflow_active_runs` | All non-terminal runs with age, step progress |
+| View                        | Description                                   |
+| --------------------------- | --------------------------------------------- |
+| `v_workflow_active_runs`    | All non-terminal runs with age, step progress |
 | `v_workflow_step_durations` | Per-step execution statistics (avg, p95, max) |
-| `v_workflow_error_rates` | 24h error rates per workflow |
-| `v_workflow_queue_depth` | PGMQ queue metrics |
-| `v_workflow_run_timeline` | Ordered step-by-step timeline for a run |
+| `v_workflow_error_rates`    | 24h error rates per workflow                  |
+| `v_workflow_queue_depth`    | PGMQ queue metrics                            |
+| `v_workflow_run_timeline`   | Ordered step-by-step timeline for a run       |
 
 **Example queries:**
 
@@ -239,14 +240,18 @@ WHERE run_id = '<uuid>';
 ```typescript
 supabase
   .channel('workflow-progress')
-  .on('postgres_changes', {
-    event: 'UPDATE',
-    schema: 'public',
-    table: 'workflow_runs',
-    filter: `id=eq.${runId}`,
-  }, (payload) => {
-    console.log('Run status:', payload.new.status);
-  })
+  .on(
+    'postgres_changes',
+    {
+      event: 'UPDATE',
+      schema: 'public',
+      table: 'workflow_runs',
+      filter: `id=eq.${runId}`,
+    },
+    (payload) => {
+      console.log('Run status:', payload.new.status);
+    },
+  )
   .subscribe();
 ```
 
@@ -259,56 +264,60 @@ Every engine and step operation emits structured JSON logs with `trace_id`, `run
 Both `workflow_events` and `workflow_runs` support an `idempotency_key` column (unique constraint). Use it to prevent duplicate processing:
 
 ```typescript
-await dispatchEvent(supabase, {
-  name: 'payment/received',
-  payload: { order_id: '123', amount: 99.99 },
-}, {
-  idempotencyKey: `payment-${orderId}`,
-});
+await dispatchEvent(
+  supabase,
+  {
+    name: 'payment/received',
+    payload: { order_id: '123', amount: 99.99 },
+  },
+  {
+    idempotencyKey: `payment-${orderId}`,
+  },
+);
 ```
 
 ## Database Schema
 
 ### `workflow_runs`
 
-| Column | Type | Description |
-|---|---|---|
-| `id` | UUID | Primary key |
-| `workflow_id` | TEXT | References a registered `WorkflowDefinition.id` |
-| `status` | ENUM | `pending`, `running`, `completed`, `failed`, `cancelled`, `sleeping`, `waiting_for_event` |
-| `trigger_event` | JSONB | The event that triggered this run |
-| `context` | JSONB | Arbitrary context data |
-| `output` | JSONB | Final return value of the workflow function |
-| `error` | TEXT | Error message (if failed) |
-| `attempt` | INT | Current attempt number |
-| `max_retries` | INT | Maximum retry attempts |
-| `idempotency_key` | TEXT | Optional deduplication key (unique) |
-| `parent_run_id` | UUID | Parent run ID (for child workflows) |
-| `trace_id` | TEXT | Trace ID for log correlation |
+| Column            | Type  | Description                                                                               |
+| ----------------- | ----- | ----------------------------------------------------------------------------------------- |
+| `id`              | UUID  | Primary key                                                                               |
+| `workflow_id`     | TEXT  | References a registered `WorkflowDefinition.id`                                           |
+| `status`          | ENUM  | `pending`, `running`, `completed`, `failed`, `cancelled`, `sleeping`, `waiting_for_event` |
+| `trigger_event`   | JSONB | The event that triggered this run                                                         |
+| `context`         | JSONB | Arbitrary context data                                                                    |
+| `output`          | JSONB | Final return value of the workflow function                                               |
+| `error`           | TEXT  | Error message (if failed)                                                                 |
+| `attempt`         | INT   | Current attempt number                                                                    |
+| `max_retries`     | INT   | Maximum retry attempts                                                                    |
+| `idempotency_key` | TEXT  | Optional deduplication key (unique)                                                       |
+| `parent_run_id`   | UUID  | Parent run ID (for child workflows)                                                       |
+| `trace_id`        | TEXT  | Trace ID for log correlation                                                              |
 
 ### `workflow_steps`
 
-| Column | Type | Description |
-|---|---|---|
-| `id` | UUID | Primary key |
-| `run_id` | UUID | FK to `workflow_runs` |
-| `step_id` | TEXT | Step name (unique per run) |
-| `status` | ENUM | `pending`, `running`, `completed`, `failed`, `sleeping`, `waiting_for_event` |
-| `output` | JSONB | Step return value |
-| `error` | TEXT | Error message (if failed) |
-| `sleep_until` | TIMESTAMPTZ | Wake-up time (for sleeping steps) |
-| `wait_event_name` | TEXT | Event to wait for |
-| `wait_timeout` | TIMESTAMPTZ | Timeout for event wait |
-| `wait_match` | JSONB | Payload filter for event matching |
-| `duration_ms` | INT | Execution duration |
+| Column            | Type        | Description                                                                  |
+| ----------------- | ----------- | ---------------------------------------------------------------------------- |
+| `id`              | UUID        | Primary key                                                                  |
+| `run_id`          | UUID        | FK to `workflow_runs`                                                        |
+| `step_id`         | TEXT        | Step name (unique per run)                                                   |
+| `status`          | ENUM        | `pending`, `running`, `completed`, `failed`, `sleeping`, `waiting_for_event` |
+| `output`          | JSONB       | Step return value                                                            |
+| `error`           | TEXT        | Error message (if failed)                                                    |
+| `sleep_until`     | TIMESTAMPTZ | Wake-up time (for sleeping steps)                                            |
+| `wait_event_name` | TEXT        | Event to wait for                                                            |
+| `wait_timeout`    | TIMESTAMPTZ | Timeout for event wait                                                       |
+| `wait_match`      | JSONB       | Payload filter for event matching                                            |
+| `duration_ms`     | INT         | Execution duration                                                           |
 
 ### `workflow_events`
 
-| Column | Type | Description |
-|---|---|---|
-| `id` | UUID | Primary key |
-| `event_name` | TEXT | Event name (e.g., `diet-plan/requested`) |
-| `payload` | JSONB | Event data |
-| `user_id` | UUID | Optional user association |
-| `source` | TEXT | Origin (e.g., `workflow:{runId}:{stepId}`) |
-| `idempotency_key` | TEXT | Deduplication key (unique) |
+| Column            | Type  | Description                                |
+| ----------------- | ----- | ------------------------------------------ |
+| `id`              | UUID  | Primary key                                |
+| `event_name`      | TEXT  | Event name (e.g., `diet-plan/requested`)   |
+| `payload`         | JSONB | Event data                                 |
+| `user_id`         | UUID  | Optional user association                  |
+| `source`          | TEXT  | Origin (e.g., `workflow:{runId}:{stepId}`) |
+| `idempotency_key` | TEXT  | Deduplication key (unique)                 |

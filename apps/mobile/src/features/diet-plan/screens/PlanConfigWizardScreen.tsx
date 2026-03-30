@@ -1,11 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  TextInput,
-} from 'react-native';
+import { View, Text, ScrollView, Pressable, TextInput } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -40,7 +34,7 @@ export const PlanConfigWizardScreen = () => {
 
   const { data: targets } = useUserTargets();
   const totalKcal = targets?.targetKcal ?? 2000;
-  const budgetKcal = Math.round(totalKcal * mealBudgetPct / 100);
+  const budgetKcal = Math.round((totalKcal * mealBudgetPct) / 100);
 
   const addExcluded = useCallback(() => {
     const trimmed = excludedInput.trim();
@@ -225,11 +219,19 @@ export const PlanConfigWizardScreen = () => {
         {/* Meal calorie budget */}
         <Animated.View entering={FadeInDown.delay(250).duration(300).springify()}>
           <Text style={sectionLabel}>{t('wizard.mealBudget')}</Text>
-          <Text style={{ ...typography.bodySm, color: colors.onSurfaceVariant, marginBottom: spacing.sm }}>
+          <Text
+            style={{
+              ...typography.bodySm,
+              color: colors.onSurfaceVariant,
+              marginBottom: spacing.sm,
+            }}
+          >
             {t('wizard.mealBudgetHint')}
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-            <Text style={{ ...typography.labelMd, color: colors.onSurfaceVariant }}>{`${mealBudgetPct}%`}</Text>
+            <Text
+              style={{ ...typography.labelMd, color: colors.onSurfaceVariant }}
+            >{`${mealBudgetPct}%`}</Text>
             <Slider
               style={{ flex: 1, height: 40 }}
               minimumValue={70}
@@ -243,7 +245,11 @@ export const PlanConfigWizardScreen = () => {
             />
           </View>
           <Text style={{ ...typography.bodySm, color: colors.onSurfaceVariant, marginTop: 4 }}>
-            {t('wizard.mealBudgetValue', { budget: budgetKcal, total: totalKcal, pct: mealBudgetPct })}
+            {t('wizard.mealBudgetValue', {
+              budget: budgetKcal,
+              total: totalKcal,
+              pct: mealBudgetPct,
+            })}
           </Text>
         </Animated.View>
 

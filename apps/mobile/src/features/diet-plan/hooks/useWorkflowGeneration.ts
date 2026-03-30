@@ -58,56 +58,59 @@ export function useWorkflowGeneration() {
     return { isGenerating: false, planId: null, error: null };
   });
 
-  const generate = useCallback(async (config: PlanConfig) => {
-    setState({ isGenerating: true, planId: null, error: null });
+  const generate = useCallback(
+    async (config: PlanConfig) => {
+      setState({ isGenerating: true, planId: null, error: null });
 
-    try {
-      const accessToken = await ensureValidSession();
-      if (!accessToken) {
-        await getSupabase().auth.signOut();
-        throw new Error('SESSION_EXPIRED');
+      try {
+        const accessToken = await ensureValidSession();
+        if (!accessToken) {
+          await getSupabase().auth.signOut();
+          throw new Error('SESSION_EXPIRED');
+        }
+
+        const baseUrl = Config.SUPABASE_URL ?? '';
+        const anonKey = Config.SUPABASE_ANON_KEY ?? '';
+
+        const resp = await fetch(`${baseUrl}/functions/v1/generate-plan`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${anonKey}`,
+            apikey: anonKey,
+            'x-user-token': accessToken,
+          },
+          body: JSON.stringify(config),
+        });
+
+        if (!resp.ok) {
+          const errBody = await resp.text().catch(() => `HTTP ${resp.status}`);
+          throw new Error(errBody);
+        }
+
+        const data = (await resp.json()) as GenerateResponse;
+
+        persistGeneration(data.plan_id);
+
+        setState({
+          isGenerating: true,
+          planId: data.plan_id,
+          error: null,
+        });
+
+        void queryClient.invalidateQueries({ queryKey: ['diet-plan'] });
+      } catch (err) {
+        console.error('[WorkflowGeneration] Failed:', (err as Error).message);
+        clearPersistedGeneration();
+        setState({
+          isGenerating: false,
+          planId: null,
+          error: (err as Error).message,
+        });
       }
-
-      const baseUrl = Config.SUPABASE_URL ?? '';
-      const anonKey = Config.SUPABASE_ANON_KEY ?? '';
-
-      const resp = await fetch(`${baseUrl}/functions/v1/generate-plan`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${anonKey}`,
-          apikey: anonKey,
-          'x-user-token': accessToken,
-        },
-        body: JSON.stringify(config),
-      });
-
-      if (!resp.ok) {
-        const errBody = await resp.text().catch(() => `HTTP ${resp.status}`);
-        throw new Error(errBody);
-      }
-
-      const data = (await resp.json()) as GenerateResponse;
-
-      persistGeneration(data.plan_id);
-
-      setState({
-        isGenerating: true,
-        planId: data.plan_id,
-        error: null,
-      });
-
-      void queryClient.invalidateQueries({ queryKey: ['diet-plan'] });
-    } catch (err) {
-      console.error('[WorkflowGeneration] Failed:', (err as Error).message);
-      clearPersistedGeneration();
-      setState({
-        isGenerating: false,
-        planId: null,
-        error: (err as Error).message,
-      });
-    }
-  }, [queryClient]);
+    },
+    [queryClient],
+  );
 
   const setCompleted = useCallback(() => {
     clearPersistedGeneration();
