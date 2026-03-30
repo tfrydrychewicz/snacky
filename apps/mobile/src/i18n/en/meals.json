@@ -17,6 +17,7 @@
   "detail_original": "AI Original",
   "detail_modified": "Your Edit",
   "detail_source_scan": "Photo scan",
+  "detail_source_barcode": "Barcode scan",
   "detail_source_manual": "Manual entry",
   "detail_logged_at": "Logged at {{time}}",
   "detail_nova": "NOVA {{class}}",

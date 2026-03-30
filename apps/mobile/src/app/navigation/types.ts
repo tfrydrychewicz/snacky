@@ -36,11 +36,37 @@ export type OnboardingStackParamList = {
   };
 };
 
+export interface BarcodeProduct {
+  name: string;
+  brand: string | null;
+  quantity: string | null;
+  serving_size: string | null;
+  serving_g: number | null;
+  image_url: string | null;
+  nova_group: 1 | 2 | 3 | 4 | null;
+  nutriscore: string | null;
+  per_100g: {
+    calories_kcal: number;
+    protein_g: number;
+    carbohydrates_g: number;
+    fat_g: number;
+    fiber_g: number | null;
+    sugar_g: number | null;
+    sodium_mg: number | null;
+    saturated_fat_g: number | null;
+  };
+}
+
 export type ScannerStackParamList = {
   Capture: undefined;
   Results: {
     scanResult: MealScanResult;
     photoUris: string[];
+    mealType: MealType;
+  };
+  BarcodeResult: {
+    product: BarcodeProduct;
+    barcode: string;
     mealType: MealType;
   };
 };

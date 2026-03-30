@@ -90,5 +90,24 @@
   "analyze_photos_one": "Analyze {{count}} photo",
   "analyze_photos_few": "Analyze {{count}} photos",
   "analyze_photos_many": "Analyze {{count}} photos",
-  "analyze_photos_other": "Analyze {{count}} photos"
+  "analyze_photos_other": "Analyze {{count}} photos",
+
+  "mode_photo": "Photo",
+  "mode_barcode": "Barcode",
+  "barcode_scanning": "Point at a barcode",
+  "barcode_scanning_hint": "Align the barcode within the frame",
+  "barcode_looking_up": "Looking up product...",
+  "barcode_not_found": "Product not found",
+  "barcode_not_found_hint": "This barcode isn't in our database. Try scanning the meal with a photo instead.",
+  "barcode_try_photo": "Scan with Photo",
+  "barcode_result_title": "Product Found",
+  "barcode_brand": "Brand",
+  "barcode_serving": "Serving size",
+  "barcode_per_100g": "Per 100g",
+  "barcode_per_serving": "Per serving ({{g}}g)",
+  "barcode_portion": "Your portion",
+  "barcode_portion_g": "{{value}}g",
+  "barcode_nutriscore": "Nutri-Score",
+  "barcode_log_meal": "Log as Meal",
+  "barcode_scan_another": "Scan Another"
 }

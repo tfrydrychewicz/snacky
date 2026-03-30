@@ -99,6 +99,13 @@ export const MealDetailScreen = () => {
       ? Math.round(aiAnalysis.overall_confidence * 100)
       : null;
   const isManual = meal.source === 'manual';
+  const isBarcode = meal.source === 'barcode';
+
+  const sourceLabel = isManual
+    ? t('detail_source_manual')
+    : isBarcode
+      ? t('detail_source_barcode')
+      : t('detail_source_scan');
 
   return (
     <View style={styles.root}>
@@ -167,9 +174,7 @@ export const MealDetailScreen = () => {
             ) : (
               <Scan size={12} color={colors.onSurfaceVariant} strokeWidth={2} />
             )}
-            <Text style={styles.sourceText}>
-              {isManual ? t('detail_source_manual') : t('detail_source_scan')}
-            </Text>
+            <Text style={styles.sourceText}>{sourceLabel}</Text>
             {meal.nova_class != null && (
               <Text style={styles.novaText}>{t('detail_nova', { class: meal.nova_class })}</Text>
             )}

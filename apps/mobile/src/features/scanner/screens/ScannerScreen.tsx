@@ -4,9 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation, type NavigationProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { MealType } from '@snacky/shared-types';
-import { Camera as CameraIcon, ImageIcon, ScanLine } from 'lucide-react-native';
+import { Camera as CameraIcon, ImageIcon, ScanLine, Barcode } from 'lucide-react-native';
 import { useImageCompression } from '../hooks/useImageCompression';
 import { useScanAnalysis } from '../hooks/useScanAnalysis';
+import { useBarcodeLookup } from '../hooks/useBarcodeLookup';
 import { PhotoStrip } from '../components/PhotoStrip';
 import type { CapturedPhoto } from './CameraViewInner';
 import type { ScannerStackParamList } from '~/app/navigation/types';
@@ -16,6 +17,8 @@ import { launchImageLibrary } from 'react-native-image-picker';
 type Nav = NativeStackNavigationProp<ScannerStackParamList, 'Capture'>;
 type TabNav = NavigationProp<{ Dashboard: undefined }>;
 
+type ScanMode = 'photo' | 'barcode';
+
 const MAX_PHOTOS = 5;
 
 const nativeModuleAvailable = NativeModules.CameraView != null;
@@ -24,12 +27,18 @@ const LazyCameraView = React.lazy(() =>
   import('./CameraViewInner').then((m) => ({ default: m.CameraViewInner })),
 );
 
+const LazyBarcodeView = React.lazy(() =>
+  import('./BarcodeViewInner').then((m) => ({ default: m.BarcodeViewInner })),
+);
+
 export const ScannerScreen = () => {
   const { t } = useTranslation('scanner');
   const navigation = useNavigation<Nav>();
   const tabNavigation = useNavigation<TabNav>();
   const [mealType, setMealType] = useState<MealType>('lunch');
+  const [scanMode, setScanMode] = useState<ScanMode>('photo');
   const [capturedPhotos, setCapturedPhotos] = useState<CapturedPhoto[]>([]);
+  const barcode = useBarcodeLookup();
 
   const { compressMultiple, isCompressing } = useImageCompression();
   const { analyze, result, isAnalyzing, error, reset } = useScanAnalysis();
@@ -45,6 +54,17 @@ export const ScannerScreen = () => {
       setCapturedPhotos([]);
     }
   }, [result, navigation, mealType, capturedPhotos, reset]);
+
+  useEffect(() => {
+    if (barcode.product && barcode.lastBarcode) {
+      navigation.navigate('BarcodeResult', {
+        product: barcode.product,
+        barcode: barcode.lastBarcode,
+        mealType,
+      });
+      barcode.reset();
+    }
+  }, [barcode, navigation, mealType]);
 
   const handleAnalyze = useCallback(
     async (photos: CapturedPhoto[]) => {
@@ -162,29 +182,70 @@ export const ScannerScreen = () => {
   }
 
   return (
-    <Suspense
-      fallback={
-        <View style={styles.center}>
-          <ActivityIndicator size="large" color={colors.primary} />
+    <View style={{ flex: 1 }}>
+      <Suspense
+        fallback={
+          <View style={styles.center}>
+            <ActivityIndicator size="large" color={colors.primary} />
+          </View>
+        }
+      >
+        {scanMode === 'photo' ? (
+          <LazyCameraView
+            mealType={mealType}
+            onMealTypeChange={setMealType}
+            onAnalyze={(base64s, mt) => analyze(base64s, mt)}
+            onPhotosChanged={setCapturedPhotos}
+            onGallery={() => void handleGallery()}
+            onBack={handleBack}
+            showLoader={showLoader}
+            error={error}
+            capturedPhotos={capturedPhotos}
+            onRemovePhoto={handleRemovePhoto}
+            canAddMore={capturedPhotos.length < MAX_PHOTOS}
+            maxPhotos={MAX_PHOTOS}
+            t={t}
+          />
+        ) : (
+          <LazyBarcodeView
+            onBarcodeScanned={(code) => void barcode.lookup(code)}
+            onBack={handleBack}
+            isLooking={barcode.isLooking}
+            notFound={barcode.notFound}
+            error={barcode.error}
+            onSwitchToPhoto={() => {
+              barcode.reset();
+              setScanMode('photo');
+            }}
+            t={t}
+          />
+        )}
+      </Suspense>
+
+      {/* Mode toggle */}
+      <View style={styles.modeToggleContainer}>
+        <View style={styles.modeToggle}>
+          <Pressable
+            onPress={() => { barcode.reset(); setScanMode('photo'); }}
+            style={[styles.modeButton, scanMode === 'photo' && styles.modeButtonActive]}
+          >
+            <CameraIcon size={16} color={scanMode === 'photo' ? colors.onPrimary : colors.onSurfaceVariant} />
+            <Text style={[styles.modeLabel, scanMode === 'photo' && styles.modeLabelActive]}>
+              {t('mode_photo')}
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => { setScanMode('barcode'); }}
+            style={[styles.modeButton, scanMode === 'barcode' && styles.modeButtonActive]}
+          >
+            <Barcode size={16} color={scanMode === 'barcode' ? colors.onPrimary : colors.onSurfaceVariant} />
+            <Text style={[styles.modeLabel, scanMode === 'barcode' && styles.modeLabelActive]}>
+              {t('mode_barcode')}
+            </Text>
+          </Pressable>
         </View>
-      }
-    >
-      <LazyCameraView
-        mealType={mealType}
-        onMealTypeChange={setMealType}
-        onAnalyze={(base64s, mt) => analyze(base64s, mt)}
-        onPhotosChanged={setCapturedPhotos}
-        onGallery={() => void handleGallery()}
-        onBack={handleBack}
-        showLoader={showLoader}
-        error={error}
-        capturedPhotos={capturedPhotos}
-        onRemovePhoto={handleRemovePhoto}
-        canAddMore={capturedPhotos.length < MAX_PHOTOS}
-        maxPhotos={MAX_PHOTOS}
-        t={t}
-      />
-    </Suspense>
+      </View>
+    </View>
   );
 };
 
@@ -298,6 +359,38 @@ const styles = StyleSheet.create({
     color: colors.onSurfaceVariant,
   },
   mealTypeLabelSelected: {
+    color: colors.onPrimary,
+  },
+  modeToggleContainer: {
+    position: 'absolute',
+    top: 60,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  modeToggle: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: radii.full,
+    padding: 3,
+  },
+  modeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: radii.full,
+  },
+  modeButtonActive: {
+    backgroundColor: colors.primary,
+  },
+  modeLabel: {
+    ...typography.labelMd,
+    color: colors.onSurfaceVariant,
+  },
+  modeLabelActive: {
     color: colors.onPrimary,
   },
 });

@@ -17,6 +17,7 @@
   "detail_original": "Oryginał AI",
   "detail_modified": "Twoja edycja",
   "detail_source_scan": "Skan zdjęcia",
+  "detail_source_barcode": "Skan kodu kreskowego",
   "detail_source_manual": "Wpis ręczny",
   "detail_logged_at": "Dodano o {{time}}",
   "detail_nova": "NOVA {{class}}",

@@ -90,5 +90,24 @@
   "analyze_photos_one": "Analizuj {{count}} zdjęcie",
   "analyze_photos_few": "Analizuj {{count}} zdjęcia",
   "analyze_photos_many": "Analizuj {{count}} zdjęć",
-  "analyze_photos_other": "Analizuj {{count}} zdjęć"
+  "analyze_photos_other": "Analizuj {{count}} zdjęć",
+
+  "mode_photo": "Zdjęcie",
+  "mode_barcode": "Kod kreskowy",
+  "barcode_scanning": "Skieruj na kod kreskowy",
+  "barcode_scanning_hint": "Wyrównaj kod kreskowy w ramce",
+  "barcode_looking_up": "Szukam produktu...",
+  "barcode_not_found": "Nie znaleziono produktu",
+  "barcode_not_found_hint": "Tego kodu nie ma w naszej bazie. Spróbuj zeskanować posiłek zdjęciem.",
+  "barcode_try_photo": "Skanuj zdjęciem",
+  "barcode_result_title": "Znaleziono produkt",
+  "barcode_brand": "Marka",
+  "barcode_serving": "Porcja",
+  "barcode_per_100g": "Na 100g",
+  "barcode_per_serving": "Na porcję ({{g}}g)",
+  "barcode_portion": "Twoja porcja",
+  "barcode_portion_g": "{{value}}g",
+  "barcode_nutriscore": "Nutri-Score",
+  "barcode_log_meal": "Zapisz jako posiłek",
+  "barcode_scan_another": "Skanuj kolejny"
 }
