@@ -1,4 +1,4 @@
-package com.snacky
+package com.tfrydrychewicz.snacky
 
 import android.os.Bundle
 import com.facebook.react.ReactActivity
