@@ -7,7 +7,9 @@ const IMAGE_MODEL = 'gpt-image-1.5';
 const IMAGE_SIZE = '1024x1024';
 const IMAGE_QUALITY = 'low';
 const IMAGE_FORMAT = 'webp';
-const TIMEOUT_MS = 60_000;
+const TIMEOUT_MS = 90_000;
+const MAX_RETRIES = 2;
+const RETRY_DELAY_MS = 3_000;
 
 interface MealImageInput {
   mealId: string;
@@ -28,7 +30,15 @@ export async function generateAndUploadMealImage(
   supabase: SupabaseClient,
 ): Promise<string | null> {
   try {
-    const imageBytes = await callImageModel(input, apiKey);
+    let imageBytes: Uint8Array | null = null;
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+      imageBytes = await callImageModel(input, apiKey);
+      if (imageBytes) break;
+      if (attempt < MAX_RETRIES) {
+        log.info('Image retry', { mealId: input.mealId, attempt: attempt + 1 });
+        await new Promise((r) => setTimeout(r, RETRY_DELAY_MS * (attempt + 1)));
+      }
+    }
     if (!imageBytes) return null;
 
     const storagePath = `${userId}/plan/${input.mealId}.webp`;

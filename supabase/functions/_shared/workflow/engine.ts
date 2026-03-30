@@ -211,7 +211,14 @@ export class WorkflowEngine {
 
     // Schedule a delayed watchdog: if this invocation is killed, the
     // watchdog message fires after 60s and triggers stall recovery.
-    await this.supabase.rpc('workflow_send_watchdog', { p_run_id: runId });
+    const { error: watchdogErr } = await this.supabase.rpc('workflow_send_watchdog', {
+      p_run_id: runId,
+    });
+    if (watchdogErr) {
+      log.warn('Failed to send watchdog (non-fatal)', { run_id: runId, error: watchdogErr.message });
+    } else {
+      log.debug('Watchdog scheduled', { run_id: runId, delay_s: 60 });
+    }
 
     // Load completed steps for replay
     const { data: steps } = await this.supabase
@@ -400,10 +407,16 @@ export class WorkflowEngine {
       .update({ status: 'pending' as RunStatus })
       .eq('id', msg.run_id);
 
-    await this.supabase.rpc('workflow_send_resume', {
+    const { error: resumeErr } = await this.supabase.rpc('workflow_send_resume', {
       p_run_id: msg.run_id,
       p_reason: 'stall_recovery',
     });
+    if (resumeErr) {
+      log.error('Watchdog: failed to send resume message', {
+        run_id: msg.run_id,
+        error: resumeErr.message,
+      });
+    }
   }
 
   private async failRun(runId: string, error: string): Promise<void> {
