@@ -1,4 +1,4 @@
-import type { MealScanResult, MealType } from '@snacky/shared-types';
+import type { IngredientAnalysis, MealScanResult, MealType } from '@snacky/shared-types';
 import type { PlanConfig } from '~/features/diet-plan/types';
 
 export type RootStackParamList = {
@@ -68,6 +68,9 @@ export type ScannerStackParamList = {
     product: BarcodeProduct;
     barcode: string;
     mealType: MealType;
+  };
+  IngredientDetail: {
+    ingredient: IngredientAnalysis;
   };
 };
 

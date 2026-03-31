@@ -10,6 +10,7 @@ type Props = {
   ingredient: IngredientAnalysis;
   index: number;
   grouped?: boolean;
+  onPress?: () => void;
   onEdit: () => void;
   onRemove: () => void;
 };
@@ -27,13 +28,14 @@ const getConfidenceColor = (confidence: number): string => {
   return colors.error;
 };
 
-export const ScanResultCard = ({ ingredient, index, grouped, onEdit, onRemove }: Props) => {
+export const ScanResultCard = ({ ingredient, index, grouped, onPress, onEdit, onRemove }: Props) => {
   const { t } = useTranslation('scanner');
   const macroColor = getMacroColor(ingredient);
   const confColor = getConfidenceColor(ingredient.confidence);
 
   return (
     <Animated.View entering={FadeInDown.delay(200 + index * 80).duration(400)} style={[styles.card, grouped && styles.groupedCard]}>
+      <Pressable onPress={onPress} style={({ pressed }) => pressed && onPress ? { opacity: 0.7 } : undefined}>
       <View style={styles.topRow}>
         <View style={[styles.macroIndicator, { backgroundColor: `${macroColor}20` }]}>
           <View style={[styles.macroDot, { backgroundColor: macroColor }]} />
@@ -81,6 +83,7 @@ export const ScanResultCard = ({ ingredient, index, grouped, onEdit, onRemove }:
           </Pressable>
         </View>
       </View>
+      </Pressable>
     </Animated.View>
   );
 };

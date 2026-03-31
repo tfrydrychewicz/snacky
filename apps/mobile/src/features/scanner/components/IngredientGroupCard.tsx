@@ -16,6 +16,7 @@ type Props = {
   groupName: string;
   items: GroupItem[];
   animationIndex: number;
+  onIngredientPress?: (ing: IngredientAnalysis) => void;
   onEdit: (idx: number) => void;
   onRemove: (idx: number) => void;
 };
@@ -31,6 +32,7 @@ export const IngredientGroupCard = ({
   groupName,
   items,
   animationIndex,
+  onIngredientPress,
   onEdit,
   onRemove,
 }: Props) => {
@@ -97,6 +99,7 @@ export const IngredientGroupCard = ({
               ingredient={ing}
               index={idx}
               grouped
+              onPress={onIngredientPress ? () => onIngredientPress(ing) : undefined}
               onEdit={() => onEdit(idx)}
               onRemove={() => onRemove(idx)}
             />

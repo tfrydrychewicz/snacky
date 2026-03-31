@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
+import { useNavigation, useRoute, type RouteProp, type NavigationProp } from '@react-navigation/native';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { ShieldCheck, Check, Plus, ImageIcon } from 'lucide-react-native';
 import RNFS from 'react-native-fs';
@@ -41,7 +41,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 export const ScanResultsScreen = () => {
   const { t, i18n } = useTranslation('scanner');
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<ScannerStackParamList>>();
   const route = useRoute<ResultsRoute>();
   const { user } = useAuth();
 
@@ -208,6 +208,13 @@ export const ScanResultsScreen = () => {
       void triggerReanalysis();
     }
   }, [clarificationIndex, currentScanResult.clarification_questions.length, triggerReanalysis]);
+
+  const handleIngredientPress = useCallback(
+    (ing: IngredientAnalysis) => {
+      navigation.navigate('IngredientDetail', { ingredient: ing });
+    },
+    [navigation],
+  );
 
   const hasModifications = JSON.stringify(ingredients) !== JSON.stringify(scanResult.ingredients);
 
@@ -447,6 +454,7 @@ export const ScanResultsScreen = () => {
                       groupName={section.group}
                       items={section.items}
                       animationIndex={sIdx}
+                      onIngredientPress={handleIngredientPress}
                       onEdit={(idx) => {
                         setIsNewIngredient(false);
                         setEditingIndex(idx);
@@ -461,6 +469,7 @@ export const ScanResultsScreen = () => {
                     key={`${ing.name}-${idx}`}
                     ingredient={ing}
                     index={idx}
+                    onPress={() => handleIngredientPress(ing)}
                     onEdit={() => {
                       setIsNewIngredient(false);
                       setEditingIndex(idx);
