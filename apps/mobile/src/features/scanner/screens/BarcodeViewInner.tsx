@@ -7,8 +7,9 @@ import {
   useCodeScanner,
   type Code,
 } from 'react-native-vision-camera';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { TFunction } from 'i18next';
-import { CameraIcon, ScanLine } from 'lucide-react-native';
+import { CameraIcon, ChevronLeft, ScanLine } from 'lucide-react-native';
 import { colors, typography, spacing, radii } from '~/shared/theme/tokens';
 
 type Props = {
@@ -30,6 +31,7 @@ export const BarcodeViewInner = ({
   onSwitchToPhoto,
   t,
 }: Props) => {
+  const insets = useSafeAreaInsets();
   const { hasPermission, requestPermission } = useCameraPermission();
   const device = useCameraDevice('back');
 
@@ -73,36 +75,46 @@ export const BarcodeViewInner = ({
 
       {/* Scanning overlay */}
       <View style={styles.overlay}>
-        <View style={styles.scanFrame}>
-          <View style={[styles.corner, styles.cornerTL]} />
-          <View style={[styles.corner, styles.cornerTR]} />
-          <View style={[styles.corner, styles.cornerBL]} />
-          <View style={[styles.corner, styles.cornerBR]} />
+        {/* Top bar with back button */}
+        <View style={[styles.topBar, { paddingTop: insets.top + spacing.sm }]}>
+          <Pressable onPress={onBack} style={styles.backButton} hitSlop={12}>
+            <ChevronLeft size={24} color="#FFFFFF" strokeWidth={2.5} />
+          </Pressable>
+          <Text style={styles.topTitle}>{t('barcode_scanning')}</Text>
+          <View style={{ width: 44 }} />
         </View>
 
-        <View style={styles.hintContainer}>
-          {isLooking ? (
-            <>
-              <ActivityIndicator size="small" color="#FFFFFF" />
-              <Text style={styles.hintText}>{t('barcode_looking_up')}</Text>
-            </>
-          ) : notFound ? (
-            <>
-              <Text style={styles.hintText}>{t('barcode_not_found')}</Text>
-              <Text style={styles.hintSubtext}>{t('barcode_not_found_hint')}</Text>
-              <Pressable onPress={onSwitchToPhoto} style={styles.switchButton}>
-                <ScanLine size={18} color={colors.onPrimary} />
-                <Text style={styles.switchText}>{t('barcode_try_photo')}</Text>
-              </Pressable>
-            </>
-          ) : error ? (
-            <Text style={styles.errorText}>{error}</Text>
-          ) : (
-            <>
-              <Text style={styles.hintText}>{t('barcode_scanning')}</Text>
-              <Text style={styles.hintSubtext}>{t('barcode_scanning_hint')}</Text>
-            </>
-          )}
+        <View style={styles.centerContent}>
+          <View style={styles.scanFrame}>
+            <View style={[styles.corner, styles.cornerTL]} />
+            <View style={[styles.corner, styles.cornerTR]} />
+            <View style={[styles.corner, styles.cornerBL]} />
+            <View style={[styles.corner, styles.cornerBR]} />
+          </View>
+
+          <View style={styles.hintContainer}>
+            {isLooking ? (
+              <>
+                <ActivityIndicator size="small" color="#FFFFFF" />
+                <Text style={styles.hintText}>{t('barcode_looking_up')}</Text>
+              </>
+            ) : notFound ? (
+              <>
+                <Text style={styles.hintText}>{t('barcode_not_found')}</Text>
+                <Text style={styles.hintSubtext}>{t('barcode_not_found_hint')}</Text>
+                <Pressable onPress={onSwitchToPhoto} style={styles.switchButton}>
+                  <ScanLine size={18} color={colors.onPrimary} />
+                  <Text style={styles.switchText}>{t('barcode_try_photo')}</Text>
+                </Pressable>
+              </>
+            ) : error ? (
+              <Text style={styles.errorText}>{error}</Text>
+            ) : (
+              <>
+                <Text style={styles.hintText}>{t('barcode_scanning_hint')}</Text>
+              </>
+            )}
+          </View>
         </View>
       </View>
     </View>
@@ -133,6 +145,32 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+  },
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.md,
+    width: '100%',
+  },
+  backButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  topTitle: {
+    ...typography.titleMd,
+    color: '#FFFFFF',
+    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
+  },
+  centerContent: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -363,7 +363,7 @@ const styles = StyleSheet.create({
   },
   modeToggleContainer: {
     position: 'absolute',
-    top: 60,
+    bottom: 36,
     left: 0,
     right: 0,
     alignItems: 'center',
