@@ -3,6 +3,7 @@ import { getAuthenticatedUser } from '../_shared/auth.ts';
 import { createServiceClient } from '../_shared/supabase-client.ts';
 import { badRequest, internalError } from '../_shared/errors.ts';
 import { createLogger } from '../_shared/logger.ts';
+import { CHAT_TOOLS, executeTool } from './tools.ts';
 
 const log = createLogger('chat');
 
@@ -11,8 +12,8 @@ const OPENAI_EMBED_URL = 'https://api.openai.com/v1/embeddings';
 const EMBED_MODEL = 'text-embedding-3-small';
 const EMBED_DIM = 1024;
 
-const MODEL_COMPLEX = 'gpt-4.1';
-const MODEL_SIMPLE = 'gpt-4.1-nano';
+const MODEL_COMPLEX = 'gpt-5.4';
+const MODEL_SIMPLE = 'gpt-5.4-mini';
 
 const MAX_HISTORY = 10;
 
@@ -89,7 +90,7 @@ Intents:
         },
         { role: 'user', content: message },
       ],
-      max_tokens: 20,
+      max_completion_tokens: 20,
       temperature: 0,
     }),
   });
@@ -592,6 +593,12 @@ RULES:
 - Respond in the user's preferred language: ${locale}
 - Use metric units (g, kg, kcal) by default
 
+TOOLS:
+You have access to nutrition tools. Use them proactively when relevant:
+- **lookup_usda_food**: Search the USDA database for detailed macro/micronutrient data on any food. Use when the user asks about specific food nutrients, wants to compare foods, or when you need precise data.
+- **evaluate_nutrient_interactions**: Analyze nutrient-nutrient interactions for a meal or food combination. Detects absorption inhibitions, synergies, and depletions. Use when the user asks about food combinations, nutrient absorption, or wants to optimize a meal. Always provide english_search_term for each ingredient so USDA matching works.
+When using tools, present the results in a user-friendly way — never dump raw tool output.
+
 FORMATTING (mobile screen):
 - Responses are displayed on a small phone screen (~375pt wide). Keep them concise.
 - Use markdown: **bold** for emphasis, bullet lists for structure, headings (##, ###) for sections.
@@ -695,9 +702,30 @@ Deno.serve(async (req) => {
       content: message,
     });
 
-    // Helper: call OpenAI and store result
-    async function callOpenAIAndStore(streaming: boolean) {
-      const chatResp = await fetch(OPENAI_CHAT_URL, {
+    // Helpers
+    type ChatMsg =
+      | { role: 'system' | 'user' | 'assistant'; content: string }
+      | { role: 'assistant'; content: null; tool_calls: ToolCall[] }
+      | { role: 'tool'; tool_call_id: string; content: string };
+
+    interface ToolCall {
+      id: string;
+      type: 'function';
+      function: { name: string; arguments: string };
+    }
+
+    interface OpenAIChoice {
+      message: {
+        content: string | null;
+        tool_calls?: ToolCall[];
+      };
+      finish_reason: string;
+    }
+
+    const MAX_TOOL_ROUNDS = 3;
+
+    async function callOpenAI(msgs: ChatMsg[], streaming: boolean) {
+      return fetch(OPENAI_CHAT_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -705,14 +733,13 @@ Deno.serve(async (req) => {
         },
         body: JSON.stringify({
           model: config.model,
-          messages,
+          messages: msgs,
+          tools: CHAT_TOOLS,
           stream: streaming,
-          max_tokens: 1024,
+          max_completion_tokens: 1024,
           temperature: 0.7,
         }),
       });
-
-      return chatResp;
     }
 
     async function storeAssistantMessage(content: string, tokensUsed: number) {
@@ -733,50 +760,98 @@ Deno.serve(async (req) => {
       return contextIds;
     }
 
-    // ---- Non-streaming JSON mode (for React Native) ----
-    if (!useStreaming) {
-      const chatResp = await callOpenAIAndStore(false);
+    async function resolveToolCalls(
+      conversationMsgs: ChatMsg[],
+    ): Promise<{ content: string; totalTokens: number }> {
+      let totalTokens = 0;
 
-      if (!chatResp.ok) {
-        const errText = await chatResp.text();
-        log.error('OpenAI chat error', { status: chatResp.status, body: errText });
-        return internalError('AI model error');
+      for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
+        const resp = await callOpenAI(conversationMsgs, false);
+        if (!resp.ok) {
+          const errText = await resp.text();
+          log.error('OpenAI error in tool loop', { status: resp.status, body: errText });
+          throw new Error('AI model error');
+        }
+
+        const result = (await resp.json()) as {
+          choices: OpenAIChoice[];
+          usage?: { total_tokens?: number };
+        };
+        totalTokens += result.usage?.total_tokens ?? 0;
+
+        const choice = result.choices[0];
+        if (!choice) throw new Error('Empty response from AI');
+
+        if (choice.finish_reason === 'tool_calls' && choice.message.tool_calls?.length) {
+          conversationMsgs.push({
+            role: 'assistant',
+            content: null,
+            tool_calls: choice.message.tool_calls,
+          });
+
+          for (const tc of choice.message.tool_calls) {
+            log.info('Executing tool', { tool: tc.function.name, round });
+            const toolResult = await executeTool({
+              name: tc.function.name,
+              arguments: tc.function.arguments,
+            });
+            conversationMsgs.push({
+              role: 'tool',
+              tool_call_id: tc.id,
+              content: toolResult,
+            });
+          }
+          continue;
+        }
+
+        return { content: choice.message.content ?? '', totalTokens };
       }
 
-      const result = (await chatResp.json()) as {
-        choices: Array<{ message: { content: string } }>;
+      const fallback = await callOpenAI(conversationMsgs, false);
+      const fallbackResult = (await fallback.json()) as {
+        choices: OpenAIChoice[];
         usage?: { total_tokens?: number };
       };
+      totalTokens += fallbackResult.usage?.total_tokens ?? 0;
+      return {
+        content: fallbackResult.choices[0]?.message?.content ?? '',
+        totalTokens,
+      };
+    }
 
-      const content = result.choices[0]?.message?.content ?? '';
-      const tokensUsed = result.usage?.total_tokens ?? 0;
+    // ---- Non-streaming JSON mode (for React Native) ----
+    if (!useStreaming) {
+      try {
+        const { content, totalTokens } = await resolveToolCalls([...messages] as ChatMsg[]);
+        const contextIds = await storeAssistantMessage(content, totalTokens);
 
-      const contextIds = await storeAssistantMessage(content, tokensUsed);
-
-      log.info('Chat response complete (non-streaming)', {
-        user_id: user.id,
-        session_id: resolvedSessionId,
-        intent,
-        model: config.model,
-        response_length: content.length,
-        tokens: tokensUsed,
-      });
-
-      return new Response(
-        JSON.stringify({
+        log.info('Chat response complete (non-streaming)', {
+          user_id: user.id,
           session_id: resolvedSessionId,
           intent,
           model: config.model,
-          content,
-          tokens_used: tokensUsed,
-          context_ids: contextIds,
-          attachments,
-        }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        },
-      );
+          response_length: content.length,
+          tokens: totalTokens,
+        });
+
+        return new Response(
+          JSON.stringify({
+            session_id: resolvedSessionId,
+            intent,
+            model: config.model,
+            content,
+            tokens_used: totalTokens,
+            context_ids: contextIds,
+            attachments,
+          }),
+          {
+            status: 200,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          },
+        );
+      } catch {
+        return internalError('AI model error');
+      }
     }
 
     // ---- SSE streaming mode ----
@@ -796,19 +871,99 @@ Deno.serve(async (req) => {
         );
 
         try {
-          const chatResp = await callOpenAIAndStore(true);
+          const conversationMsgs = [...messages] as ChatMsg[];
+          let totalTokens = 0;
 
-          if (!chatResp.ok || !chatResp.body) {
-            const errText = await chatResp.text();
-            log.error('OpenAI chat error', { status: chatResp.status, body: errText });
+          for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
+            const resp = await callOpenAI(conversationMsgs, false);
+            if (!resp.ok) {
+              const errText = await resp.text();
+              log.error('OpenAI error in tool loop', { status: resp.status, body: errText });
+              controller.enqueue(encoder.encode(sseEvent('error', { message: 'AI model error' })));
+              controller.close();
+              return;
+            }
+
+            const result = (await resp.json()) as {
+              choices: OpenAIChoice[];
+              usage?: { total_tokens?: number };
+            };
+            totalTokens += result.usage?.total_tokens ?? 0;
+
+            const choice = result.choices[0];
+            if (
+              choice?.finish_reason === 'tool_calls' &&
+              choice.message.tool_calls?.length
+            ) {
+              conversationMsgs.push({
+                role: 'assistant',
+                content: null,
+                tool_calls: choice.message.tool_calls,
+              });
+
+              for (const tc of choice.message.tool_calls) {
+                log.info('Executing tool (streaming)', { tool: tc.function.name, round });
+                controller.enqueue(
+                  encoder.encode(
+                    sseEvent('tool_use', { tool: tc.function.name, round }),
+                  ),
+                );
+                const toolResult = await executeTool({
+                  name: tc.function.name,
+                  arguments: tc.function.arguments,
+                });
+                conversationMsgs.push({
+                  role: 'tool',
+                  tool_call_id: tc.id,
+                  content: toolResult,
+                });
+              }
+              continue;
+            }
+
+            if (choice?.message.content) {
+              const finalContent = choice.message.content;
+              controller.enqueue(
+                encoder.encode(sseEvent('content_delta', { text: finalContent })),
+              );
+
+              const contextIds = await storeAssistantMessage(finalContent, totalTokens);
+              controller.enqueue(
+                encoder.encode(
+                  sseEvent('message_end', {
+                    session_id: resolvedSessionId,
+                    model: config.model,
+                    tokens_used: totalTokens,
+                    context_ids: contextIds,
+                    attachments,
+                  }),
+                ),
+              );
+
+              log.info('Chat response complete (streaming+tools)', {
+                user_id: user.id,
+                session_id: resolvedSessionId,
+                intent,
+                model: config.model,
+                response_length: finalContent.length,
+                tokens: totalTokens,
+              });
+              controller.close();
+              return;
+            }
+
+            break;
+          }
+
+          const finalResp = await callOpenAI(conversationMsgs, true);
+          if (!finalResp.ok || !finalResp.body) {
             controller.enqueue(encoder.encode(sseEvent('error', { message: 'AI model error' })));
             controller.close();
             return;
           }
 
           let fullResponse = '';
-          let totalTokens = 0;
-          const reader = chatResp.body.getReader();
+          const reader = finalResp.body.getReader();
           const decoder = new TextDecoder();
           let buffer = '';
 

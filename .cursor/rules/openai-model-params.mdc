@@ -1,0 +1,32 @@
+---
+description: OpenAI API parameter rules for GPT-5.x models
+globs: supabase/functions/**/*.ts
+alwaysApply: false
+---
+
+# OpenAI Model Parameters
+
+## GPT-5.x models require `max_completion_tokens`
+
+GPT-5.4, GPT-5.4-mini, and all GPT-5.x models do **NOT** support `max_tokens`. Use `max_completion_tokens` instead.
+
+```typescript
+// ❌ BAD — will return 400 "Unsupported parameter"
+body: JSON.stringify({
+  model: 'gpt-5.4-mini',
+  max_tokens: 1024,
+})
+
+// ✅ GOOD
+body: JSON.stringify({
+  model: 'gpt-5.4-mini',
+  max_completion_tokens: 1024,
+})
+```
+
+## Snacky model constants
+
+| Constant | Model | Use case |
+|---|---|---|
+| `MODEL_SIMPLE` | `gpt-5.4-mini` | Intent classification, translations, lightweight tasks |
+| `MODEL_COMPLEX` | `gpt-5.4` | Meal suggestions, plan creation, health insights |
