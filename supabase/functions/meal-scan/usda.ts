@@ -73,6 +73,16 @@ export async function crossReferenceUSDA(
       if (data && data.length > 0) match = data[0] as UsdaFood;
     }
 
+    if (!match && ing.english_search_term) {
+      const englishTerms = ing.english_search_term.replace(/[^\w\s]/g, '');
+      const { data } = await supabase
+        .from('usda_foods')
+        .select('*')
+        .textSearch('search_vector', englishTerms, { type: 'websearch' })
+        .limit(1);
+      if (data && data.length > 0) match = data[0] as UsdaFood;
+    }
+
     if (!match || match.calories_per_100g == null) {
       log.warn('No USDA match found', { ingredient: ing.name });
       adjusted.push(ing);

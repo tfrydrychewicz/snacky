@@ -20,6 +20,8 @@ export const IngredientAnalysisSchema = z.object({
   confidence: z.number().min(0).max(1),
   macros: MacroBreakdownSchema,
   usda_fdc_id: z.number().int().positive().nullable(),
+  group: z.string().nullable().optional(),
+  english_search_term: z.string().nullable().optional(),
 });
 
 export type IngredientAnalysis = z.infer<typeof IngredientAnalysisSchema>;

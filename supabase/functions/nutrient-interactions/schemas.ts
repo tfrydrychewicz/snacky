@@ -21,6 +21,7 @@ const IngredientInputSchema = z.object({
   usda_fdc_id: z.number().int().positive().nullable(),
   quantity_g: z.number().positive(),
   macros: MacroBreakdownSchema,
+  english_search_term: z.string().nullable().optional(),
 });
 
 export type IngredientInput = z.infer<typeof IngredientInputSchema>;

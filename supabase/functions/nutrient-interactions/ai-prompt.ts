@@ -49,18 +49,20 @@ ${allergyNote}
 
 Respond in ${lang}. Use simple, friendly language a non-scientist can understand. Be concise — each field should be 1-2 sentences max.
 
+CRITICAL: Always mention the SPECIFIC ingredients from the meal that are the source of each nutrient. Do NOT just say "calcium" or "iron" — say which food in the meal provides it (e.g. "the calcium from ricotta and parmesan", "the iron from spinach"). This helps the user understand which foods in their meal are interacting.
+
 ${warningBlock ? `=== WARNINGS ===\n${warningBlock}` : ''}
 
 ${synergyBlock ? `=== SYNERGIES ===\n${synergyBlock}` : ''}
 
 For each WARNING, produce:
-- title: short attention-grabbing label (e.g. "Calcium blocks iron")
-- description: plain-language explanation of why this matters
+- title: short attention-grabbing label that names the specific ingredients (e.g. "Ricotta calcium blocks spinach iron" not just "Calcium blocks iron")
+- description: plain-language explanation referencing the specific meal ingredients that are the source of each nutrient
 - suggestion: a specific, actionable fix using real food examples that respect the user's dietary restrictions and allergies
 
 For each SYNERGY, produce:
-- title: encouraging short label (e.g. "Great iron boost!")
-- description: why this combination is beneficial
+- title: encouraging short label naming the ingredients (e.g. "Spinach iron + parsley vitamin C = great combo!")
+- description: why this combination is beneficial, referencing the specific meal ingredients
 
 Return ONLY valid JSON matching this structure:
 {

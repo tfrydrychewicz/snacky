@@ -26,6 +26,7 @@ import { ensureValidSession } from '~/shared/api/sessionRecovery';
 import { useAuth } from '~/app/providers/AuthProvider';
 import type { ScannerStackParamList } from '~/app/navigation/types';
 import { ScanResultCard } from '../components/ScanResultCard';
+import { IngredientGroupCard } from '../components/IngredientGroupCard';
 import { IngredientEditor } from '../components/IngredientEditor';
 import { ClarificationDialog } from '../components/ClarificationDialog';
 import { CommentInput } from '../components/CommentInput';
@@ -423,20 +424,52 @@ export const ScanResultsScreen = () => {
             </View>
           </View>
 
-          {/* Ingredient List */}
+          {/* Ingredient List (grouped) */}
           <View style={styles.ingredientList}>
-            {ingredients.map((ing, i) => (
-              <ScanResultCard
-                key={`${ing.name}-${i}`}
-                ingredient={ing}
-                index={i}
-                onEdit={() => {
-                  setIsNewIngredient(false);
-                  setEditingIndex(i);
-                }}
-                onRemove={() => handleRemoveIngredient(i)}
-              />
-            ))}
+            {(() => {
+              const grouped: { group: string | null; items: { ing: IngredientAnalysis; idx: number }[] }[] = [];
+              const groupMap = new Map<string | null, { ing: IngredientAnalysis; idx: number }[]>();
+
+              ingredients.forEach((ing, idx) => {
+                const g = ing.group ?? null;
+                if (!groupMap.has(g)) {
+                  groupMap.set(g, []);
+                  grouped.push({ group: g, items: groupMap.get(g)! });
+                }
+                groupMap.get(g)!.push({ ing, idx });
+              });
+
+              return grouped.map((section, sIdx) => {
+                if (section.group) {
+                  return (
+                    <IngredientGroupCard
+                      key={`group-${sIdx}`}
+                      groupName={section.group}
+                      items={section.items}
+                      animationIndex={sIdx}
+                      onEdit={(idx) => {
+                        setIsNewIngredient(false);
+                        setEditingIndex(idx);
+                      }}
+                      onRemove={(idx) => handleRemoveIngredient(idx)}
+                    />
+                  );
+                }
+
+                return section.items.map(({ ing, idx }) => (
+                  <ScanResultCard
+                    key={`${ing.name}-${idx}`}
+                    ingredient={ing}
+                    index={idx}
+                    onEdit={() => {
+                      setIsNewIngredient(false);
+                      setEditingIndex(idx);
+                    }}
+                    onRemove={() => handleRemoveIngredient(idx)}
+                  />
+                ));
+              });
+            })()}
           </View>
 
           {/* Add ingredient */}

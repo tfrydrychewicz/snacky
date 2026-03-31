@@ -119,5 +119,7 @@
   "nutrient_insights_count_other": "{{count}} spostrzeżeń",
   "nutrient_insights_synergies_title": "Dobre połączenia w Twoim posiłku",
   "nutrient_insights_warnings_title": "Na co warto zwrócić uwagę",
-  "nutrient_insights_none": "Nie znaleziono interakcji składników"
+  "nutrient_insights_none": "Nie znaleziono interakcji składników",
+
+  "ingredient_group_items": "skł."
 }

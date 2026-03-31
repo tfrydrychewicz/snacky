@@ -78,14 +78,28 @@ async function buildNutrientProfile(
       }
     }
 
+    let row: UsdaRow | undefined;
     if (ing.usda_fdc_id != null) {
-      const row = usdaMap.get(ing.usda_fdc_id);
-      if (row) {
-        for (const [col, nKey] of Object.entries(USDA_COL_TO_KEY)) {
-          const per100 = row[col];
-          if (per100 != null && per100 > 0) {
-            totals[nKey] = (totals[nKey] ?? 0) + per100 * ratio;
-          }
+      row = usdaMap.get(ing.usda_fdc_id);
+    }
+
+    if (!row && ing.english_search_term) {
+      const searchTerms = ing.english_search_term.replace(/[^\w\s]/g, '');
+      const { data } = await supabase
+        .from('usda_foods')
+        .select(USDA_MICRO_SELECT)
+        .textSearch('search_vector', searchTerms, { type: 'websearch' })
+        .limit(1);
+      if (data && data.length > 0) {
+        row = data[0] as UsdaRow;
+      }
+    }
+
+    if (row) {
+      for (const [col, nKey] of Object.entries(USDA_COL_TO_KEY)) {
+        const per100 = row[col];
+        if (per100 != null && per100 > 0) {
+          totals[nKey] = (totals[nKey] ?? 0) + per100 * ratio;
         }
       }
     }

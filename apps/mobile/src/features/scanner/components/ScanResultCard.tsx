@@ -9,6 +9,7 @@ import { colors, spacing, typography, radii, elevation } from '~/shared/theme/to
 type Props = {
   ingredient: IngredientAnalysis;
   index: number;
+  grouped?: boolean;
   onEdit: () => void;
   onRemove: () => void;
 };
@@ -26,13 +27,13 @@ const getConfidenceColor = (confidence: number): string => {
   return colors.error;
 };
 
-export const ScanResultCard = ({ ingredient, index, onEdit, onRemove }: Props) => {
+export const ScanResultCard = ({ ingredient, index, grouped, onEdit, onRemove }: Props) => {
   const { t } = useTranslation('scanner');
   const macroColor = getMacroColor(ingredient);
   const confColor = getConfidenceColor(ingredient.confidence);
 
   return (
-    <Animated.View entering={FadeInDown.delay(200 + index * 80).duration(400)} style={styles.card}>
+    <Animated.View entering={FadeInDown.delay(200 + index * 80).duration(400)} style={[styles.card, grouped && styles.groupedCard]}>
       <View style={styles.topRow}>
         <View style={[styles.macroIndicator, { backgroundColor: `${macroColor}20` }]}>
           <View style={[styles.macroDot, { backgroundColor: macroColor }]} />
@@ -90,6 +91,11 @@ const styles = StyleSheet.create({
     borderRadius: radii.DEFAULT,
     padding: spacing.md,
     ...elevation.ambient,
+  },
+  groupedCard: {
+    marginLeft: spacing.md,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.outlineVariant,
   },
   topRow: {
     flexDirection: 'row',

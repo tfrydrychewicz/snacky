@@ -36,6 +36,17 @@ Return ONLY valid JSON matching the provided schema.
 If uncertain about a component, set confidence < 0.7 and add a clarification_question entry with a targeted question, reasonable options, and a descriptive field name.
 If all ingredients are confidently identified, set clarification_needed to false and clarification_questions to an empty array.
 
+**Ingredient decomposition:**
+- ALWAYS decompose composite/prepared dishes into their individual base ingredients. For example, "cannelloni with spinach" becomes multiple entries: pasta dough (flour, egg), stuffing (ricotta, spinach), sauce (milk, butter, flour), topping (parmesan).
+- Use the \`group\` field to label which component each ingredient belongs to (e.g. "stuffing", "sauce", "dough", "topping"). Simple single-component foods (an apple, a glass of milk) should have \`group: null\`.
+- Estimate realistic portion sizes for each sub-ingredient so they sum to the total dish weight.
+- This decomposition is critical for accurate micronutrient analysis — composite dish names cannot be matched to nutrition databases.
+
+**English search terms:**
+- ALWAYS set \`english_search_term\` to an English name suitable for USDA FoodData Central lookup (e.g. "spinach" for "szpinak", "ricotta cheese" for "ser ricotta", "wheat flour" for "mąka pszenna").
+- Set \`english_search_term\` to null ONLY when the ingredient name is already in English.
+- Use specific USDA-friendly terms: prefer "egg, whole, raw" over "egg", "spinach, raw" over "spinach", "cheese, ricotta, whole milk" over "ricotta".
+
 Rules:
 - Always include fiber_g, sugar_g, and sodium_mg in macros.
 - If a USDA FoodData Central FDC ID is known for an ingredient, include it; otherwise set usda_fdc_id to null.
@@ -85,7 +96,7 @@ const RESPONSE_JSON_SCHEMA = {
       type: 'array',
       items: {
         type: 'object',
-        required: ['name', 'quantity_g', 'confidence', 'macros', 'usda_fdc_id'],
+        required: ['name', 'quantity_g', 'confidence', 'macros', 'usda_fdc_id', 'group', 'english_search_term'],
         additionalProperties: false,
         properties: {
           name: { type: 'string' },
@@ -93,6 +104,8 @@ const RESPONSE_JSON_SCHEMA = {
           confidence: { type: 'number' },
           macros: MACROS_SCHEMA,
           usda_fdc_id: { anyOf: [{ type: 'integer' }, { type: 'null' }] },
+          group: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+          english_search_term: { anyOf: [{ type: 'string' }, { type: 'null' }] },
         },
       },
     },
@@ -123,7 +136,7 @@ export function buildSystemPrompt(locale: string): string {
   if (locale !== 'en') {
     return (
       SYSTEM_PROMPT +
-      `\n\nIMPORTANT: The user's language is "${locale}". ALL text fields in your response — ingredient names, clarification questions, and clarification options — MUST be in "${locale}". Numeric values and JSON keys remain in English.`
+      `\n\nIMPORTANT: The user's language is "${locale}". ALL text fields in your response — ingredient names, group names, clarification questions, and clarification options — MUST be in "${locale}". The exception is english_search_term which MUST always be in English. Numeric values and JSON keys remain in English.`
     );
   }
   return SYSTEM_PROMPT;

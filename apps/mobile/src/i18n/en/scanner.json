@@ -119,5 +119,7 @@
   "nutrient_insights_count_other": "{{count}} insights found",
   "nutrient_insights_synergies_title": "Good combinations in your meal",
   "nutrient_insights_warnings_title": "Things to watch out for",
-  "nutrient_insights_none": "No nutrient interactions found"
+  "nutrient_insights_none": "No nutrient interactions found",
+
+  "ingredient_group_items": "items"
 }
