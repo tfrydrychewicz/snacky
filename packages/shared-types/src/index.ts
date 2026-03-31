@@ -6,3 +6,4 @@ export * from './chat';
 export * from './dietPlan';
 export * from './measurements';
 export * from './notifications';
+export * from './nutrient-interactions';

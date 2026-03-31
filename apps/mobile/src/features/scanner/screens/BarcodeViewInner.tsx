@@ -56,6 +56,13 @@ export const BarcodeViewInner = ({
   if (!hasPermission || !device) {
     return (
       <View style={styles.center}>
+        <Pressable
+          onPress={onBack}
+          hitSlop={12}
+          style={[styles.fallbackBackButton, { top: insets.top + spacing.sm }]}
+        >
+          <ChevronLeft size={24} color={colors.onSurface} strokeWidth={2.5} />
+        </Pressable>
         <CameraIcon size={64} color={colors.outline} strokeWidth={1.2} />
         <Text style={styles.text}>
           {!hasPermission ? t('camera_permission_message') : t('camera_no_device')}
@@ -137,6 +144,17 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     padding: spacing.xl,
     gap: spacing.md,
+  },
+  fallbackBackButton: {
+    position: 'absolute',
+    left: spacing.md,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.surfaceContainerHigh,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
   },
   text: {
     ...typography.bodyMd,

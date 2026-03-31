@@ -109,5 +109,15 @@
   "barcode_portion_g": "{{value}}g",
   "barcode_nutriscore": "Nutri-Score",
   "barcode_log_meal": "Zapisz jako posiłek",
-  "barcode_scan_another": "Skanuj kolejny"
+  "barcode_scan_another": "Skanuj kolejny",
+
+  "nutrient_insights_title": "Analiza składników",
+  "nutrient_insights_loading": "Analizuję interakcje składników...",
+  "nutrient_insights_count_one": "{{count}} spostrzeżenie",
+  "nutrient_insights_count_few": "{{count}} spostrzeżenia",
+  "nutrient_insights_count_many": "{{count}} spostrzeżeń",
+  "nutrient_insights_count_other": "{{count}} spostrzeżeń",
+  "nutrient_insights_synergies_title": "Dobre połączenia w Twoim posiłku",
+  "nutrient_insights_warnings_title": "Na co warto zwrócić uwagę",
+  "nutrient_insights_none": "Nie znaleziono interakcji składników"
 }

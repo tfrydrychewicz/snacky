@@ -16,7 +16,8 @@ import {
 } from 'react-native-vision-camera';
 import type { TFunction } from 'i18next';
 import type { MealType } from '@snacky/shared-types';
-import { CameraIcon, ImageIcon, ScanLine } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { CameraIcon, ChevronLeft, ImageIcon, ScanLine } from 'lucide-react-native';
 import { CameraOverlay } from '../components/CameraOverlay';
 import { PhotoStrip } from '../components/PhotoStrip';
 import { useImageCompression } from '../hooks/useImageCompression';
@@ -57,6 +58,7 @@ export const CameraViewInner = ({
   maxPhotos,
   t,
 }: Props) => {
+  const insets = useSafeAreaInsets();
   const { hasPermission, requestPermission } = useCameraPermission();
   const device = useCameraDevice('back');
   const cameraRef = useRef<Camera>(null);
@@ -125,6 +127,14 @@ export const CameraViewInner = ({
   if (!hasPermission || !device) {
     return (
       <View style={styles.center}>
+        <Pressable
+          onPress={onBack}
+          hitSlop={12}
+          style={[styles.fallbackBackButton, { top: insets.top + spacing.sm }]}
+        >
+          <ChevronLeft size={24} color={colors.onSurface} strokeWidth={2.5} />
+        </Pressable>
+
         <CameraIcon size={64} color={colors.outline} strokeWidth={1.2} />
         <Text style={styles.fallbackTitle}>{t('camera_title')}</Text>
         <Text style={styles.text}>
@@ -221,6 +231,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.surface,
     padding: spacing.xl,
+  },
+  fallbackBackButton: {
+    position: 'absolute',
+    left: spacing.md,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.surfaceContainerHigh,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
   },
   fallbackTitle: {
     ...typography.headlineLg,

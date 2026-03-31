@@ -29,6 +29,9 @@ import { ScanResultCard } from '../components/ScanResultCard';
 import { IngredientEditor } from '../components/IngredientEditor';
 import { ClarificationDialog } from '../components/ClarificationDialog';
 import { CommentInput } from '../components/CommentInput';
+import { NutrientInsightsBubble } from '../components/NutrientInsightsBubble';
+import { NutrientInsightsSheet } from '../components/NutrientInsightsSheet';
+import { useNutrientInsights } from '../hooks/useNutrientInsights';
 
 type ResultsRoute = RouteProp<ScannerStackParamList, 'Results'>;
 
@@ -56,6 +59,9 @@ export const ScanResultsScreen = () => {
     clarificationIndex < currentScanResult.clarification_questions.length;
   const [isLogging, setIsLogging] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+  const [insightsSheetVisible, setInsightsSheetVisible] = useState(false);
+  const { insights: nutrientInsights, isLoading: insightsLoading } =
+    useNutrientInsights(ingredients);
 
   const totals: MacroBreakdown = useMemo(() => {
     return ingredients.reduce<MacroBreakdown>(
@@ -477,6 +483,13 @@ export const ScanResultsScreen = () => {
             </View>
           </View>
 
+          {/* Nutrient Insights */}
+          <NutrientInsightsBubble
+            insights={nutrientInsights}
+            isLoading={insightsLoading}
+            onPress={() => setInsightsSheetVisible(true)}
+          />
+
           {/* Comment */}
           <CommentInput value={comment} onChange={setComment} />
 
@@ -531,6 +544,15 @@ export const ScanResultsScreen = () => {
             onSkip={handleClarificationSkip}
           />
         )}
+
+      {/* Nutrient Insights Sheet */}
+      {nutrientInsights?.has_insights && (
+        <NutrientInsightsSheet
+          visible={insightsSheetVisible}
+          onClose={() => setInsightsSheetVisible(false)}
+          insights={nutrientInsights}
+        />
+      )}
     </View>
   );
 };

@@ -109,5 +109,15 @@
   "barcode_portion_g": "{{value}}g",
   "barcode_nutriscore": "Nutri-Score",
   "barcode_log_meal": "Log as Meal",
-  "barcode_scan_another": "Scan Another"
+  "barcode_scan_another": "Scan Another",
+
+  "nutrient_insights_title": "Nutrient Insights",
+  "nutrient_insights_loading": "Analyzing nutrient interactions...",
+  "nutrient_insights_count_one": "{{count}} insight found",
+  "nutrient_insights_count_few": "{{count}} insights found",
+  "nutrient_insights_count_many": "{{count}} insights found",
+  "nutrient_insights_count_other": "{{count}} insights found",
+  "nutrient_insights_synergies_title": "Good combinations in your meal",
+  "nutrient_insights_warnings_title": "Things to watch out for",
+  "nutrient_insights_none": "No nutrient interactions found"
 }
