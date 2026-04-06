@@ -38,7 +38,7 @@
     "@react-navigation/native-stack": "^7.x",
     "@snacky/api-client": "workspace:*",
     "@snacky/shared-types": "workspace:*",
-    "@supabase/supabase-js": "^2.49.0",
+    "@supabase/supabase-js": "^2.101.1",
     "@tanstack/react-query": "^5.x",
     "i18next": "^26.0.0",
     "intl-pluralrules": "^2.0.1",

@@ -39,7 +39,7 @@
     "setup:check": "bash scripts/setup.sh --check-only"
   },
   "devDependencies": {
-    "@supabase/supabase-js": "^2.49.0",
+    "@supabase/supabase-js": "^2.101.1",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "tsx": "^4.19.0",
