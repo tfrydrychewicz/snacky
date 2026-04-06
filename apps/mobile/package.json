@@ -31,7 +31,7 @@
     "@hookform/resolvers": "^5.x",
     "@react-native-community/slider": "^5.1.2",
     "@react-native-firebase/app": "^23.8.8",
-    "@react-native-firebase/messaging": "^23.8.8",
+    "@react-native-firebase/messaging": "^24.0.0",
     "@react-native-google-signin/google-signin": "^16.1.2",
     "@react-navigation/bottom-tabs": "^7.x",
     "@react-navigation/native": "^7.x",
